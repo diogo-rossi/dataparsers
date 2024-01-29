@@ -27,23 +27,23 @@ def arg(*name_or_flags: str, default=None, mutually_exclusive_group: str | int |
     return field(default=default, metadata=arg_dict)
 
 
-def dataparser(*args, required_mutually_exclusive_groups: dict[str | int, bool] | None = None, **kwargs):
+def dataparser(*, required_mutually_exclusive_groups: dict[str | int, bool] | None = None, **kwargs):
     if required_mutually_exclusive_groups is None:
         required_mutually_exclusive_groups = {}
 
     def wrap(cls: type[Class]) -> type[Class]:
         cls = dataclass(cls)
-        setattr(cls, SPECIALATTRIBUTE, (args, kwargs, required_mutually_exclusive_groups))
+        setattr(cls, SPECIALATTRIBUTE, (kwargs, required_mutually_exclusive_groups))
         return cls
 
     return wrap
 
 
 def parse(cls: type[Class], args: Sequence[str] | None = None, *, parser: ArgumentParser | None = None) -> Class:
-    argparser_args, argparser_kwargs, required_groups = getattr(cls, SPECIALATTRIBUTE, ((), {}, {}))
+    kwargs, required_groups = getattr(cls, SPECIALATTRIBUTE, ({}, {}))
 
     if parser is None:
-        parser = ArgumentParser(*argparser_args, **argparser_kwargs)
+        parser = ArgumentParser(**kwargs)
 
     groups: dict[str | int, _MutuallyExclusiveGroup] = {}
 
