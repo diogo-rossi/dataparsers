@@ -79,7 +79,7 @@ def parse(cls: type[Class], args: Sequence[str] | None = None, *, parser: Argume
         else:
             parser.add_argument(*name_or_flags, **arg_metadata)
 
-    return parser.parse_args(args, namespace=cls())
+    return cls(**vars(parser.parse_args(args)))
 
 
 # %% ###################################################################################################################
