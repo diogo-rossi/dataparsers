@@ -10,7 +10,6 @@ Class = TypeVar("Class", covariant=True)
 def arg(*name_or_flags: str, default=None, mutually_exclusive_group: str | int | None = None, **kwargs) -> Any:
     is_flag = False
     if name_or_flags:
-        # Error if `name_or_flags` is given without flags
         if not all(n.startswith("-") for n in name_or_flags):
             raise ValueError(
                 "The argument `name_or_flags` should be passed to function `arg` only if it is a flag (starts with `-`)"
@@ -22,7 +21,6 @@ def arg(*name_or_flags: str, default=None, mutually_exclusive_group: str | int |
 
     arg_dict = dict(name_or_flags=name_or_flags, mutually_exclusive_group=mutually_exclusive_group, is_flag=is_flag, **kwargs)
 
-    # remove dict nones
     arg_dict = {key: value for key, value in arg_dict.items() if value is not None}
 
     return field(default=default, metadata=arg_dict)
@@ -64,30 +62,24 @@ def parse(cls: type[Class], args: Sequence[str] | None = None, *, parser: Argume
         parser = ArgumentParser(**kwargs)
 
     for arg in fields(cls):  # type: ignore
-        # Transform in dict because MappingProxyType is not subscriptable
         arg_metadata = dict(arg.metadata)
 
         arg_field_has_default = arg.default is not arg.default_factory
         if (arg_field_has_default and arg_metadata.pop("is_flag", True)) or (not arg_field_has_default and arg.type == bool):
-            # `arg` is field with default value and is not a flag by `arg()` or `arg` is `bool` and has no default: make it flag
             if not arg_metadata.get("name_or_flags", False):
                 arg_metadata["name_or_flags"] = ("--" + arg.name.replace("_", "-"),)
             if not arg_field_has_default:
-                # arg is a `bool` and has no default (required): make it with default
                 arg.default = default_bool
 
-        # get name_or_flags argument
         if not arg_metadata.get("name_or_flags"):  # no flag arg
             arg_metadata["name_or_flags"] = (arg.name,)
         else:  # flag arg
             arg_metadata["dest"] = arg.name
         name_or_flags = arg_metadata.pop("name_or_flags")
 
-        # infer type from field (if it is not `bool`)
         if "type" not in arg_metadata and arg.type != bool:
             arg_metadata["type"] = arg.type
 
-        # for `bool` arg, the `default` defines `action`
         if "action" not in arg_metadata and arg.type == bool:
             arg_metadata["action"] = "store_false" if arg.default else "store_true"
 
