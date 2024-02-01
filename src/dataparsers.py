@@ -3,7 +3,7 @@
 
 from dataclasses import dataclass, field, fields
 from argparse import ArgumentParser, _MutuallyExclusiveGroup
-from typing import Any, TypeVar, Sequence, Callable
+from typing import Any, TypeVar, Sequence, Callable, overload
 
 SPECIALATTRIBUTE = "__data_parsers_params__"
 Class = TypeVar("Class", covariant=True)
@@ -30,8 +30,20 @@ def arg(*name_or_flags: str, default=None, mutually_exclusive_group: str | int |
     return field(default=default, metadata=arg_dict)
 
 
+@overload
+def dataparser(cls: type[Class]) -> type[Class]:
+    ...
+
+
+@overload
 def dataparser(
-    cls: type[Class] | None = None, *, required_mutually_exclusive_groups: dict[str | int, bool] | None = None, **kwargs
+    *, required_mutually_exclusive_groups: dict[str | int, bool] | None = None, default_store_bool: bool = True, **kwargs
+) -> Callable[[type[Class]], type[Class]]:
+    ...
+
+
+def dataparser(
+    cls, *, required_mutually_exclusive_groups=None, default_store_bool=True, **kwargs
 ) -> type[Class] | Callable[[type[Class]], type[Class]]:
     if cls is not None:
         return dataclass(cls)
@@ -41,14 +53,14 @@ def dataparser(
 
     def wrap(cls: type[Class]) -> type[Class]:
         cls = dataclass(cls)
-        setattr(cls, SPECIALATTRIBUTE, (kwargs, required_mutually_exclusive_groups))
+        setattr(cls, SPECIALATTRIBUTE, (kwargs, required_mutually_exclusive_groups, default_store_bool))
         return cls
 
     return wrap
 
 
 def parse(cls: type[Class], args: Sequence[str] | None = None, *, parser: ArgumentParser | None = None) -> Class:
-    kwargs, required_groups = getattr(cls, SPECIALATTRIBUTE, ({}, {}))
+    kwargs, required_groups, default_bool = getattr(cls, SPECIALATTRIBUTE, ({}, {}, False))
 
     if parser is None:
         parser = ArgumentParser(**kwargs)
