@@ -100,9 +100,9 @@ def parse(cls: type[Class], args: Sequence[str] | None = None, *, parser: Argume
                 groups[group_id] = parser.add_mutually_exclusive_group(
                     required=required_groups.get(group_id, False),
                 )
-            groups[group_id].add_argument(*name_or_flags, **arg_metadata)
+            groups[group_id].add_argument(*name_or_flags, default=arg.default, **arg_metadata)
         else:
-            parser.add_argument(*name_or_flags, **arg_metadata)
+            parser.add_argument(*name_or_flags, default=arg.default, **arg_metadata)
 
     return cls(**vars(parser.parse_args(args)))
 
