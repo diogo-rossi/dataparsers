@@ -10,16 +10,19 @@ Class = TypeVar("Class", covariant=True)
 
 
 def arg(*name_or_flags: str, default=None, mutually_exclusive_group: str | int | None = None, **kwargs) -> Any:
-    # Error if `name_or_flags` is given without flags
-    if name_or_flags and not all(n.startswith("-") for n in name_or_flags):
-        raise ValueError(
-            "The argument `name_or_flags` should be passed to function `arg` only if it is a flag (starts with `-`)"
-        )
+    is_flag = False
+    if name_or_flags:
+        # Error if `name_or_flags` is given without flags
+        if not all(n.startswith("-") for n in name_or_flags):
+            raise ValueError(
+                "The argument `name_or_flags` should be passed to function `arg` only if it is a flag (starts with `-`)"
+            )
+        is_flag = True
 
     if "dest" in kwargs:
         raise ValueError("The argument `dest` is not necessary")
 
-    arg_dict = dict(name_or_flags=name_or_flags, mutually_exclusive_group=mutually_exclusive_group, **kwargs)
+    arg_dict = dict(name_or_flags=name_or_flags, mutually_exclusive_group=mutually_exclusive_group, is_flag=is_flag, **kwargs)
 
     # remove dict nones
     arg_dict = {key: value for key, value in arg_dict.items() if value is not None}
