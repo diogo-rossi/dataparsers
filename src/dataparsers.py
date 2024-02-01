@@ -3,7 +3,6 @@ from dataclasses import dataclass, field, fields
 from argparse import ArgumentParser, _MutuallyExclusiveGroup
 from typing import Any, TypeVar, Sequence, Callable, overload
 
-SPECIALATTRIBUTE = "__data_parsers_params__"
 Class = TypeVar("Class", covariant=True)
 
 
@@ -49,14 +48,14 @@ def dataparser(
 
     def wrap(cls: type[Class]) -> type[Class]:
         cls = dataclass(cls)
-        setattr(cls, SPECIALATTRIBUTE, (kwargs, required_mutually_exclusive_groups, default_store_bool))
+        setattr(cls, "__dataparsers_params__", (kwargs, required_mutually_exclusive_groups, default_store_bool))
         return cls
 
     return wrap
 
 
 def parse(cls: type[Class], args: Sequence[str] | None = None, *, parser: ArgumentParser | None = None) -> Class:
-    kwargs, required_groups, default_bool = getattr(cls, SPECIALATTRIBUTE, ({}, {}, False))
+    kwargs, required_groups, default_bool = getattr(cls, "__dataparsers_params__", ({}, {}, False))
     groups: dict[str | int, _MutuallyExclusiveGroup] = {}
     if parser is None:
         parser = ArgumentParser(**kwargs)
