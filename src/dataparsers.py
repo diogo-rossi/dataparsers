@@ -71,10 +71,15 @@ def parse(cls: type[Class], args: Sequence[str] | None = None, *, parser: Argume
         # Transform to dict because MappingProxyType is not subscriptable
         arg_metadata = dict(arg.metadata)
 
-        if arg.type == bool and arg.default is arg.default_factory:
-            # arg is a `bool` and has no default (required): make it optional with default `True`
-            arg_metadata["name_or_flags"] = ("--" + arg.name.replace("_", "-"),)
-            arg.default = True
+        arg_field_has_default = arg.default is not arg.default_factory
+
+        if (arg_field_has_default and arg_metadata.pop("is_flag", True)) or (not arg_field_has_default and arg.type == bool):
+            # `arg` is field with default value and is not a flag by `arg()` or `arg` is `bool` and has no default: make it flag
+            if not arg_metadata.get("name_or_flags", False):
+                arg_metadata["name_or_flags"] = ("--" + arg.name.replace("_", "-"),)
+            if not arg_field_has_default:
+                # arg is a `bool` and has no default (required): make it with default
+                arg.default = default_bool
 
         # Get name_or_flags argument
         if not arg_metadata.get("name_or_flags"):  # no flagged arg
