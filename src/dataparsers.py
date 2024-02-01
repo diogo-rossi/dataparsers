@@ -1,6 +1,4 @@
 # %% ############################################### data parsers region ###############################################
-
-
 from dataclasses import dataclass, field, fields
 from argparse import ArgumentParser, _MutuallyExclusiveGroup
 from typing import Any, TypeVar, Sequence, Callable, overload
@@ -70,7 +68,6 @@ def parse(cls: type[Class], args: Sequence[str] | None = None, *, parser: Argume
         arg_metadata = dict(arg.metadata)
 
         arg_field_has_default = arg.default is not arg.default_factory
-
         if (arg_field_has_default and arg_metadata.pop("is_flag", True)) or (not arg_field_has_default and arg.type == bool):
             # `arg` is field with default value and is not a flag by `arg()` or `arg` is `bool` and has no default: make it flag
             if not arg_metadata.get("name_or_flags", False):
