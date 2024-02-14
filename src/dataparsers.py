@@ -141,7 +141,7 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
             if group_id is not None:
                 if group_id not in groups:
                     groups[group_id] = parser.add_argument_group(
-                        title=str(group_id),
+                        title=group_id if type(group_id) == str else None,
                         description=groups_descriptions.get(group_id, None),
                     )
                 handler = groups[group_id]
