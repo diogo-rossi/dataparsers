@@ -1,7 +1,8 @@
 # %% ################################################# dataparsers region ######################################################
 import os, textwrap
 from dataclasses import dataclass, field, fields
-from argparse import ArgumentParser, _MutuallyExclusiveGroup, _ArgumentGroup
+from argparse import ArgumentParser, RawTextHelpFormatter, ArgumentDefaultsHelpFormatter
+from argparse import _MutuallyExclusiveGroup, _ArgumentGroup  # only for typing annotation
 from typing import Any, TypeVar, Sequence, Callable, overload
 
 Class = TypeVar("Class", covariant=True)
@@ -73,6 +74,7 @@ def dataparser(
     groups_descriptions: dict[str | int, str] | None = None,
     required_mutually_exclusive_groups: dict[str | int, bool] | None = None,
     default_bool: bool = False,
+    help_fmt: Callable[[str], str] | None = None,
     **kwargs,
 ) -> type[Class] | Callable[[type[Class]], type[Class]]:
     if cls is not None:
@@ -87,25 +89,36 @@ def dataparser(
     def wrap(cls: type[Class]) -> type[Class]:
         cls = dataclass(cls)
         setattr(
-            cls, "__dataparsers_params__", (kwargs, groups_descriptions, required_mutually_exclusive_groups, default_bool)
+            cls,
+            "__dataparsers_params__",
+            (kwargs, groups_descriptions, required_mutually_exclusive_groups, default_bool, help_fmt),
         )
         return cls
 
     return wrap
 
 
+class RawTextWithArgumentDefaultsHelpFormatter(RawTextHelpFormatter, ArgumentDefaultsHelpFormatter): ...
+
+
 def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentParser:
-    kwargs, groups_descriptions, required_groups_status, default_bool = getattr(
-        cls, "__dataparsers_params__", ({}, {}, {}, False)
+    kwargs, groups_descriptions, required_groups_status, default_bool, help_fmt = getattr(
+        cls, "__dataparsers_params__", ({}, {}, {}, False, None)
     )
     if parser is None:
+        if help_fmt is not None and "formatter_class" not in kwargs:
+            kwargs["formatter_class"] = RawTextWithArgumentDefaultsHelpFormatter
         parser = ArgumentParser(**kwargs)
 
+    help_fmt = help_fmt or str
     groups: dict[str | int, _ArgumentGroup] = {}
     mutually_exclusive_groups: dict[str | int, _MutuallyExclusiveGroup] = {}
 
     for arg in fields(cls):  # type: ignore
         arg_metadata = dict(arg.metadata)
+
+        if "help" in arg_metadata:
+            arg_metadata["help"] = help_fmt(arg_metadata["help"])
 
         arg_field_has_default = arg.default is not arg.default_factory
         make_flag = arg_metadata.pop("make_flag", True)
@@ -128,7 +141,7 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
 
         if "action" not in arg_metadata and arg.type == bool:
             arg_metadata["action"] = "store_false" if arg.default else "store_true"
-            
+
         if arg.type == bool:
             arg.default = arg_metadata["action"] == "store_false"
 
