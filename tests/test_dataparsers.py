@@ -25,7 +25,7 @@ def parser():
     return ArgumentParser()
 
 
-def test_only_positionals(capsys: CapSys):
+def test_00_only_positionals(capsys: CapSys):
     @dataclass
     class Args:
         string: str
@@ -38,7 +38,7 @@ def test_only_positionals(capsys: CapSys):
     assert all(name in positionals for name in [f.name for f in fields(Args)])
 
 
-def test_with_one_flag(capsys: CapSys):
+def test_01_with_one_flag(capsys: CapSys):
     @dataclass
     class Args:
         string: str
@@ -51,8 +51,35 @@ def test_with_one_flag(capsys: CapSys):
     flags = HelpOutput(output).flags
     assert "--foo" in flags
 
+def test_02_with_defaults_and_helps(capsys: CapSys):
+    @dataclass
+    class Args:
+        string: str = arg(help="This must be a string")
+        integer: int = arg(default=1, help="This is a integer")
 
-def test_with_one_group(capsys: CapSys):
+    parser = make_parser(Args)
+    parser.print_help()
+    output = capsys.readouterr().out
+    output = HelpOutput(output)
+    positionals = output.positionals
+    flags = output.flags
+    assert "string" in positionals
+    assert "--integer" in flags
+
+def test_03_automatic_make_flags(capsys: CapSys):
+    @dataclass
+    class Args:
+        string: str = arg("-s")
+        integer: int = arg("-i")
+
+    parser = make_parser(Args)
+    parser.print_help()
+    output = capsys.readouterr().out
+    flags = HelpOutput(output).flags
+    assert all(name in flags for name in ["-s", "-i"])
+    assert all(name in flags for name in ["--string", "--integer"])
+
+def test_3_with_one_group(capsys: CapSys):
     @dataclass
     class Args:
         string: str = arg(group_title="group1")
@@ -117,17 +144,7 @@ def test_with_required_multually_exclusive_groups_and_given_single_flags(capsys:
     assert all(name in flags for name in ["--string", "--integer"])
 
 
-def test_automatic_make_flags(capsys: CapSys):
-    @dataclass
-    class Args:
-        string: str = arg("-s")
-        integer: int = arg("-i")
 
-    parser = make_parser(Args)
-    parser.print_help()
-    output = capsys.readouterr().out
-    flags = HelpOutput(output).flags
-    assert all(name in flags for name in ["--string", "--integer"])
 
 
 def test_forced_make_flags(capsys: CapSys):
@@ -143,20 +160,7 @@ def test_forced_make_flags(capsys: CapSys):
     assert all(name in flags for name in ["--string", "--integer"])
 
 
-def test_with_defaults_and_helps(capsys: CapSys):
-    @dataclass
-    class Args:
-        string: str = arg(help="This must be a string")
-        integer: int = arg(default=1, help="This is a integer")
 
-    parser = make_parser(Args)
-    parser.print_help()
-    output = capsys.readouterr().out
-    output = HelpOutput(output)
-    positionals = output.positionals
-    flags = output.flags
-    assert "string" in positionals
-    assert "--integer" in flags
 
 
 # %% Help output handler
