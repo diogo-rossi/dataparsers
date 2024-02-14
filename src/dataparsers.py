@@ -1,4 +1,4 @@
-# %% ############################################### data parsers region ###############################################
+# %% ################################################# dataparsers region ######################################################
 from dataclasses import dataclass, field, fields
 from argparse import ArgumentParser, _MutuallyExclusiveGroup
 from typing import Any, TypeVar, Sequence, Callable, overload
@@ -8,6 +8,7 @@ Class = TypeVar("Class", covariant=True)
 
 def arg(*name_or_flags: str, default=None, mutually_exclusive_group: str | int | None = None, **kwargs) -> Any:
     is_flag = False
+
     if name_or_flags:
         if not all(n.startswith("-") for n in name_or_flags):
             raise ValueError(
@@ -95,4 +96,4 @@ def parse(cls: type[Class], args: Sequence[str] | None = None, *, parser: Argume
     return cls(**vars(parser.parse_args(args)))
 
 
-# %% ###################################################################################################################
+# %% ###########################################################################################################################
