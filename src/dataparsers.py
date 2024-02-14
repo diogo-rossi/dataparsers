@@ -114,7 +114,7 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
                 arg_metadata["name_or_flags"] = ()
             if make_flag or (arg.type == bool and not arg_metadata["name_or_flags"]):
                 arg_metadata["name_or_flags"] += (f'--{arg.name.replace("_", "-")}',)
-            if not arg_field_has_default or arg.default is None:
+            if arg.type == bool and (not arg_field_has_default or arg.default is None):
                 arg.default = default_bool
 
         if not arg_metadata.get("name_or_flags"):  # no flag arg
