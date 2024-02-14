@@ -97,7 +97,7 @@ def dataparser(
     return wrap
 
 
-def parse(cls: type[Class], args: Sequence[str] | None = None, *, parser: ArgumentParser | None = None) -> Class:
+def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentParser:
     kwargs, groups, required_groups, default_bool = getattr(cls, "__dataparsers_params__", ({}, {}, {}, False))
     if parser is None:
         parser = ArgumentParser(**kwargs)
@@ -145,7 +145,11 @@ def parse(cls: type[Class], args: Sequence[str] | None = None, *, parser: Argume
         else:
             parser.add_argument(*name_or_flags, default=arg.default, **arg_metadata)
 
-    return cls(**vars(parser.parse_args(args)))
+    return parser
+
+
+def parse(cls: type[Class], args: Sequence[str] | None = None, *, parser: ArgumentParser | None = None) -> Class:
+    return cls(**vars(make_parser(cls, parser=parser).parse_args(args)))
 
 
 def write_help(
