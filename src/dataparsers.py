@@ -9,8 +9,8 @@ Class = TypeVar("Class", covariant=True)
 
 def arg(
     *name_or_flags: str,
-    group: str | int | None = None,
-    mutually_exclusive_group: str | int | None = None,
+    group_title: str | int | None = None,
+    mutually_exclusive_group_id: str | int | None = None,
     make_flag: bool | None = None,
     **kwargs,
 ) -> Any:
@@ -28,7 +28,7 @@ def arg(
     if "dest" in kwargs:
         raise ValueError("The argument `dest` is not necessary")
 
-    if group is not None and mutually_exclusive_group is not None:
+    if group_title is not None and mutually_exclusive_group_id is not None:
         raise ValueError("Can't pass both `group` and `mutually_exclusive_group`")
 
     if "default" in kwargs and not kwargs.get("nargs", None) in ["?", "*"] and not is_flag:
@@ -36,7 +36,7 @@ def arg(
 
     default = kwargs.pop("default", None)
 
-    if not is_flag and mutually_exclusive_group is not None:
+    if not is_flag and mutually_exclusive_group_id is not None:
         make_flag = True
 
     make_flag = bool(make_flag)
@@ -44,8 +44,8 @@ def arg(
 
     metadict = dict(
         name_or_flags=name_or_flags,
-        group=group,
-        mutually_exclusive_group=mutually_exclusive_group,
+        group_title=group_title,
+        mutually_exclusive_group_id=mutually_exclusive_group_id,
         is_flag=is_flag,
         make_flag=make_flag,
         **kwargs,
@@ -63,7 +63,7 @@ def dataparser(cls: type[Class]) -> type[Class]: ...
 @overload
 def dataparser(
     *,
-    groups: dict[str | int, bool] | None = None,
+    groups_descriptions: dict[str | int, str] | None = None,
     required_mutually_exclusive_groups: dict[str | int, bool] | None = None,
     default_store_bool: bool = True,
     **kwargs,
@@ -73,7 +73,7 @@ def dataparser(
 def dataparser(
     cls: type[Class] | None = None,
     *,
-    groups: dict[str | int, bool] | None = None,
+    groups_descriptions: dict[str | int, str] | None = None,
     required_mutually_exclusive_groups=None,
     default_store_bool=True,
     **kwargs,
@@ -81,15 +81,17 @@ def dataparser(
     if cls is not None:
         return dataclass(cls)
 
-    if groups is None:
-        groups = {}
+    if groups_descriptions is None:
+        groups_descriptions = {}
 
     if required_mutually_exclusive_groups is None:
         required_mutually_exclusive_groups = {}
 
     def wrap(cls: type[Class]) -> type[Class]:
         cls = dataclass(cls)
-        setattr(cls, "__dataparsers_params__", (kwargs, groups, required_mutually_exclusive_groups, default_store_bool))
+        setattr(
+            cls, "__dataparsers_params__", (kwargs, groups_descriptions, required_mutually_exclusive_groups, default_store_bool)
+        )
         return cls
 
     return wrap
@@ -128,8 +130,8 @@ def parse(cls: type[Class], args: Sequence[str] | None = None, *, parser: Argume
         if "action" not in arg_metadata and arg.type == bool:
             arg_metadata["action"] = "store_false" if arg.default else "store_true"
 
-        group_id: str | int | None = arg_metadata.pop("group", None)
-        exclusive_group_id: str | int | None = arg_metadata.pop("mutually_exclusive_group", None)
+        group_id: str | int | None = arg_metadata.pop("group_title", None)
+        exclusive_group_id: str | int | None = arg_metadata.pop("mutually_exclusive_group_id", None)
         if group_id is not None:
             if group_id not in arg_groups:
                 arg_groups[group_id] = parser.add_argument_group(title=str(group_id), description=groups.get(group_id, None))

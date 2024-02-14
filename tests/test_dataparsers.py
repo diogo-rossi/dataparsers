@@ -55,8 +55,8 @@ def test_with_one_flag(capsys: CapSys, parser: ArgumentParser):
 def test_with_one_group(capsys: CapSys, parser: ArgumentParser):
     @dataclass
     class Args:
-        string: str = arg(group=1)
-        integer: int = arg(group=1)
+        string: str = arg(group_title=1)
+        integer: int = arg(group_title=1)
 
     parse(Args, ["test", "10"], parser=parser)
     parser.print_help()
@@ -68,8 +68,8 @@ def test_with_one_group(capsys: CapSys, parser: ArgumentParser):
 def test_with_one_group_with_one_flag(capsys: CapSys, parser: ArgumentParser):
     @dataclass
     class Args:
-        string: str = arg(group=1)
-        integer: int = arg(group=1, make_flag=True)
+        string: str = arg(group_title=1)
+        integer: int = arg(group_title=1, make_flag=True)
 
     parse(Args, ["test"], parser=parser)
     parser.print_help()
@@ -81,8 +81,8 @@ def test_with_one_group_with_one_flag(capsys: CapSys, parser: ArgumentParser):
 def test_with_multually_exclusive_groups(capsys: CapSys, parser: ArgumentParser):
     @dataclass
     class Args:
-        string: str = arg(mutually_exclusive_group=1)
-        integer: int = arg(mutually_exclusive_group=1)
+        string: str = arg(mutually_exclusive_group_id=1)
+        integer: int = arg(mutually_exclusive_group_id=1)
 
     parse(Args, ["--string", "test"], parser=parser)
     parser.print_help()
@@ -94,8 +94,8 @@ def test_with_multually_exclusive_groups(capsys: CapSys, parser: ArgumentParser)
 def test_with_required_multually_exclusive_groups_and_no_given_flags(capsys: CapSys, parser: ArgumentParser):
     @dataparser(required_mutually_exclusive_groups={1: True})
     class Args:
-        string: str = arg(mutually_exclusive_group=1)
-        integer: int = arg(mutually_exclusive_group=1)
+        string: str = arg(mutually_exclusive_group_id=1)
+        integer: int = arg(mutually_exclusive_group_id=1)
 
     parse(Args, ["--string", "test"], parser=parser)
     parser.print_help()
@@ -107,8 +107,8 @@ def test_with_required_multually_exclusive_groups_and_no_given_flags(capsys: Cap
 def test_with_required_multually_exclusive_groups_and_given_single_flags(capsys: CapSys, parser: ArgumentParser):
     @dataparser(required_mutually_exclusive_groups={1: True})
     class Args:
-        string: str = arg("-s", mutually_exclusive_group=1)
-        integer: int = arg("-i", mutually_exclusive_group=1)
+        string: str = arg("-s", mutually_exclusive_group_id=1)
+        integer: int = arg("-i", mutually_exclusive_group_id=1)
 
     parse(Args, ["--string", "test"], parser=parser)
     parser.print_help()
