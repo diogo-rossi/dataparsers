@@ -1,4 +1,5 @@
 # %% ################################################# dataparsers region ######################################################
+import os, textwrap
 from dataclasses import dataclass, field, fields
 from argparse import ArgumentParser, _MutuallyExclusiveGroup
 from typing import Any, TypeVar, Sequence, Callable, overload
@@ -44,15 +45,13 @@ def arg(
 
 
 @overload
-def dataparser(cls: type[Class]) -> type[Class]:
-    ...
+def dataparser(cls: type[Class]) -> type[Class]: ...
 
 
 @overload
 def dataparser(
     *, required_mutually_exclusive_groups: dict[str | int, bool] | None = None, default_store_bool: bool = True, **kwargs
-) -> Callable[[type[Class]], type[Class]]:
-    ...
+) -> Callable[[type[Class]], type[Class]]: ...
 
 
 def dataparser(
@@ -114,6 +113,22 @@ def parse(cls: type[Class], args: Sequence[str] | None = None, *, parser: Argume
             parser.add_argument(*name_or_flags, default=arg.default, **arg_metadata)
 
     return cls(**vars(parser.parse_args(args)))
+
+
+def write_help(
+    text: str,
+    width: int | None = None,
+    space: int = 24,
+    dedent: bool = True,
+    final_newlines: bool = True,
+) -> str:
+    width = width or os.get_terminal_size().columns
+    lines = []
+    for line in text.splitlines():
+        line = textwrap.dedent(line) if dedent else line
+        lines.append(textwrap.fill(text=line, width=width - space, replace_whitespace=False))
+
+    return "\n".join(lines) + ("\n\n" if final_newlines else "")
 
 
 # %% ###########################################################################################################################
