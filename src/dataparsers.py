@@ -1,7 +1,7 @@
 # %% ################################################# dataparsers region ######################################################
 import os, textwrap
 from dataclasses import dataclass, field, fields
-from argparse import ArgumentParser, RawTextHelpFormatter, ArgumentDefaultsHelpFormatter
+from argparse import ArgumentParser, RawTextHelpFormatter
 from argparse import _MutuallyExclusiveGroup, _ArgumentGroup  # only for typing annotation
 from typing import Any, TypeVar, Sequence, Callable, overload
 
@@ -98,16 +98,13 @@ def dataparser(
     return wrap
 
 
-class RawTextWithArgumentDefaultsHelpFormatter(RawTextHelpFormatter, ArgumentDefaultsHelpFormatter): ...
-
-
 def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentParser:
     kwargs, groups_descriptions, required_groups_status, default_bool, help_fmt = getattr(
         cls, "__dataparsers_params__", ({}, {}, {}, False, None)
     )
     if parser is None:
         if help_fmt is not None and "formatter_class" not in kwargs:
-            kwargs["formatter_class"] = RawTextWithArgumentDefaultsHelpFormatter
+            kwargs["formatter_class"] = RawTextHelpFormatter
         parser = ArgumentParser(**kwargs)
 
     help_fmt = help_fmt or str
