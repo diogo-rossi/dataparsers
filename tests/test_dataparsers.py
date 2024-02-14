@@ -20,10 +20,6 @@ class CapSys(Protocol):
     def readouterr(self) -> OutErr: ...
 
 
-def get_options(helptxt: str):
-    txtlines = helptxt.splitlines()
-
-
 @fixture
 def parser():
     return ArgumentParser()
@@ -38,7 +34,8 @@ def test_only_positionals(capsys: CapSys, parser: ArgumentParser):
     parse(Args, ["test", "10"], parser=parser)
     parser.print_help()
     output = capsys.readouterr().out
-    assert all(name in HelpOutput(output).positionals for name in [f.name for f in fields(Args)])
+    positionals = HelpOutput(output).positionals
+    assert all(name in positionals for name in [f.name for f in fields(Args)])
 
 
 def test_with_one_flag(capsys: CapSys, parser: ArgumentParser):
@@ -51,7 +48,8 @@ def test_with_one_flag(capsys: CapSys, parser: ArgumentParser):
     parse(Args, ["test", "10"], parser=parser)
     parser.print_help()
     output = capsys.readouterr().out
-    assert "--foo" in HelpOutput(output).flags
+    flags = HelpOutput(output).flags
+    assert "--foo" in flags
 
 
 def test_with_one_group(capsys: CapSys, parser: ArgumentParser):
@@ -167,7 +165,6 @@ class HelpOutput:
     def get_section(self, title: str) -> list[str]:
         try:
             start = self.text_lines.index([line for line in self.text_lines if line.strip().startswith(title)][0]) + 1
-            end = start + self.text_lines[start:].index("") if "" in self.text_lines[start:] else None
             lines = []
             for line in self.text_lines[start:]:
                 if not (line.startswith(" ") or line == ""):
