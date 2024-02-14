@@ -1,6 +1,10 @@
-def identify_code_snippets(file_path) -> list[str]:
+from pathlib import Path
+
+
+def identify_code_snippets(filepath: Path) -> list[str]:
+    """Returns a list of code snippets (delimited by `::`) inside docstrings of a module filepath"""
     snippets = []
-    with open(file_path, "r") as file:
+    with open(filepath, "r") as file:
         in_snippet = False
         current_snippet = []
 
@@ -30,6 +34,7 @@ def identify_code_snippets(file_path) -> list[str]:
 
 
 def separate_snippets_by_type(snippets) -> dict[str, list[str]]:
+    """Separate code snippets by types: "Python" and "Shell" """
     result = {"python": [], "sh": []}
     for snippet in snippets:
         if "$" in snippet:
@@ -40,6 +45,7 @@ def separate_snippets_by_type(snippets) -> dict[str, list[str]]:
 
 
 def code_snippet_to_replace_in_markdown_for_myst(snippet: str, type_of_code: str) -> str:
+    """Returns a corrected code snippet to replace in markdown docs (removes indentation and put back ticks)"""
     lines = snippet.split("\n")
     corrected_snippet_lines = []
     for line in lines[2:-2]:
@@ -52,7 +58,8 @@ def code_snippet_to_replace_in_markdown_for_myst(snippet: str, type_of_code: str
     return "\n".join(final_lines)
 
 
-def replace_note_sections_in_markdown_for_myst(file:str):
+def replace_note_sections_in_markdown_for_myst(file: Path):
+    """Put the correct "Note" section inside the markdown docs (for MyST with sphinx)"""
     in_Note = False
     note_section = []
     note_sections_list: list[str] = []
@@ -77,7 +84,9 @@ def replace_note_sections_in_markdown_for_myst(file:str):
     with open(file, "w") as fd:
         fd.write(text)
 
-def replace_code_snippets_in_markdown_for_myst(file:str):
+
+def replace_code_snippets_in_markdown_for_myst(file: Path):
+    "Replaces the code snippets written for VSCode stub file by corrected snippets to write in markdown format"
     code_snippets = separate_snippets_by_type(identify_code_snippets(file))
     with open(file, "r") as fd:
         text = fd.read()
@@ -88,7 +97,14 @@ def replace_code_snippets_in_markdown_for_myst(file:str):
     with open(file, "w") as fd:
         fd.write(text)
 
-def process_file(filepath:str, replace_snippets: bool, replace_notes: bool):
+
+def replace_snippets_and_notes(filepath: Path, replace_snippets: bool, replace_notes: bool):
+    """Formats a markdown file that supports VSCode stubs for pylance replacing snippets and notes sections.
+
+    - snippets are given in the stub by a `::` symbol (the are replaced by markdown code snippet)
+    - Notes are simple paragraphs with indentation (the are replaced by MyST notes sections)
+
+    """
     if replace_snippets:
         replace_code_snippets_in_markdown_for_myst(filepath)
     if replace_notes:
