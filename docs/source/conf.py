@@ -63,10 +63,16 @@ copybutton_prompt_text = ">>> "
 intersphinx_mapping = {"python": ("https://docs.python.org/3", None)}
 
 # Ext-links settings
-extlinks = {"original": ("https://docs.python.org/3/library/argparse.html#%s", "%s")}
+extlinks = {
+    "original": ("https://docs.python.org/3/library/argparse.html#%s", "%s"),
+    "argument": ("2_available_functions.html#%s", "%s"),
+}
 
 # Combo-roles settings
-comboroles_roles = {"literal_issue": ["literal", "original"]}
+comboroles_roles = {
+    "original_link": ["literal", "original"],
+    "argument_link": ["literal", "argument"],
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
