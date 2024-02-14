@@ -3,7 +3,7 @@
 
 from dataclasses import dataclass, field, fields
 from argparse import ArgumentParser, _MutuallyExclusiveGroup
-from typing import Any, TypeVar, Sequence
+from typing import Any, TypeVar, Sequence, Callable
 
 SPECIALATTRIBUTE = "__data_parsers_params__"
 Class = TypeVar("Class", covariant=True)
@@ -27,7 +27,12 @@ def arg(*name_or_flags: str, default=None, mutually_exclusive_group: str | int |
     return field(default=default, metadata=arg_dict)
 
 
-def dataparser(*, required_mutually_exclusive_groups: dict[str | int, bool] | None = None, **kwargs):
+def dataparser(
+    cls: type[Class] | None = None, *, required_mutually_exclusive_groups: dict[str | int, bool] | None = None, **kwargs
+) -> type[Class] | Callable[[type[Class]], type[Class]]:
+    if cls is not None:
+        return dataclass(cls)
+
     if required_mutually_exclusive_groups is None:
         required_mutually_exclusive_groups = {}
 
