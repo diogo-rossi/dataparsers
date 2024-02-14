@@ -6,7 +6,13 @@ from typing import Any, TypeVar, Sequence, Callable, overload
 Class = TypeVar("Class", covariant=True)
 
 
-def arg(*name_or_flags: str, default=None, mutually_exclusive_group: str | int | None = None, **kwargs) -> Any:
+def arg(
+    *name_or_flags: str,
+    default=None,
+    mutually_exclusive_group: str | int | None = None,
+    make_flag: bool | None = None,
+    **kwargs,
+) -> Any:
     is_flag = False
 
     if name_or_flags:
@@ -14,12 +20,23 @@ def arg(*name_or_flags: str, default=None, mutually_exclusive_group: str | int |
             raise ValueError(
                 "The argument `name_or_flags` should be passed to function `arg` only if it is a flag (starts with `-`)"
             )
+        if not any(n.startswith("--") for n in name_or_flags) and make_flag is None:
+            make_flag = True
         is_flag = True
 
     if "dest" in kwargs:
         raise ValueError("The argument `dest` is not necessary")
 
-    arg_dict = dict(name_or_flags=name_or_flags, mutually_exclusive_group=mutually_exclusive_group, is_flag=is_flag, **kwargs)
+    make_flag = bool(make_flag)
+    is_flag = is_flag or make_flag
+
+    arg_dict = dict(
+        name_or_flags=name_or_flags,
+        mutually_exclusive_group=mutually_exclusive_group,
+        is_flag=is_flag,
+        make_flag=make_flag,
+        **kwargs,
+    )
 
     arg_dict = {key: value for key, value in arg_dict.items() if value is not None}
 
@@ -65,9 +82,12 @@ def parse(cls: type[Class], args: Sequence[str] | None = None, *, parser: Argume
         arg_metadata = dict(arg.metadata)
 
         arg_field_has_default = arg.default is not arg.default_factory
+        make_flag = arg_metadata.pop("make_flag", True)
         if (arg_field_has_default and arg_metadata.pop("is_flag", True)) or (not arg_field_has_default and arg.type == bool):
-            if not arg_metadata.get("name_or_flags", False):
-                arg_metadata["name_or_flags"] = ("--" + arg.name.replace("_", "-"),)
+            if "name_or_flags" not in arg_metadata:
+                arg_metadata["name_or_flags"] = ()
+            if make_flag:
+                arg_metadata["name_or_flags"] += (f'--{arg.name.replace("_", "-")}',)
             if not arg_field_has_default:
                 arg.default = default_bool
 
