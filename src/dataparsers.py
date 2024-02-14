@@ -61,11 +61,9 @@ def dataparser(
 
 def parse(cls: type[Class], args: Sequence[str] | None = None, *, parser: ArgumentParser | None = None) -> Class:
     kwargs, required_groups, default_bool = getattr(cls, SPECIALATTRIBUTE, ({}, {}, False))
-
+    groups: dict[str | int, _MutuallyExclusiveGroup] = {}
     if parser is None:
         parser = ArgumentParser(**kwargs)
-
-    groups: dict[str | int, _MutuallyExclusiveGroup] = {}
 
     for arg in fields(cls):  # type: ignore
         # Transform in dict because MappingProxyType is not subscriptable
