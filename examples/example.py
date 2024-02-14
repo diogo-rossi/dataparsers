@@ -17,12 +17,12 @@ from dataparsers import arg, make_parser, dataparser, parse
 
 
 @dataclass
-class Args1:
+class Args:
     foo: str
     bar: int = 42
 
 
-args = parse(Args1)
+args = parse(Args)
 print("Printing `args`:")
 print(args)
 
@@ -31,93 +31,93 @@ print(args)
 
 
 @dataclass
-class Args2:
+class Args:
     foo: str = arg(help="foo help")
     bar: int = arg(default=42, help="bar help")
 
 
-args = parse(Args2)
+args = parse(Args)
 
 
 # %% Example 3: Aliases
 
 
 @dataclass
-class Args3:
+class Args:
     foo: str = arg(help="foo help")
     bar: int = arg("-b", default=42, help="bar help")
 
 
-args = parse(Args3)
+args = parse(Args)
 
 
 # %% Example 4: Automatic flag creation
 
 
 @dataclass
-class Args4:
+class Args:
     bar: int = arg("--bar", default=42, nargs="?", help="bar help")
 
 
-args = parse(Args4)
+args = parse(Args)
 
 
 # %% Example 5: Automatic flag creation
 
 
 @dataclass
-class Args5:
+class Args:
     bar: int = arg(default=42, nargs="?", help="bar help", make_flag=True)
 
 
-args = parse(Args5)
+args = parse(Args)
 
 
 # %% Example 6: Avoiding automatic flag creation
 
 
 @dataclass
-class Args6:
+class Args:
     bar: int = arg("-b", default=42, help="bar help", make_flag=False)
 
 
-args = parse(Args6)
+args = parse(Args)
 
 
 # %% Example 7: Booleans
 
 
 @dataclass
-class Args7:
+class Args:
     bar: bool
 
 
-make_parser(Args7).print_help()
-parse(Args7, [])
+make_parser(Args).print_help()
+parse(Args, [])
 
 # %% Example 8: Decoupling code from the command line interface
 
 
 @dataclass
-class Args8:
+class Args:
     path: str = arg("-f", "--file-output", metavar="<filepath>", help="Text file to write output")
 
 
-args = parse(Args8)
+args = parse(Args)
 print(args)
 
 # %% Example 9: Argument groups
 
 
 @dataclass
-class Args9:
-    foo: str = arg(group_title="The 1st group")
-    bar: str = arg(group_title="The 1st group")
-    sam: str = arg(group_title="The 2nd group")
-    ham: str = arg(group_title="The 2nd group")
+class Args:
+    foo: str = arg(group_title="Group1")
+    bar: str = arg(group_title="Group1")
+    sam: str = arg(group_title="Group2")
+    ham: str = arg(group_title="Group2")
 
 
-parser = make_parser(Args9)
+parser = make_parser(Args)
 parser.print_help()
 
 
@@ -125,55 +125,69 @@ parser.print_help()
 
 
 @dataclass
-class Args10:
+class Args:
     foo: str = arg(mutually_exclusive_group_id="my_group")
     bar: str = arg(mutually_exclusive_group_id="my_group")
 
 
-parser = make_parser(Args10)
+parser = make_parser(Args)
 parser.print_help()
 
-# %% Example 11: Parser specifications
+parse(Args, ["--foo", "test", "--bar", "newtest"])
+
+# %% Example 11: Identifying argument groups
+
+
+@dataclass
+class Args:
+    foo: str = arg(group_title=1)
+    bar: str = arg(group_title=1)
+    sam: str = arg(group_title=2)
+    ham: str = arg(group_title=2)
+
+
+parser = make_parser(Args)
+parser.print_help()
+
+
+# %% Example 12: Parser specifications
 
 
 @dataparser(prog="MyProgram", description="A foo that bars")
-class Args11: ...
+class Args: ...
 
 
-make_parser(Args11).print_help()
+make_parser(Args).print_help()
 
-# %% Example 12: Groups `description` and `required` status
+# %% Example 13: Groups `description` and `required` status
 
 
 @dataparser(
-    groups_descriptions={"Group1": "Description for 1st group", "Group2": "Description for 2nd group"},
+    groups_descriptions={"Group1": "1st group description", "Group2": "2nd group description"},
     required_mutually_exclusive_groups={0: True, 1: False},
     add_help=False,  # Disable automatic addition of `-h` or `--help` at the command line
 )
-class Args12:
+class Args:
     foo: str = arg(group_title="Group1", mutually_exclusive_group_id=0)
     bar: int = arg(group_title="Group1", mutually_exclusive_group_id=0)
     sam: bool = arg(group_title="Group2", mutually_exclusive_group_id=1)
     ham: float = arg(group_title="Group2", mutually_exclusive_group_id=1)
 
 
-make_parser(Args12).print_help()
+make_parser(Args).print_help()
 
 
-# %% Example 13: Default for booleans
+# %% Example 14: Default for booleans
 
 
-@dataparser(default_bool=False)
-class Args13:
+@dataparser
+class Args:
     foo: bool
 
-
-parse(Args13, ["--foo"])
-
+parse(Args, ["--foo"])
 
 @dataparser(default_bool=True)
 class Args:
     foo: bool = arg(help="Boolean value")
-
 
 parse(Args, ["--foo"])
