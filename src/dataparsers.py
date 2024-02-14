@@ -62,7 +62,7 @@ def dataparser(
     *,
     groups_descriptions: dict[str | int, str] | None = None,
     required_mutually_exclusive_groups: dict[str | int, bool] | None = None,
-    default_store_bool: bool = True,
+    default_bool: bool = False,
     **kwargs,
 ) -> Callable[[type[Class]], type[Class]]: ...
 
@@ -71,8 +71,8 @@ def dataparser(
     cls: type[Class] | None = None,
     *,
     groups_descriptions: dict[str | int, str] | None = None,
-    required_mutually_exclusive_groups=None,
-    default_store_bool=True,
+    required_mutually_exclusive_groups: dict[str | int, bool] | None = None,
+    default_bool: bool = False,
     **kwargs,
 ) -> type[Class] | Callable[[type[Class]], type[Class]]:
     if cls is not None:
@@ -87,7 +87,7 @@ def dataparser(
     def wrap(cls: type[Class]) -> type[Class]:
         cls = dataclass(cls)
         setattr(
-            cls, "__dataparsers_params__", (kwargs, groups_descriptions, required_mutually_exclusive_groups, default_store_bool)
+            cls, "__dataparsers_params__", (kwargs, groups_descriptions, required_mutually_exclusive_groups, default_bool)
         )
         return cls
 
@@ -109,12 +109,12 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
 
         arg_field_has_default = arg.default is not arg.default_factory
         make_flag = arg_metadata.pop("make_flag", True)
-        if (arg_field_has_default and arg_metadata.pop("is_flag", True)) or (not arg_field_has_default and arg.type == bool):
+        if (arg_field_has_default and arg_metadata.pop("is_flag", True)) or arg.type == bool:
             if "name_or_flags" not in arg_metadata:
                 arg_metadata["name_or_flags"] = ()
-            if make_flag:
+            if make_flag or (arg.type == bool and not arg_metadata["name_or_flags"]):
                 arg_metadata["name_or_flags"] += (f'--{arg.name.replace("_", "-")}',)
-            if not arg_field_has_default:
+            if not arg_field_has_default or arg.default is None:
                 arg.default = default_bool
 
         if not arg_metadata.get("name_or_flags"):  # no flag arg
