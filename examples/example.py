@@ -16,7 +16,6 @@ from dataparsers import arg, make_parser, dataparser, parse
 # %% Example 1
 
 
-# prog.py
 @dataclass
 class Args1:
     foo: str
@@ -57,11 +56,10 @@ args = parse(Args3)
 
 @dataclass
 class Args4:
-    foo: str = arg(help="foo help")
-    bar: int = arg("-b", "--bar", default=42, nargs="?", help="bar help")
+    bar: int = arg("--bar", default=42, nargs="?", help="bar help")
+
 
 args = parse(Args4)
-
 
 
 # %% Example 5
@@ -69,33 +67,70 @@ args = parse(Args4)
 
 @dataclass
 class Args5:
-    foo: str = arg(help="foo help")
-    bar: int = arg("-b", default=42, help="bar help", make_flag=False)
+    bar: int = arg(default=42, nargs="?", help="bar help", make_flag=True)
+
 
 args = parse(Args5)
-
-
-# %% Example 5
-
-
-@dataparser(groups_descriptions={"group1": "group1 description", "group2": "group2 description"})
-class Arg5:
-    foo: str = arg(group_title="group1", help="foo help")
-    bar: str = arg(group_title="group2", help="bar help", make_flag=True)
-
-
-parser = make_parser(Arg5)
-parser.print_help()
 
 
 # %% Example 6
 
 
 @dataclass
-class Args:
-    foo: bool = arg(action="store_true", mutually_exclusive_group_id=1)
-    bar: bool = arg(action="store_false", mutually_exclusive_group_id=1)
+class Args6:
+    bar: int = arg("-b", default=42, help="bar help", make_flag=False)
 
 
-parse(Args, "--foo", "--bar")
-# parser.print_help()
+args = parse(Args6)
+
+
+# %% Example 7
+
+
+@dataclass
+class Args7:
+    path: str = arg("-f", "--file-output", metavar="<filepath>", help="Text file to write output")
+
+
+args = parse(Args7)
+print(args)
+
+# %% Example 8
+
+
+@dataclass
+class Args8:
+    foo: str = arg(group_title="The 1st group")
+    bar: str = arg(group_title="The 1st group")
+    sam: str = arg(group_title="The 2nd group")
+    ham: str = arg(group_title="The 2nd group")
+
+
+parser = make_parser(Args8)
+parser.print_help()
+
+
+# %% Example 9
+
+
+@dataclass
+class Args9:
+    foo: str = arg(mutually_exclusive_group_id="my_group")
+    bar: str = arg(mutually_exclusive_group_id="my_group")
+
+
+parser = make_parser(Args9)
+parser.print_help()
+
+# %% Example 10
+
+
+@dataclass
+class Args10:
+    foo: bool = arg(action="store_true", mutually_exclusive_group_id="my_group")
+    bar: bool = arg(action="store_false", mutually_exclusive_group_id="my_group")
+
+
+parse(Args10, ["--foo"])
+parse(Args10, ["--bar"])
+parse(Args10, ["--foo", "--bar"])
