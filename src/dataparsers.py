@@ -63,6 +63,12 @@ def parse(cls: type[Class], args: Sequence[str] | None = None, *, parser: Argume
             arg_metadata["dest"] = arg.name
         name_or_flags = arg_metadata.pop("name_or_flags")
 
+        if "type" not in arg_metadata and arg.type != bool:
+            arg_metadata["type"] = arg.type
+
+        if "action" not in arg_metadata and arg.type == bool:
+            arg_metadata["action"] = "store_true" if arg.default else "store_false"
+
         group_id: str | int | None = arg_metadata.pop("mutually_exclusive_group", None)
         if group_id is not None:
             if group_id not in groups:
