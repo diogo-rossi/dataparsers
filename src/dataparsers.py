@@ -28,9 +28,6 @@ def arg(
     if "dest" in kwargs:
         raise ValueError("The argument `dest` is not necessary")
 
-    if group_title is not None and mutually_exclusive_group_id is not None:
-        raise ValueError("Can't pass both `group` and `mutually_exclusive_group`")
-
     if "default" in kwargs and not kwargs.get("nargs", None) in ["?", "*"] and not is_flag:
         make_flag = True
 
@@ -98,11 +95,13 @@ def dataparser(
 
 
 def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentParser:
-    kwargs, groups, required_groups, default_bool = getattr(cls, "__dataparsers_params__", ({}, {}, {}, False))
+    kwargs, groups_descriptions, required_groups_status, default_bool = getattr(
+        cls, "__dataparsers_params__", ({}, {}, {}, False)
+    )
     if parser is None:
         parser = ArgumentParser(**kwargs)
 
-    arg_groups: dict[str | int, _ArgumentGroup] = {}
+    groups: dict[str | int, _ArgumentGroup] = {}
     mutually_exclusive_groups: dict[str | int, _MutuallyExclusiveGroup] = {}
 
     for arg in fields(cls):  # type: ignore
@@ -132,16 +131,28 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
 
         group_id: str | int | None = arg_metadata.pop("group_title", None)
         exclusive_group_id: str | int | None = arg_metadata.pop("mutually_exclusive_group_id", None)
-        if group_id is not None:
-            if group_id not in arg_groups:
-                arg_groups[group_id] = parser.add_argument_group(title=str(group_id), description=groups.get(group_id, None))
-            arg_groups[group_id].add_argument(*name_or_flags, default=arg.default, **arg_metadata)
-        elif exclusive_group_id is not None:
-            if exclusive_group_id not in mutually_exclusive_groups:
-                mutually_exclusive_groups[exclusive_group_id] = parser.add_mutually_exclusive_group(
-                    required=required_groups.get(exclusive_group_id, False),
-                )
-            mutually_exclusive_groups[exclusive_group_id].add_argument(*name_or_flags, default=arg.default, **arg_metadata)
+        if any(id is not None for id in [group_id, exclusive_group_id]):
+
+            handler = parser
+
+            if group_id is not None:
+                if group_id not in groups_descriptions:
+                    groups[group_id] = parser.add_argument_group(
+                        title=str(group_id),
+                        description=groups_descriptions.get(group_id, None),
+                    )
+                handler = groups[group_id]
+
+            if exclusive_group_id is not None:
+
+                if exclusive_group_id not in mutually_exclusive_groups:
+                    mutually_exclusive_groups[exclusive_group_id] = handler.add_mutually_exclusive_group(
+                        required=required_groups_status.get(exclusive_group_id, False),
+                    )
+                handler = mutually_exclusive_groups[exclusive_group_id]
+
+            handler.add_argument(*name_or_flags, default=arg.default, **arg_metadata)
+
         else:
             parser.add_argument(*name_or_flags, default=arg.default, **arg_metadata)
 
