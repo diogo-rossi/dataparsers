@@ -68,7 +68,7 @@ def parse(cls: type[Class], args: Sequence[str] | None = None, *, parser: Argume
     groups: dict[str | int, _MutuallyExclusiveGroup] = {}
 
     for arg in fields(cls):  # type: ignore
-        # Transform to dict because MappingProxyType is not subscriptable
+        # Transform in dict because MappingProxyType is not subscriptable
         arg_metadata = dict(arg.metadata)
 
         arg_field_has_default = arg.default is not arg.default_factory
@@ -81,16 +81,18 @@ def parse(cls: type[Class], args: Sequence[str] | None = None, *, parser: Argume
                 # arg is a `bool` and has no default (required): make it with default
                 arg.default = default_bool
 
-        # Get name_or_flags argument
-        if not arg_metadata.get("name_or_flags"):  # no flagged arg
+        # get name_or_flags argument
+        if not arg_metadata.get("name_or_flags"):  # no flag arg
             arg_metadata["name_or_flags"] = (arg.name,)
-        else:  # flagged arg
+        else:  # flag arg
             arg_metadata["dest"] = arg.name
         name_or_flags = arg_metadata.pop("name_or_flags")
 
+        # infer type from field (if it is not `bool`)
         if "type" not in arg_metadata and arg.type != bool:
             arg_metadata["type"] = arg.type
 
+        # for `bool` arg, the `default` defines `action`
         if "action" not in arg_metadata and arg.type == bool:
             arg_metadata["action"] = "store_false" if arg.default else "store_true"
 
