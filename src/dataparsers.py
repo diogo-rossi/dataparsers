@@ -102,6 +102,7 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
     kwargs, groups_descriptions, required_groups_status, default_bool, help_fmt = getattr(
         cls, "__dataparsers_params__", ({}, {}, {}, False, None)
     )
+
     if parser is None:
         if help_fmt is not None and "formatter_class" not in kwargs:
             kwargs["formatter_class"] = RawTextHelpFormatter
@@ -131,6 +132,7 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
             arg_metadata["name_or_flags"] = (arg.name,)
         else:  # flag arg
             arg_metadata["dest"] = arg.name
+
         name_or_flags = arg_metadata.pop("name_or_flags")
 
         if "type" not in arg_metadata and arg.type != bool:
@@ -154,6 +156,7 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
                         title=group_id if type(group_id) == str else None,
                         description=groups_descriptions.get(group_id, None),
                     )
+
                 handler = groups[group_id]
 
             if exclusive_group_id is not None:
@@ -162,6 +165,7 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
                     mutually_exclusive_groups[exclusive_group_id] = handler.add_mutually_exclusive_group(
                         required=required_groups_status.get(exclusive_group_id, False),
                     )
+
                 handler = mutually_exclusive_groups[exclusive_group_id]
 
             handler.add_argument(*name_or_flags, default=arg.default, **arg_metadata)
