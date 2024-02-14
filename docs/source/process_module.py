@@ -1,9 +1,9 @@
 import os
 import shutil
+from pathlib import Path
 from process_text import initial_docstring, remove_overloads, put_links_on_file
-from replace_snippets import process_file
+from replace_snippets import replace_snippets_and_notes
 
-MODULE_FILE = "dataparsers.py"
 EXTERNAL_LINKS = {
     "`parse_args()`": "https://docs.python.org/3/library/argparse.html#the-parse-args-method",
     "`add_argument()`": "https://docs.python.org/3/library/argparse.html#the-add-argument-method",
@@ -14,29 +14,78 @@ EXTERNAL_LINKS = {
     "`dataclasses`": "https://docs.python.org/3/library/dataclasses.html#module-dataclasses",
     "`dataclass`": "https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass",
 }
-INTERNAL_LINKS = ["`dest`"]
+ARGUMENTS_LINKS = [
+    "`name_or_flags`",
+    "`group_title`",
+    "`mutually_exclusive_group_id`",
+    "`make_flag`",
+    "`action`",
+    "`nargs`",
+    "`const`",
+    "`default`",
+    "`type`",
+    "`choices`",
+    "`required`",
+    "`help`",
+    "`metavar`",
+    "`dest`",
+    "`groups_descriptions`",
+    "`required_mutually_exclusive_groups`",
+    "`default_bool`",
+    "`help_fmt`",
+    "`prog`",
+    "`usage`",
+    "`description`",
+    "`epilog`",
+    "`parents`",
+    "`formatter_class`",
+    "`prefix_chars`",
+    "`fromfile_prefix_chars`",
+    "`argument_default`",
+    "`conflict_handler`",
+    "`add_help`",
+    "`allow_abbrev`",
+    "`exit_on_error`",
+    "`parser`",
+]
+
+THIS_FILE = Path(__file__)
+THIS_DIR = THIS_FILE.parent.resolve()
+DOCS_DIR = THIS_DIR.parent.resolve()
+ROOT_DIR = DOCS_DIR.parent.resolve()
+MODULE_FILENAME = "dataparsers.py"
+MODULE_FILEPATH = THIS_DIR / MODULE_FILENAME
+USER_MANUAL_FILE = THIS_DIR / "1_user_manual.md"
 
 
 def process_module():
-    # Copy stub file to `source` file
-    shutil.copy(os.path.abspath(f"../../src/{MODULE_FILE}i"), os.path.abspath(f"./{MODULE_FILE}"))
+    """Copy the stub file and process the module to use `autofunction` - replace links and format markdown"""
 
-    module_docstring = initial_docstring(MODULE_FILE).replace(
+    # Copy stub file form `./src` folder to  `./docs/source` folder
+    shutil.copy(os.path.abspath(f"{ROOT_DIR}/src/{MODULE_FILENAME}i"), os.path.abspath(MODULE_FILEPATH))
+
+    # Gets module docstring to write the user manual
+    module_docstring = initial_docstring(MODULE_FILEPATH).replace(
         "# dataparsers\n\nA wrapper", "# User manual\n\n`dataparsers` is a simple module that wrappers"
     )
 
-    # Put links for markdown version
+    # Put links in markdown version of user manual
     for link in EXTERNAL_LINKS:
         module_docstring = module_docstring.replace(link, f"[{link}]({EXTERNAL_LINKS[link]})")
+    for link in ARGUMENTS_LINKS:
+        module_docstring = module_docstring.replace(
+            link, f"[{link}](./2_available_functions.md#{link.replace('`','').replace('_','-')})"
+        )
 
-    with open("1_user_manual.md", "w") as file:
+    # Writes the user manual
+    with open(USER_MANUAL_FILE, "w") as file:
         file.write(module_docstring)
 
     # format notes and snippets for MyST
-    process_file("1_user_manual.md", replace_notes=True, replace_snippets=True)
+    replace_snippets_and_notes(USER_MANUAL_FILE, replace_notes=True, replace_snippets=True)
 
     # remove overloads from the original stub file
-    remove_overloads(MODULE_FILE)
+    remove_overloads(MODULE_FILEPATH)
 
     # put links on file for sphinx reST file
-    put_links_on_file(MODULE_FILE, EXTERNAL_LINKS, INTERNAL_LINKS)
+    put_links_on_file(MODULE_FILEPATH, EXTERNAL_LINKS, ARGUMENTS_LINKS)
