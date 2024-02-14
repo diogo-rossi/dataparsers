@@ -55,26 +55,26 @@ def test_with_one_flag(capsys: CapSys):
 def test_with_one_group(capsys: CapSys):
     @dataclass
     class Args:
-        string: str = arg(group_title=1)
-        integer: int = arg(group_title=1)
+        string: str = arg(group_title="group1")
+        integer: int = arg(group_title="group1")
 
     parser = make_parser(Args)
     parser.print_help()
     output = capsys.readouterr().out
-    group = HelpOutput(output).group("1")
+    group = HelpOutput(output).group("group1")
     assert all(name in group for name in [f.name for f in fields(Args)])
 
 
 def test_with_one_group_with_one_flag(capsys: CapSys):
     @dataclass
     class Args:
-        string: str = arg(group_title=1)
-        integer: int = arg(group_title=1, make_flag=True)
+        string: str = arg(group_title="group1")
+        integer: int = arg(group_title="group1", make_flag=True)
 
     parser = make_parser(Args)
     parser.print_help()
     output = capsys.readouterr().out
-    group = HelpOutput(output).group("1")
+    group = HelpOutput(output).group("group1")
     assert all(name in group for name in ["string", "--integer"])
 
 
