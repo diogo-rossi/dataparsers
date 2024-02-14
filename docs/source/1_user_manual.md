@@ -1,7 +1,7 @@
 
 # User manual
 
-`dataparsers` is a simple module that wrappers around [`argparse`](https://docs.python.org/3/library/argparse.html#module-argparse) to get command line argument parsers from [`dataclasses`](https://docs.python.org/3/library/dataclasses.html#module-dataclasses)
+`dataparsers` is a simple module that wrappers around [`argparse`](https://docs.python.org/3/library/argparse.html#module-argparse) to get command line argument parsers from [`dataclasses`](https://docs.python.org/3/library/dataclasses.html#module-dataclasses).
 
 ## Basic usage
 
