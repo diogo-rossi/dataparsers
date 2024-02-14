@@ -128,6 +128,9 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
 
         if "action" not in arg_metadata and arg.type == bool:
             arg_metadata["action"] = "store_false" if arg.default else "store_true"
+            
+        if arg.type == bool:
+            arg.default = arg_metadata["action"] == "store_false"
 
         group_id: str | int | None = arg_metadata.pop("group_title", None)
         exclusive_group_id: str | int | None = arg_metadata.pop("mutually_exclusive_group_id", None)
