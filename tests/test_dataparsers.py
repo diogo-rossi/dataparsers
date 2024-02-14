@@ -7,7 +7,7 @@ sys.path.insert(0, os.path.abspath("./src"))
 from pytest import fixture
 from dataclasses import dataclass, fields
 from argparse import ArgumentParser
-from dataparsers import arg, dataparser, parse
+from dataparsers import arg, dataparser, parse, make_parser
 from typing import Protocol, Literal
 
 
@@ -25,131 +25,131 @@ def parser():
     return ArgumentParser()
 
 
-def test_only_positionals(capsys: CapSys, parser: ArgumentParser):
+def test_only_positionals(capsys: CapSys):
     @dataclass
     class Args:
         string: str
         integer: int
 
-    parse(Args, ["test", "10"], parser=parser)
+    parser = make_parser(Args)
     parser.print_help()
     output = capsys.readouterr().out
     positionals = HelpOutput(output).positionals
     assert all(name in positionals for name in [f.name for f in fields(Args)])
 
 
-def test_with_one_flag(capsys: CapSys, parser: ArgumentParser):
+def test_with_one_flag(capsys: CapSys):
     @dataclass
     class Args:
         string: str
         integer: int
         foo: str = "test"
 
-    parse(Args, ["test", "10"], parser=parser)
+    parser = make_parser(Args)
     parser.print_help()
     output = capsys.readouterr().out
     flags = HelpOutput(output).flags
     assert "--foo" in flags
 
 
-def test_with_one_group(capsys: CapSys, parser: ArgumentParser):
+def test_with_one_group(capsys: CapSys):
     @dataclass
     class Args:
         string: str = arg(group_title=1)
         integer: int = arg(group_title=1)
 
-    parse(Args, ["test", "10"], parser=parser)
+    parser = make_parser(Args)
     parser.print_help()
     output = capsys.readouterr().out
     group = HelpOutput(output).group("1")
     assert all(name in group for name in [f.name for f in fields(Args)])
 
 
-def test_with_one_group_with_one_flag(capsys: CapSys, parser: ArgumentParser):
+def test_with_one_group_with_one_flag(capsys: CapSys):
     @dataclass
     class Args:
         string: str = arg(group_title=1)
         integer: int = arg(group_title=1, make_flag=True)
 
-    parse(Args, ["test"], parser=parser)
+    parser = make_parser(Args)
     parser.print_help()
     output = capsys.readouterr().out
     group = HelpOutput(output).group("1")
     assert all(name in group for name in ["string", "--integer"])
 
 
-def test_with_multually_exclusive_groups(capsys: CapSys, parser: ArgumentParser):
+def test_with_multually_exclusive_groups(capsys: CapSys):
     @dataclass
     class Args:
         string: str = arg(mutually_exclusive_group_id=1)
         integer: int = arg(mutually_exclusive_group_id=1)
 
-    parse(Args, ["--string", "test"], parser=parser)
+    parser = make_parser(Args)
     parser.print_help()
     output = capsys.readouterr().out
     flags = HelpOutput(output).flags
     assert all(name in flags for name in ["--string", "--integer"])
 
 
-def test_with_required_multually_exclusive_groups_and_no_given_flags(capsys: CapSys, parser: ArgumentParser):
+def test_with_required_multually_exclusive_groups_and_no_given_flags(capsys: CapSys):
     @dataparser(required_mutually_exclusive_groups={1: True})
     class Args:
         string: str = arg(mutually_exclusive_group_id=1)
         integer: int = arg(mutually_exclusive_group_id=1)
 
-    parse(Args, ["--string", "test"], parser=parser)
+    parser = make_parser(Args)
     parser.print_help()
     output = capsys.readouterr().out
     flags = HelpOutput(output).flags
     assert all(name in flags for name in ["--string", "--integer"])
 
 
-def test_with_required_multually_exclusive_groups_and_given_single_flags(capsys: CapSys, parser: ArgumentParser):
+def test_with_required_multually_exclusive_groups_and_given_single_flags(capsys: CapSys):
     @dataparser(required_mutually_exclusive_groups={1: True})
     class Args:
         string: str = arg("-s", mutually_exclusive_group_id=1)
         integer: int = arg("-i", mutually_exclusive_group_id=1)
 
-    parse(Args, ["--string", "test"], parser=parser)
+    parser = make_parser(Args)
     parser.print_help()
     output = capsys.readouterr().out
     flags = HelpOutput(output).flags
     assert all(name in flags for name in ["--string", "--integer"])
 
 
-def test_automatic_make_flags(capsys: CapSys, parser: ArgumentParser):
+def test_automatic_make_flags(capsys: CapSys):
     @dataclass
     class Args:
         string: str = arg("-s")
         integer: int = arg("-i")
 
-    parse(Args, ["--string", "test"], parser=parser)
+    parser = make_parser(Args)
     parser.print_help()
     output = capsys.readouterr().out
     flags = HelpOutput(output).flags
     assert all(name in flags for name in ["--string", "--integer"])
 
 
-def test_forced_make_flags(capsys: CapSys, parser: ArgumentParser):
+def test_forced_make_flags(capsys: CapSys):
     @dataclass
     class Args:
         string: str = arg("-s", "--str", make_flag=True)
         integer: int = arg("-i", "--int", make_flag=True)
 
-    parse(Args, ["--string", "test"], parser=parser)
+    parser = make_parser(Args)
     parser.print_help()
     output = capsys.readouterr().out
     flags = HelpOutput(output).flags
     assert all(name in flags for name in ["--string", "--integer"])
 
 
-def test_with_defaults_and_helps(capsys: CapSys, parser: ArgumentParser):
+def test_with_defaults_and_helps(capsys: CapSys):
     @dataclass
     class Args:
         string: str = arg(help="This must be a string")
         integer: int = arg(default=1, help="This is a integer")
 
-    parse(Args, ["hello"], parser=parser)
+    parser = make_parser(Args)
     parser.print_help()
     output = capsys.readouterr().out
     output = HelpOutput(output)
