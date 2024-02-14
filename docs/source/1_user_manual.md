@@ -113,16 +113,16 @@ options:
 ```
 
 In general, the `arg()` function accepts all parameters that are used in the original [`add_argument()`](https://docs.python.org/3/library/argparse.html#the-add-argument-method) method (with few
-exceptions) and some additional parameters. The `default` keyword argument used above makes the argument optional
+exceptions) and some additional parameters. The [`default`](./2_available_functions.md#default) keyword argument used above makes the argument optional
 (i.e., passed with flags like `--bar`) except in some specific situations.
 
-One parameter of [`add_argument()`](https://docs.python.org/3/library/argparse.html#the-add-argument-method) that are not possible to pass to `arg()` is the `dest` keyword argument. That's
+One parameter of [`add_argument()`](https://docs.python.org/3/library/argparse.html#the-add-argument-method) that are not possible to pass to `arg()` is the [`dest`](./2_available_functions.md#dest) keyword argument. That's
 because the name of the class attribute is determined by the [`dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass) field name. So, it is unnecessary to pass the
-`dest` parameter, since it doesn't makes sense in this situation.
+[`dest`](./2_available_functions.md#dest) parameter, since it doesn't makes sense in this situation.
 
 ### Aliases
 
-The first parameter of the the original [`add_argument()`](https://docs.python.org/3/library/argparse.html#the-add-argument-method) method is `name_or_flags`, which is a series of flags, or a
+The first parameter of the the original [`add_argument()`](https://docs.python.org/3/library/argparse.html#the-add-argument-method) method is [`name_or_flags`](./2_available_functions.md#name-or-flags), which is a series of flags, or a
 simple argument name. This parameter can be passed to `arg()` function to define aliases for optional arguments:
 
 ```python
@@ -148,15 +148,15 @@ options:
   -b BAR, --bar BAR  bar help
 ```
 
-However, the parameter `name_or_flags` must be passed only with flags (i.e., starting with `-` or `--`). That's because
+However, the parameter [`name_or_flags`](./2_available_functions.md#name-or-flags) must be passed only with flags (i.e., starting with `-` or `--`). That's because
 it doesn't make sense to pass a simple name that is not a flag, since the simple name normally determines the class
 attribute's name, which is already defined by the [`dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass) field name in this case.
 
 ### Automatic flag creation
 
-One situation where the `default` keyword argument does not automatically makes the argument optional (i.e., creating a
-`--` flag) is when the parameter `nargs` is passed and set equal to `?` or `*`. That's because this setting also allows
-that positional arguments may use a `default` value, in the original [`add_argument()`](https://docs.python.org/3/library/argparse.html#the-add-argument-method) method. So, the flags must be
+One situation where the [`default`](./2_available_functions.md#default) keyword argument does not automatically makes the argument optional (i.e., creating a
+`--` flag) is when the parameter [`nargs`](./2_available_functions.md#nargs) is passed and set equal to `?` or `*`. That's because this setting also allows
+that positional arguments may use a [`default`](./2_available_functions.md#default) value, in the original [`add_argument()`](https://docs.python.org/3/library/argparse.html#the-add-argument-method) method. So, the flags must be
 passed explicitly in this case to make the argument optional:
 
 ```python
@@ -213,9 +213,9 @@ options:
 #### Booleans
 
 Booleans attributes are considered to be always passed by flag arguments, using the `"store_true"` or `"store_false"`
-values for the `action` parameter of the original [`add_argument()`](https://docs.python.org/3/library/argparse.html#the-add-argument-method) method. If the boolean [`dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass) field is created
+values for the [`action`](./2_available_functions.md#action) parameter of the original [`add_argument()`](https://docs.python.org/3/library/argparse.html#the-add-argument-method) method. If the boolean [`dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass) field is created
 with no default value, the flag is still automatically created and the default value for the parameter will be `False`
-(it's defaults can be modified by the keyword argument `default_bool` of the `dataparser()` decorator):
+(it's defaults can be modified by the keyword argument [`default_bool`](./2_available_functions.md#default-bool) of the `dataparser()` decorator):
 
 ```python
 >>> @dataclass
@@ -270,11 +270,11 @@ Args(path='myfile.txt')
 ### Argument groups
 
 Two important additional keyword arguments can be passed to the `arg()` function to specify "argument groups":
-`group_title` and `mutually_exclusive_group_id`.
+[`group_title`](./2_available_functions.md#group-title) and [`mutually_exclusive_group_id`](./2_available_functions.md#mutually-exclusive-group-id).
 
 #### Conceptual grouping
 
-The `group_title` defines the title (or the ID) of the argument group in which the argument may be included. The titled
+The [`group_title`](./2_available_functions.md#group-title) defines the title (or the ID) of the argument group in which the argument may be included. The titled
 group will be created later, by the method [`add_argument_group()`](https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.add_argument_group), which is used just to separate the arguments in
 simple more appropriate conceptual groups:
 
@@ -302,12 +302,12 @@ Group2:
   ham
 ```
 
-Argument groups may have a `description` in addition to the name. To define the `description` of the argument group, see
+Argument groups may have a [`description`](./2_available_functions.md#description) in addition to the name. To define the [`description`](./2_available_functions.md#description) of the argument group, see
 the `dataparser()` decorator, which allows to define options to the [`ArgumentParser`](https://docs.python.org/3/library/argparse.html#argumentparser-objects) object.
 
 #### Mutual exclusion
 
-The `mutually_exclusive_group_id` defines the name (or the ID) of the mutually exclusive argument group in which the
+The [`mutually_exclusive_group_id`](./2_available_functions.md#mutually-exclusive-group-id) defines the name (or the ID) of the mutually exclusive argument group in which the
 argument may be included. The identified group will be created later, by the method [`add_mutually_exclusive_group()`](https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.add_mutually_exclusive_group),
 which is used in [`argparse`](https://docs.python.org/3/library/argparse.html#module-argparse) to creates a mutually exclusive arguments:
 
@@ -338,16 +338,16 @@ usage: [-h] [--foo FOO | --bar BAR]
 
 ```{note}
 Mutually exclusive arguments are always optionals. If no flag is given, they will be created automatically from the
-[`dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass) field name, regardless of the value of `make_flag`.
+[`dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass) field name, regardless of the value of [`make_flag`](./2_available_functions.md#make-flag).
 ```
-Mutually exclusive groups also accepts a `required` argument, to indicate that at least one of the mutually exclusive
-arguments is required. To define the `required` status of the mutually exclusive argument group, see the `dataparser()`
+Mutually exclusive groups also accepts a [`required`](./2_available_functions.md#required) argument, to indicate that at least one of the mutually exclusive
+arguments is required. To define the [`required`](./2_available_functions.md#required) status of the mutually exclusive argument group, see the `dataparser()`
 decorator.
 
 #### Identifying argument groups
 
-Both parameters `group_title` and `mutually_exclusive_group_id` may be integers. This makes easier to prevent typos when
-identifying the groups. For the `group_title` parameter, if an integer is given, it will be used to identify the group,
+Both parameters [`group_title`](./2_available_functions.md#group-title) and [`mutually_exclusive_group_id`](./2_available_functions.md#mutually-exclusive-group-id) may be integers. This makes easier to prevent typos when
+identifying the groups. For the [`group_title`](./2_available_functions.md#group-title) parameter, if an integer is given, it will be used to identify the group,
 but the value is not passed as `title` to the original [`add_argument_group()`](https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.add_argument_group) method (`None` is passed instead). This
 prevents the integer to be printed in the displayed help message:
 
@@ -375,9 +375,9 @@ options:
 ```
 
 ```{note}
-Mutually exclusive argument groups do not support the `title` and `description` arguments of [`add_argument_group()`](https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.add_argument_group).
-However, a mutually exclusive group can be added to an argument group that has a `title` and `description`. This is
-achieved by passing both `group_title` and `mutually_exclusive_group_id` parameters to the `arg()` function. If
+Mutually exclusive argument groups do not support the `title` and [`description`](./2_available_functions.md#description) arguments of [`add_argument_group()`](https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.add_argument_group).
+However, a mutually exclusive group can be added to an argument group that has a `title` and [`description`](./2_available_functions.md#description). This is
+achieved by passing both [`group_title`](./2_available_functions.md#group-title) and [`mutually_exclusive_group_id`](./2_available_functions.md#mutually-exclusive-group-id) parameters to the `arg()` function. If
 there is a conflict (i.e., same mutually exclusive group and different group titles), the mutually exclusive group
 takes precedence.
 ```
@@ -403,11 +403,11 @@ options:
 In general, the `dataparser()` decorator accepts all parameters that are used in the original `ArgumentParser()`
 constructor, and some additional parameters. 
 
-### Groups `description` and `required` status
+### Groups [`description`](./2_available_functions.md#description) and [`required`](./2_available_functions.md#required) status
 
-Two important additional parameters accepted by the `dataparser()` decorator are the dictionaries `groups_descriptions`
-and `required_mutually_exclusive_groups`, whose keys should match some value of the arguments `group_title` or
-`mutually_exclusive_group_id` passed to `arg()` function (strings or integers) :
+Two important additional parameters accepted by the `dataparser()` decorator are the dictionaries [`groups_descriptions`](./2_available_functions.md#groups-descriptions)
+and [`required_mutually_exclusive_groups`](./2_available_functions.md#required-mutually-exclusive-groups), whose keys should match some value of the arguments [`group_title`](./2_available_functions.md#group-title) or
+[`mutually_exclusive_group_id`](./2_available_functions.md#mutually-exclusive-group-id) passed to `arg()` function (strings or integers) :
 
 ```python
 >>> @dataparser(
@@ -439,8 +439,8 @@ Group2:
 
 ### Default for booleans
 
-Booleans atributes with no default field value (or without `action` and `default` keyword arguments passed to `arg()`
-function) will receive its default value determining `"store_const"` action defined by the parameter `default_bool`
+Booleans atributes with no default field value (or without [`action`](./2_available_functions.md#action) and [`default`](./2_available_functions.md#default) keyword arguments passed to `arg()`
+function) will receive its default value determining `"store_const"` action defined by the parameter [`default_bool`](./2_available_functions.md#default-bool)
 (which is defaults to `False`, i.e., `action="store_true"`):
 
 ```python

@@ -97,16 +97,16 @@ It allows to customize the interface::
       --bar BAR   bar help
 
 In general, the `arg()` function accepts all parameters that are used in the original :meth:`~argparse.ArgumentParser.add_argument` method (with few
-exceptions) and some additional parameters. The `default` keyword argument used above makes the argument optional
+exceptions) and some additional parameters. The :argument_link:`default<default>` keyword argument used above makes the argument optional
 (i.e., passed with flags like `--bar`) except in some specific situations.
 
-One parameter of :meth:`~argparse.ArgumentParser.add_argument` that are not possible to pass to `arg()` is the :literal_issue:`dest` keyword argument. That's
+One parameter of :meth:`~argparse.ArgumentParser.add_argument` that are not possible to pass to `arg()` is the :argument_link:`dest<dest>` keyword argument. That's
 because the name of the class attribute is determined by the :func:`~dataclasses.dataclass` field name. So, it is unnecessary to pass the
-:literal_issue:`dest` parameter, since it doesn't makes sense in this situation.
+:argument_link:`dest<dest>` parameter, since it doesn't makes sense in this situation.
 
 ### Aliases
 
-The first parameter of the the original :meth:`~argparse.ArgumentParser.add_argument` method is `name_or_flags`, which is a series of flags, or a
+The first parameter of the the original :meth:`~argparse.ArgumentParser.add_argument` method is :argument_link:`name_or_flags<name-or-flags>`, which is a series of flags, or a
 simple argument name. This parameter can be passed to `arg()` function to define aliases for optional arguments::
 
     @dataclass
@@ -128,15 +128,15 @@ In this case, it also creates automatically a `--` flag ::
       -h, --help         show this help message and exit
       -b BAR, --bar BAR  bar help
 
-However, the parameter `name_or_flags` must be passed only with flags (i.e., starting with `-` or `--`). That's because
+However, the parameter :argument_link:`name_or_flags<name-or-flags>` must be passed only with flags (i.e., starting with `-` or `--`). That's because
 it doesn't make sense to pass a simple name that is not a flag, since the simple name normally determines the class
 attribute's name, which is already defined by the :func:`~dataclasses.dataclass` field name in this case.
 
 ### Automatic flag creation
 
-One situation where the `default` keyword argument does not automatically makes the argument optional (i.e., creating a
-`--` flag) is when the parameter `nargs` is passed and set equal to `?` or `*`. That's because this setting also allows
-that positional arguments may use a `default` value, in the original :meth:`~argparse.ArgumentParser.add_argument` method. So, the flags must be
+One situation where the :argument_link:`default<default>` keyword argument does not automatically makes the argument optional (i.e., creating a
+`--` flag) is when the parameter :argument_link:`nargs<nargs>` is passed and set equal to `?` or `*`. That's because this setting also allows
+that positional arguments may use a :argument_link:`default<default>` value, in the original :meth:`~argparse.ArgumentParser.add_argument` method. So, the flags must be
 passed explicitly in this case to make the argument optional::
 
     @dataclass
@@ -183,9 +183,9 @@ Then, only the single `-` flags will be sent to the interface::
 #### Booleans
 
 Booleans attributes are considered to be always passed by flag arguments, using the `"store_true"` or `"store_false"`
-values for the `action` parameter of the original :meth:`~argparse.ArgumentParser.add_argument` method. If the boolean :func:`~dataclasses.dataclass` field is created
+values for the :argument_link:`action<action>` parameter of the original :meth:`~argparse.ArgumentParser.add_argument` method. If the boolean :func:`~dataclasses.dataclass` field is created
 with no default value, the flag is still automatically created and the default value for the parameter will be `False`
-(it's defaults can be modified by the keyword argument `default_bool` of the `dataparser()` decorator)::
+(it's defaults can be modified by the keyword argument :argument_link:`default_bool<default-bool>` of the `dataparser()` decorator)::
 
     >>> @dataclass
     ... class Args:
@@ -232,11 +232,11 @@ In this case, the interface can be customized, and the flag are not related to t
 ### Argument groups
 
 Two important additional keyword arguments can be passed to the `arg()` function to specify "argument groups":
-`group_title` and `mutually_exclusive_group_id`.
+:argument_link:`group_title<group-title>` and :argument_link:`mutually_exclusive_group_id<mutually-exclusive-group-id>`.
 
 #### Conceptual grouping
 
-The `group_title` defines the title (or the ID) of the argument group in which the argument may be included. The titled
+The :argument_link:`group_title<group-title>` defines the title (or the ID) of the argument group in which the argument may be included. The titled
 group will be created later, by the method :meth:`~argparse.ArgumentParser.add_argument_group`, which is used just to separate the arguments in
 simple more appropriate conceptual groups::
 
@@ -262,12 +262,12 @@ simple more appropriate conceptual groups::
       sam
       ham
 
-Argument groups may have a `description` in addition to the name. To define the `description` of the argument group, see
+Argument groups may have a :argument_link:`description<description>` in addition to the name. To define the :argument_link:`description<description>` of the argument group, see
 the `dataparser()` decorator, which allows to define options to the :class:`~argparse.ArgumentParser` object.
 
 #### Mutual exclusion
 
-The `mutually_exclusive_group_id` defines the name (or the ID) of the mutually exclusive argument group in which the
+The :argument_link:`mutually_exclusive_group_id<mutually-exclusive-group-id>` defines the name (or the ID) of the mutually exclusive argument group in which the
 argument may be included. The identified group will be created later, by the method :meth:`~argparse.ArgumentParser.add_mutually_exclusive_group`,
 which is used in :mod:`~argparse` to creates a mutually exclusive arguments::
 
@@ -294,16 +294,16 @@ command line::
 
 Note:
     Mutually exclusive arguments are always optionals. If no flag is given, they will be created automatically from the
-    :func:`~dataclasses.dataclass` field name, regardless of the value of `make_flag`.
+    :func:`~dataclasses.dataclass` field name, regardless of the value of :argument_link:`make_flag<make-flag>`.
 
-Mutually exclusive groups also accepts a `required` argument, to indicate that at least one of the mutually exclusive
-arguments is required. To define the `required` status of the mutually exclusive argument group, see the `dataparser()`
+Mutually exclusive groups also accepts a :argument_link:`required<required>` argument, to indicate that at least one of the mutually exclusive
+arguments is required. To define the :argument_link:`required<required>` status of the mutually exclusive argument group, see the `dataparser()`
 decorator.
 
 #### Identifying argument groups
 
-Both parameters `group_title` and `mutually_exclusive_group_id` may be integers. This makes easier to prevent typos when
-identifying the groups. For the `group_title` parameter, if an integer is given, it will be used to identify the group,
+Both parameters :argument_link:`group_title<group-title>` and :argument_link:`mutually_exclusive_group_id<mutually-exclusive-group-id>` may be integers. This makes easier to prevent typos when
+identifying the groups. For the :argument_link:`group_title<group-title>` parameter, if an integer is given, it will be used to identify the group,
 but the value is not passed as `title` to the original :meth:`~argparse.ArgumentParser.add_argument_group` method (`None` is passed instead). This
 prevents the integer to be printed in the displayed help message::
 
@@ -329,9 +329,9 @@ prevents the integer to be printed in the displayed help message::
       ham
 
 Note:
-    Mutually exclusive argument groups do not support the `title` and `description` arguments of :meth:`~argparse.ArgumentParser.add_argument_group`.
-    However, a mutually exclusive group can be added to an argument group that has a `title` and `description`. This is
-    achieved by passing both `group_title` and `mutually_exclusive_group_id` parameters to the `arg()` function. If
+    Mutually exclusive argument groups do not support the `title` and :argument_link:`description<description>` arguments of :meth:`~argparse.ArgumentParser.add_argument_group`.
+    However, a mutually exclusive group can be added to an argument group that has a `title` and :argument_link:`description<description>`. This is
+    achieved by passing both :argument_link:`group_title<group-title>` and :argument_link:`mutually_exclusive_group_id<mutually-exclusive-group-id>` parameters to the `arg()` function. If
     there is a conflict (i.e., same mutually exclusive group and different group titles), the mutually exclusive group
     takes precedence.
 
@@ -355,11 +355,11 @@ To specify detailed options to the created :class:`~argparse.ArgumentParser` obj
 In general, the `dataparser()` decorator accepts all parameters that are used in the original `ArgumentParser()`
 constructor, and some additional parameters. 
 
-### Groups `description` and `required` status
+### Groups :argument_link:`description<description>` and :argument_link:`required<required>` status
 
-Two important additional parameters accepted by the `dataparser()` decorator are the dictionaries `groups_descriptions`
-and `required_mutually_exclusive_groups`, whose keys should match some value of the arguments `group_title` or
-`mutually_exclusive_group_id` passed to `arg()` function (strings or integers) ::
+Two important additional parameters accepted by the `dataparser()` decorator are the dictionaries :argument_link:`groups_descriptions<groups-descriptions>`
+and :argument_link:`required_mutually_exclusive_groups<required-mutually-exclusive-groups>`, whose keys should match some value of the arguments :argument_link:`group_title<group-title>` or
+:argument_link:`mutually_exclusive_group_id<mutually-exclusive-group-id>` passed to `arg()` function (strings or integers) ::
 
     >>> @dataparser(
     ...     groups_descriptions={"Group1": "1st group description", "Group2": "2nd group description"},
@@ -389,8 +389,8 @@ and `required_mutually_exclusive_groups`, whose keys should match some value of 
 
 ### Default for booleans
 
-Booleans atributes with no default field value (or without `action` and `default` keyword arguments passed to `arg()`
-function) will receive its default value determining `"store_const"` action defined by the parameter `default_bool`
+Booleans atributes with no default field value (or without :argument_link:`action<action>` and :argument_link:`default<default>` keyword arguments passed to `arg()`
+function) will receive its default value determining `"store_const"` action defined by the parameter :argument_link:`default_bool<default-bool>`
 (which is defaults to `False`, i.e., `action="store_true"`)::
 
     >>> @dataparser
@@ -448,12 +448,15 @@ def arg(
     """Helper function to create :func:`~dataclasses.dataclass` fields storing specification about arguments, used later in the method
     :meth:`~argparse.ArgumentParser.add_argument`.
 
-    This function accepts all parameters of the original :meth:`~argparse.ArgumentParser.add_argument` method (except for :literal_issue:`dest`). Three additional
-    parameters may be supplied, namely `group_title`, `mutually_exclusive_group_id` and `make_flag`. The parameter
-    `name_or_flags`, taken from the original :meth:`~argparse.ArgumentParser.add_argument` method, behaves a little different.
+    This function accepts all parameters of the original :meth:`~argparse.ArgumentParser.add_argument` method (except for :argument_link:`dest<dest>`). Three additional
+    parameters may be supplied, namely :argument_link:`group_title<group-title>`, :argument_link:`mutually_exclusive_group_id<mutually-exclusive-group-id>` and :argument_link:`make_flag<make-flag>`. The parameter
+    :argument_link:`name_or_flags<name-or-flags>`, taken from the original :meth:`~argparse.ArgumentParser.add_argument` method, behaves a little different.
 
     Parameters
     ----------
+
+        .. _name-or-flags:
+
         - `name_or_flags` (`str`):
 
             A list of option strings, e.g. `-f`, `--foo`, i.e., starting with `-`.
@@ -464,7 +467,10 @@ def arg(
             which behavior differs from its original behavior.
 
             In some particular cases, flag name starting with `--` may be automatically created from the dataclass field
-            name even when `name_or_flags` is not given. See the `make_flag` argument for details.
+            name even when :argument_link:`name_or_flags<name-or-flags>` is not given. See the :argument_link:`make_flag<make-flag>` argument for details.
+
+
+        .. _group-title:
 
         - `group_title` (`str | int | None`, optional): Defaults to `None`.
 
@@ -476,9 +482,9 @@ def arg(
             By default, `argparse.ArgumentParser` groups command-line arguments into "positional arguments" and
             "options" when displaying help messages. When there is a better conceptual grouping of arguments than this
             default one, appropriate groups can be created using the :meth:`~argparse.ArgumentParser.add_argument_group` method, that accepts `title`
-            and `description` parameters, which can be used to customize the help display.
+            and :argument_link:`description<description>` parameters, which can be used to customize the help display.
 
-            The `group_title` parameter identifies the `title` of the argument group to include the argument::
+            The :argument_link:`group_title<group-title>` parameter identifies the `title` of the argument group to include the argument::
 
                 >>> @dataclass
                 ... class Args:
@@ -496,7 +502,10 @@ def arg(
                   --foo FOO   foo help
                   bar         bar help
 
-            To define the `description` of the argument group, see the `dataparser()` decorator.
+            To define the :argument_link:`description<description>` of the argument group, see the `dataparser()` decorator.
+
+
+        .. _mutually-exclusive-group-id:
 
         - `mutually_exclusive_group_id` (`str | int | None`, optional): Defaults to `None`.
 
@@ -522,26 +531,29 @@ def arg(
             This is a way to use the functionality of the method :meth:`~argparse.ArgumentParser.add_mutually_exclusive_group` of the standard
             `argparse.ArgumentParser` class.
 
-            The original :meth:`~argparse.ArgumentParser.add_mutually_exclusive_group` method also accepts a `required` parameter, to indicate that
-            at least one of the mutually exclusive arguments is required. To define the `required` parameter of the
+            The original :meth:`~argparse.ArgumentParser.add_mutually_exclusive_group` method also accepts a :argument_link:`required<required>` parameter, to indicate that
+            at least one of the mutually exclusive arguments is required. To define the :argument_link:`required<required>` parameter of the
             mutually exclusive argument group, see the `dataparser()` decorator.
 
             Note:
                 Mutually exclusive are always optionals. If no flag is given, it will be created automatically from the
-                :func:`~dataclasses.dataclass` field name, regardless of the value of `make_flag`.
+                :func:`~dataclasses.dataclass` field name, regardless of the value of :argument_link:`make_flag<make-flag>`.
+
+
+        .. _make-flag:
 
         - `make_flag` (`bool | None`, optional): Defaults to `None`.
 
             Wether to force the automatic creation of a flag starting with `--` from the field name.
             
-            In general, the `default` keyword argument automatically makes the argument optional (i.e., creates a `--`
-            flag), but there are some situation when that doesn't happen, e.g., when the parameter `nargs` is passed and
+            In general, the :argument_link:`default<default>` keyword argument automatically makes the argument optional (i.e., creates a `--`
+            flag), but there are some situation when that doesn't happen, e.g., when the parameter :argument_link:`nargs<nargs>` is passed and
             set equal to `?` or `*`. To force the automatic `--` flag creation in theses cases, pass `make_flag=True`.
 
             I  general, flag name starting with `--` may be automatically created from the dataclass field name even
-            when `name_or_flags` is not given:
+            when :argument_link:`name_or_flags<name-or-flags>` is not given:
 
-                + If `default` value is given (with `nargs` not equal to `?` or `*`)::
+                + If :argument_link:`default<default>` value is given (with :argument_link:`nargs<nargs>` not equal to `?` or `*`)::
 
                     >>> @dataclass
                     ... class Arg:
@@ -581,6 +593,9 @@ def arg(
 
     Parameters from the original :meth:`~argparse.ArgumentParser.add_argument` method
     ----------------------------------------------------------------------------------
+
+        .. _action:
+
         - `action` (`Literal["store", "store_const", "store_true", "store_false", "append", "append_const", "count", "help", "version", "extend"] | type[Action]`,
           optional): Defaults to `"store"`.
 
@@ -588,7 +603,7 @@ def arg(
 
             :class:`~argparse.ArgumentParser` objects associate command-line arguments with actions. These actions can do just about
             anything with the command-line arguments associated with them, though most actions simply add an attribute
-            to the object returned by :meth:`~argparse.ArgumentParser.parse_args`. The `action` keyword argument specifies how the command-line
+            to the object returned by :meth:`~argparse.ArgumentParser.parse_args`. The :argument_link:`action<action>` keyword argument specifies how the command-line
             arguments should be handled. The supplied actions are
 
                 + `"store"`:
@@ -633,8 +648,8 @@ def arg(
                     Namespace(foo=['1', '2'])
 
                 + `"append_const"`
-                  - This stores a list, and appends the value specified by the `const` keyword argument to the list;
-                  note that the `const` keyword argument defaults to `None`. The `"append_const"` action is typically
+                  - This stores a list, and appends the value specified by the :argument_link:`const<const>` keyword argument to the list;
+                  note that the :argument_link:`const<const>` keyword argument defaults to `None`. The `"append_const"` action is typically
                   useful when multiple arguments need to store constants to the same list. For example::
 
                     >>> parser = argparse.ArgumentParser()
@@ -710,12 +725,15 @@ def arg(
 
                   For more details, see `Action`.
 
+
+        .. _nargs:
+
         - `nargs` (`int | Literal[`, optional): Defaults to `None`.
 
             The number of command-line arguments that should be consumed.
 
             :class:`~argparse.ArgumentParser` objects usually associate a single command-line argument with a single action to be taken.
-            The `nargs` keyword argument associates a different number of command-line arguments with a single action.
+            The :argument_link:`nargs<nargs>` keyword argument associates a different number of command-line arguments with a single action.
             See also "Specifying ambiguous arguments". The supported values are:
 
                 + `N` (an integer)
@@ -732,9 +750,9 @@ def arg(
 
                 + `"?"`
                   - One argument will be consumed from the command line if possible, and produced as a single item. If
-                  no command-line argument is present, the value from `default` will be produced. Note that for optional
+                  no command-line argument is present, the value from :argument_link:`default<default>` will be produced. Note that for optional
                   arguments, there is an additional case - the option string is present but not followed by a
-                  command-line argument. In this case the value from `const` will be produced. Some examples to
+                  command-line argument. In this case the value from :argument_link:`const<const>` will be produced. Some examples to
                   illustrate this::
 
                     >>> parser = argparse.ArgumentParser()
@@ -783,9 +801,12 @@ def arg(
                     usage: PROG [-h] foo [foo ...]
                     PROG: error: the following arguments are required: foo
 
+
+        .. _const:
+
         - `const` (`Any | None`, optional): Defaults to `None`.
 
-            A constant value required by some `action` and `nargs` selections.
+            A constant value required by some :argument_link:`action<action>` and :argument_link:`nargs<nargs>` selections.
 
             The const argument of :meth:`~argparse.ArgumentParser.add_argument` is used to hold constant values that are not read from the command
             line but are required for the various ArgumentParser actions. The two most common uses of it are:
@@ -798,20 +819,23 @@ def arg(
                 (2) When :meth:`~argparse.ArgumentParser.add_argument` is called with option strings (like `-f` or `--foo`) and `nargs='?'`. This
                 creates an optional argument that can be followed by zero or one command-line arguments. When
                 parsing the command line, if the option string is encountered with no command-line argument
-                following it, the value of const will be assumed to be `None` instead. See the `nargs` description
+                following it, the value of const will be assumed to be `None` instead. See the :argument_link:`nargs<nargs>` description
                 for examples.
 
             Changed in version 3.11: `const=None` by default, including when `action='append_const'` or
             `action='store_const'`.
+
+
+        .. _default:
 
         - `default` (`Any`, optional): Defaults to `None`.
 
             The value produced if the argument is absent from the command line and if it is absent from the namespace
             object.
 
-            All optional arguments and some positional arguments may be omitted at the command line. The `default`
+            All optional arguments and some positional arguments may be omitted at the command line. The :argument_link:`default<default>`
             keyword argument of :meth:`~argparse.ArgumentParser.add_argument`, whose value defaults to `None`, specifies what value should be used if
-            the command-line argument is not present. For optional arguments, the `default` value is used when the
+            the command-line argument is not present. For optional arguments, the :argument_link:`default<default>` value is used when the
             option string was not present at the command line::
 
                 >>> parser = argparse.ArgumentParser()
@@ -828,8 +852,8 @@ def arg(
                 >>> parser.parse_args([], namespace=argparse.Namespace(foo=101))
                 Namespace(foo=101)
 
-            If the `default` value is a string, the parser parses the value as if it were a command-line argument. In
-            particular, the parser applies any `type` conversion argument, if provided, before setting the attribute on
+            If the :argument_link:`default<default>` value is a string, the parser parses the value as if it were a command-line argument. In
+            particular, the parser applies any :argument_link:`type<type>` conversion argument, if provided, before setting the attribute on
             the `Namespace` return value. Otherwise, the parser uses the value as is::
 
                 >>> parser = argparse.ArgumentParser()
@@ -838,7 +862,7 @@ def arg(
                 >>> parser.parse_args()
                 Namespace(length=10, width=10.5)
 
-            For positional arguments with `nargs` equal to `?` or `*`, the default value is used when no command-line
+            For positional arguments with :argument_link:`nargs<nargs>` equal to `?` or `*`, the default value is used when no command-line
             argument was present::
 
                 >>> parser = argparse.ArgumentParser()
@@ -849,11 +873,11 @@ def arg(
                 Namespace(foo=42)
 
             Note:
-                Giving some `default` value to the function `arg()` will force the argument to be optional if there is
-                no flag present in the `name_or_flags` argument. That gives the same result as if `make_flag=True`. The
-                only exception occurs when `nargs` is passed and it is equal to `?` or `*`. In those cases, passing a
-                `default` value will not force the argument to be optional. To achieve that, a flag must be passed in
-                `name_or_flags` argument or explicit passing `make_flag=True`.
+                Giving some :argument_link:`default<default>` value to the function `arg()` will force the argument to be optional if there is
+                no flag present in the :argument_link:`name_or_flags<name-or-flags>` argument. That gives the same result as if `make_flag=True`. The
+                only exception occurs when :argument_link:`nargs<nargs>` is passed and it is equal to `?` or `*`. In those cases, passing a
+                :argument_link:`default<default>` value will not force the argument to be optional. To achieve that, a flag must be passed in
+                :argument_link:`name_or_flags<name-or-flags>` argument or explicit passing `make_flag=True`.
 
             Providing `default=argparse.SUPPRESS` causes no attribute to be added if the command-line argument was not
             present::
@@ -865,22 +889,25 @@ def arg(
                 >>> parser.parse_args(['--foo', '1'])
                 Namespace(foo='1')
 
+
+        .. _type:
+
         - `type` (`Callable[[str], T] | FileType | None`, optional): Defaults to `None`.
 
             Note:
-                If not given in the `arg()` function, the `type` parameter is automatically inferred from the dataclass
+                If not given in the `arg()` function, the :argument_link:`type<type>` parameter is automatically inferred from the dataclass
                 field type, except for the case when the field type is `bool` (following recommendation below).
 
             The type to which the command-line argument should be converted.
 
             By default, the parser reads command-line arguments in as simple strings. However, quite often the
-            command-line string should instead be interpreted as another type, such as a `float` or `int`. The `type`
+            command-line string should instead be interpreted as another type, such as a `float` or `int`. The :argument_link:`type<type>`
             keyword for :meth:`~argparse.ArgumentParser.add_argument` allows any necessary type-checking and type conversions to be performed.
 
-            If the `type` keyword is used with the `default` keyword, the type converter is only applied if the default
+            If the :argument_link:`type<type>` keyword is used with the :argument_link:`default<default>` keyword, the type converter is only applied if the default
             is a string.
 
-            The argument to `type` can be any callable that accepts a single string. If the function raises
+            The argument to :argument_link:`type<type>` can be any callable that accepts a single string. If the function raises
             `ArgumentTypeError`, `TypeError`, or `ValueError`, the exception is caught and a nicely formatted error
             message is displayed. No other exception types are handled.
 
@@ -916,16 +943,19 @@ def arg(
             management should be done downstream after the arguments are parsed.
 
             For example, JSON or YAML conversions have complex error cases that require better reporting than can be
-            given by the `type` keyword. A `JSONDecodeError` would not be well formatted and a `FileNotFoundError`
+            given by the :argument_link:`type<type>` keyword. A `JSONDecodeError` would not be well formatted and a `FileNotFoundError`
             exception would not be handled at all.
 
-            Even `FileType` has its limitations for use with the `type` keyword. If one argument uses `FileType` and
+            Even `FileType` has its limitations for use with the :argument_link:`type<type>` keyword. If one argument uses `FileType` and
             then a subsequent argument fails, an error is reported but the file is not automatically closed. In this
             case, it would be better to wait until after the parser has run and then use the `with`-statement to manage
             the files.
 
-            For type checkers that simply check against a fixed set of values, consider using the `choices` keyword
+            For type checkers that simply check against a fixed set of values, consider using the :argument_link:`choices<choices>` keyword
             instead.
+
+
+        .. _choices:
 
         - `choices` (`Iterable[T] | None`, optional): Defaults to `None`.
 
@@ -945,8 +975,8 @@ def arg(
                 game.py: error: argument move: invalid choice: 'fire' (choose from 'rock',
                 'paper', 'scissors')
 
-            Note that inclusion in the choices sequence is checked after any `type` conversions have been performed, so
-            the type of the objects in the choices sequence should match the `type` specified::
+            Note that inclusion in the choices sequence is checked after any :argument_link:`type<type>` conversions have been performed, so
+            the type of the objects in the choices sequence should match the :argument_link:`type<type>` specified::
 
                 >>> parser = argparse.ArgumentParser(prog='doors.py')
                 >>> parser.add_argument('door', type=int, choices=range(1, 4))
@@ -962,9 +992,12 @@ def arg(
             Use of `enum.Enum` is not recommended because it is difficult to control its appearance in usage, help, and
             error messages.
 
-            Formatted choices override the default `metavar` which is normally derived from :literal_issue:`dest`. This is usually what
+            Formatted choices override the default :argument_link:`metavar<metavar>` which is normally derived from :argument_link:`dest<dest>`. This is usually what
             you want because the user never sees the dest parameter. If this display isn't desirable (perhaps because
-            there are many choices), just specify an explicit `metavar`.
+            there are many choices), just specify an explicit :argument_link:`metavar<metavar>`.
+
+
+        .. _required:
 
         - `required` (`bool | None`, optional): Defaults to `None`.
 
@@ -982,19 +1015,22 @@ def arg(
                 usage: [-h] --foo FOO
                 : error: the following arguments are required: --foo
 
-            As the example shows, if an option is marked as `required`, :meth:`~argparse.ArgumentParser.parse_args` will report an error if that
+            As the example shows, if an option is marked as :argument_link:`required<required>`, :meth:`~argparse.ArgumentParser.parse_args` will report an error if that
             option is not present at the command line.
 
             Note:
                 Required options are generally considered bad form because users expect options to be optional, and thus
                 they should be avoided when possible.
 
+
+        .. _help:
+
         - `help` (`str | None`, optional): Defaults to `None`.
 
             A brief description of what the argument does.
 
-            The `help` value is a string containing a brief description of the argument. When a user requests help
-            (usually by using `-h` or `--help` at the command line), these `help` descriptions will be displayed with
+            The :argument_link:`help<help>` value is a string containing a brief description of the argument. When a user requests help
+            (usually by using `-h` or `--help` at the command line), these :argument_link:`help<help>` descriptions will be displayed with
             each argument::
 
                 >>> parser = argparse.ArgumentParser(prog='frobble')
@@ -1011,7 +1047,7 @@ def arg(
                   --foo   foo the bars before frobbling
 
             The help strings can include various format specifiers to avoid repetition of things like the program name
-            or the argument `default`. The available specifiers include the program name, `%(prog)s` and most keyword
+            or the argument :argument_link:`default<default>`. The available specifiers include the program name, `%(prog)s` and most keyword
             arguments to :meth:`~argparse.ArgumentParser.add_argument`, e.g. `%(default)s`, `%(type)s`, etc.::
 
                 >>> parser = argparse.ArgumentParser(prog='frobble')
@@ -1029,7 +1065,7 @@ def arg(
             As the help string supports %-formatting, if you want a literal % to appear in the help string, you must
             escape it as `%%`.
 
-            :mod:`~argparse` supports silencing the help entry for certain options, by setting the `help` value to
+            :mod:`~argparse` supports silencing the help entry for certain options, by setting the :argument_link:`help<help>` value to
             `argparse.SUPPRESS`::
 
                 >>> parser = argparse.ArgumentParser(prog='frobble')
@@ -1040,14 +1076,17 @@ def arg(
                 options:
                   -h, --help  show this help message and exit
 
+
+        .. _metavar:
+
         - `metavar` (`str | tuple[str, ...] | None`, optional): Defaults to `None`.
 
             A name for the argument in usage messages.
 
             When :class:`~argparse.ArgumentParser` generates help messages, it needs some way to refer to each expected argument. By
-            default, ArgumentParser objects use the :literal_issue:`dest` value as the "name" of each object. By default, for
-            positional argument actions, the :literal_issue:`dest` value is used directly, and for optional argument actions, the
-            :literal_issue:`dest` value is uppercased. So, a single positional argument with `dest='bar'` will be referred to as `bar`.
+            default, ArgumentParser objects use the :argument_link:`dest<dest>` value as the "name" of each object. By default, for
+            positional argument actions, the :argument_link:`dest<dest>` value is used directly, and for optional argument actions, the
+            :argument_link:`dest<dest>` value is uppercased. So, a single positional argument with `dest='bar'` will be referred to as `bar`.
             A single optional argument `--foo` that should be followed by a single command-line argument will be
             referred to as `FOO`. An example::
 
@@ -1066,7 +1105,7 @@ def arg(
                   -h, --help  show this help message and exit
                   --foo FOO
 
-            An alternative name can be specified with `metavar`::
+            An alternative name can be specified with :argument_link:`metavar<metavar>`::
 
                 >>> parser = argparse.ArgumentParser()
                 >>> parser.add_argument('--foo', metavar='YYY')
@@ -1083,10 +1122,10 @@ def arg(
                   -h, --help  show this help message and exit
                   --foo YYY
 
-            Note that `metavar` only changes the displayed name - the name of the attribute on the :meth:`~argparse.ArgumentParser.parse_args` object
-            is still determined by the :literal_issue:`dest` value.
+            Note that :argument_link:`metavar<metavar>` only changes the displayed name - the name of the attribute on the :meth:`~argparse.ArgumentParser.parse_args` object
+            is still determined by the :argument_link:`dest<dest>` value.
 
-            Different values of `nargs` may cause the metavar to be used multiple times. Providing a tuple to `metavar`
+            Different values of :argument_link:`nargs<nargs>` may cause the metavar to be used multiple times. Providing a tuple to :argument_link:`metavar<metavar>`
             specifies a different display for each of the arguments::
 
                 >>> parser = argparse.ArgumentParser(prog='PROG')
@@ -1100,27 +1139,30 @@ def arg(
                   -x X X
                   --foo bar baz
 
-        - :literal_issue:`dest` (`str | None`, optional): Defaults to `None`.
+
+        .. _dest:
+
+        - `dest` (`str | None`, optional): Defaults to `None`.
 
             Note:
-                The parameter :literal_issue:`dest` is described here just for documentation. It will raise an error if it is passed to
-                the `arg()` function, because it is not necessary: the :literal_issue:`dest` keyword argument of the :meth:`~argparse.ArgumentParser.add_argument`
+                The parameter :argument_link:`dest<dest>` is described here just for documentation. It will raise an error if it is passed to
+                the `arg()` function, because it is not necessary: the :argument_link:`dest<dest>` keyword argument of the :meth:`~argparse.ArgumentParser.add_argument`
                 method is taken from the dataclass field name.
 
             The name of the attribute to be added to the object returned by :meth:`~argparse.ArgumentParser.parse_args`.
 
             Most :class:`~argparse.ArgumentParser` actions add some value as an attribute of the object returned by :meth:`~argparse.ArgumentParser.parse_args`. The
-            name of this attribute is determined by the :literal_issue:`dest` keyword argument of :meth:`~argparse.ArgumentParser.add_argument`. For positional
-            argument actions, :literal_issue:`dest` is normally supplied as the first argument to :meth:`~argparse.ArgumentParser.add_argument`::
+            name of this attribute is determined by the :argument_link:`dest<dest>` keyword argument of :meth:`~argparse.ArgumentParser.add_argument`. For positional
+            argument actions, :argument_link:`dest<dest>` is normally supplied as the first argument to :meth:`~argparse.ArgumentParser.add_argument`::
 
                 >>> parser = argparse.ArgumentParser()
                 >>> parser.add_argument('bar')
                 >>> parser.parse_args(['XXX'])
                 Namespace(bar='XXX')
 
-            For optional argument actions, the value of :literal_issue:`dest` is normally inferred from the option strings.
-            :class:`~argparse.ArgumentParser` generates the value of :literal_issue:`dest` by taking the first long option string and stripping away the
-            initial `--` string. If no long option strings were supplied, :literal_issue:`dest` will be derived from the first short
+            For optional argument actions, the value of :argument_link:`dest<dest>` is normally inferred from the option strings.
+            :class:`~argparse.ArgumentParser` generates the value of :argument_link:`dest<dest>` by taking the first long option string and stripping away the
+            initial `--` string. If no long option strings were supplied, :argument_link:`dest<dest>` will be derived from the first short
             option string by stripping the initial `-` character. Any internal `-` characters will be converted to `_`
             characters to make sure the string is a valid attribute name. The examples below illustrate this behavior::
 
@@ -1132,7 +1174,7 @@ def arg(
                 >>> parser.parse_args('--foo 1 -y 2'.split())
                 Namespace(foo_bar='1', x='2')
 
-            :literal_issue:`dest` allows a custom attribute name to be provided::
+            :argument_link:`dest<dest>` allows a custom attribute name to be provided::
 
                 >>> parser = argparse.ArgumentParser()
                 >>> parser.add_argument('--foo', dest='bar')
@@ -1141,7 +1183,7 @@ def arg(
 
     Returns
     -------
-        `default@arg | Field`: A :func:`~dataclasses.dataclass` field with given `default` value of the field and `metadata` dictionary
+        `default@arg | Field`: A :func:`~dataclasses.dataclass` field with given :argument_link:`default<default>` value of the field and `metadata` dictionary
         filled with argument parameters.
     """
     ...
@@ -1154,9 +1196,12 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
 
     Parameters
     ----------
-        - `cls` (`type`):
+        - `cls` (:argument_link:`type<type>`):
 
             A :func:`~dataclasses.dataclass` according to which argument parser is created.
+
+
+        .. _parser:
 
         - `parser` (`ArgumentParser | None`, optional): Defaults to `None`.
 
@@ -1182,6 +1227,9 @@ def parse(cls: type[Class], args: Sequence[str] | None = None, *, parser: Argume
         - `args` (`Sequence[str] | None`, optional): Defaults to `None`.
 
             List of strings to parse. The default is taken from `sys.argv`, like the original :meth:`~argparse.ArgumentParser.parse_args` method.
+
+
+        .. _parser:
 
         - `parser` (`ArgumentParser | None`, optional): Defaults to `None`.
 
@@ -1217,34 +1265,49 @@ def dataparser(
     """A wrapper around :func:`~dataclasses.dataclass` for passing parameters to the :class:`~argparse.ArgumentParser` constructor.
 
     This function accepts all parameters of the original :class:`~argparse.ArgumentParser` constructor. Four additional parameters may be
-    supplied, namely `groups_descriptions`, `required_mutually_exclusive_groups, `default_bool` and `help_fmt`.
+    supplied, namely :argument_link:`groups_descriptions<groups-descriptions>`, `required_mutually_exclusive_groups, :argument_link:`default_bool<default-bool>` and :argument_link:`help_fmt<help-fmt>`.
 
     Parameters
     ----------
+
+        .. _groups-descriptions:
+
         - `groups_descriptions` (`dict[str | int, str] | None`, optional): Defaults to `None`.
 
             A dictionary with argument groups descriptions (used to customize the CLI display) whose keys should match
-            some value of the argument `group_title` passed to the `arg()` function.
+            some value of the argument :argument_link:`group_title<group-title>` passed to the `arg()` function.
+
+
+        .. _required-mutually-exclusive-groups:
 
         - `required_mutually_exclusive_groups` (`dict[str | int, bool] | None`, optional): Defaults to `None`.
 
             A dictionary with booleans indicating the required status of mutually exclusive groups arguments. The
-            dictionary keys should match some value of the argument `mutually_exclusive_group_id` passed to the `arg()`
+            dictionary keys should match some value of the argument :argument_link:`mutually_exclusive_group_id<mutually-exclusive-group-id>` passed to the `arg()`
             function. The value `True` indicates that at least one of the mutually exclusive arguments in the matching
             group is required.
 
+
+        .. _default-bool:
+
         - `default_bool` (`bool`, optional): Defaults to `False`.
 
-            The default boolean value used in in boolean fields when there is no `default` value passed.
+            The default boolean value used in in boolean fields when there is no :argument_link:`default<default>` value passed.
+
+
+        .. _help-fmt:
 
         - `help_fmt` (`Callable[[str], str] | None`, optional): Defaults to `None`.
 
             A formatter function used to format the help text in argument descriptions. When it is passed, the
-            `formatter_class` parameter passed to the :class:`~argparse.ArgumentParser` constructor is assumed to be
+            :argument_link:`formatter_class<formatter-class>` parameter passed to the :class:`~argparse.ArgumentParser` constructor is assumed to be
             `RawDescriptionHelpFormatter`.
 
     Parameters from the original :class:`~argparse.ArgumentParser` class
     ---------------------------------------------------------------------
+
+        .. _prog:
+
         - `prog` (`str | None`, optional): Defaults to `None`.
 
              The name of the program (default: `os.path.basename(sys.argv[0])`)
@@ -1291,6 +1354,9 @@ def dataparser(
                 options:
                   -h, --help  show this help message and exit --foo FOO   foo of the myprogram program
 
+
+        .. _usage:
+
         - `usage` (`str | None`, optional): Defaults to `None`.
 
             The string describing the program usage (default: generated from arguments added to parser).
@@ -1323,6 +1389,9 @@ def dataparser(
 
             The `%(prog)s` format specifier is available to fill in the program name in your usage messages.
 
+
+        .. _description:
+
         - `description` (`str | None`, optional): Defaults to `None`.
 
             Text to display before the argument help (by default, no text).
@@ -1341,7 +1410,10 @@ def dataparser(
                   -h, --help  show this help message and exit
 
             By default, the description will be line-wrapped so that it fits within the given space. To change this
-            behavior, see the `formatter_class` argument.
+            behavior, see the :argument_link:`formatter_class<formatter-class>` argument.
+
+
+        .. _epilog:
 
         - `epilog` (`str | None`, optional): Defaults to `None`.
 
@@ -1361,8 +1433,11 @@ def dataparser(
 
                 And that's how you'd foo a bar
 
-            As with the `description` argument, the `epilog=` text is by default line-wrapped, but this behavior can be
-            adjusted with the `formatter_class` argument to :class:`~argparse.ArgumentParser`.
+            As with the :argument_link:`description<description>` argument, the `epilog=` text is by default line-wrapped, but this behavior can be
+            adjusted with the :argument_link:`formatter_class<formatter-class>` argument to :class:`~argparse.ArgumentParser`.
+
+
+        .. _parents:
 
         - `parents` (`Sequence[ArgumentParser]`, optional): Defaults to `[]`.
 
@@ -1394,6 +1469,9 @@ def dataparser(
                 You must fully initialize the parsers before passing them via `parents=`. If you change the parent
                 parsers after the child parser, those changes will not be reflected in the child.
 
+
+        .. _formatter-class:
+
         - `formatter_class` (`_FormatterClass`, optional):
 
             A class for customizing the help output.
@@ -1405,7 +1483,7 @@ def dataparser(
                 argparse.ArgumentDefaultsHelpFormatter class argparse.MetavarTypeHelpFormatter
 
             `RawDescriptionHelpFormatter` and `RawTextHelpFormatter` give more control over how textual descriptions are
-            displayed. By default, :class:`~argparse.ArgumentParser` objects line-wrap the `description` and `epilog` texts in
+            displayed. By default, :class:`~argparse.ArgumentParser` objects line-wrap the :argument_link:`description<description>` and :argument_link:`epilog<epilog>` texts in
             command-line help messages::
 
                 >>> parser = argparse.ArgumentParser(
@@ -1422,7 +1500,7 @@ def dataparser(
                 likewise for this epilog whose whitespace will be cleaned up and whose words will be wrapped across a
                 couple lines
 
-            Passing `RawDescriptionHelpFormatter` as `formatter_class=` indicates that `description` and `epilog` are
+            Passing `RawDescriptionHelpFormatter` as `formatter_class=` indicates that :argument_link:`description<description>` and :argument_link:`epilog<epilog>` are
             already correctly formatted and should not be line-wrapped::
 
                 >>> parser = argparse.ArgumentParser(
@@ -1456,8 +1534,8 @@ def dataparser(
                 options:
                   -h, --help  show this help message and exit --foo FOO   FOO! (default: 42)
 
-            `MetavarTypeHelpFormatter` uses the name of the `type` argument for each argument as the display name for
-            its values (rather than using the :literal_issue:`dest` as the regular formatter does)::
+            `MetavarTypeHelpFormatter` uses the name of the :argument_link:`type<type>` argument for each argument as the display name for
+            its values (rather than using the :argument_link:`dest<dest>` as the regular formatter does)::
 
                 >>> parser = argparse.ArgumentParser(
                 ...    prog='PROG', ...    formatter_class=argparse.MetavarTypeHelpFormatter) >>>
@@ -1468,6 +1546,9 @@ def dataparser(
 
                 options:
                   -h, --help  show this help message and exit --foo int
+
+
+        .. _prefix-chars:
 
         - `prefix_chars` (`str`, optional): Defaults to `"-"`.
 
@@ -1485,6 +1566,9 @@ def dataparser(
 
             The `prefix_chars=` argument defaults to `'-'`. Supplying a set of characters that does not include `-` will
             cause `-f/--foo` options to be disallowed.
+
+
+        .. _fromfile-prefix-chars:
 
         - `fromfile_prefix_chars` (`str | None`, optional): Defaults to `None`.
 
@@ -1513,6 +1597,9 @@ def dataparser(
             (e.g. `locale.getpreferredencoding(False)` and `"strict"`) to filesystem encoding and error handler.
             Arguments file should be encoded in UTF-8 instead of ANSI Codepage on Windows.
 
+
+        .. _argument-default:
+
         - `argument_default` (`Any`, optional): Defaults to `None`.
 
             The global default value for arguments (default: `None`).
@@ -1531,6 +1618,9 @@ def dataparser(
                 >>> parser.parse_args([])
                 Namespace()
 
+
+        .. _conflict-handler:
+
         - `conflict_handler` (`str`, optional): Defaults to `"error"`.
 
             The strategy for resolving conflicting optionals (usually unnecessary).
@@ -1546,7 +1636,7 @@ def dataparser(
                 ..
                 ArgumentError: argument --foo: conflicting option string(s): --foo
 
-            Sometimes (e.g. when using `parents`) it may be useful to simply override any older arguments with the same
+            Sometimes (e.g. when using :argument_link:`parents<parents>`) it may be useful to simply override any older arguments with the same
             option string. To get this behavior, the value `'resolve'` can be supplied to the `conflict_handler=`
             argument of :class:`~argparse.ArgumentParser`:
 
@@ -1562,6 +1652,9 @@ def dataparser(
             Note that :class:`~argparse.ArgumentParser` objects only remove an action if all of its option strings are overridden. So, in
             the example above, the old `-f/--foo` action is retained as the `-f` action, because only the `--foo` option
             string was overridden.
+
+
+        .. _add-help:
 
         - `add_help` (`bool`, optional): Defaults to `True`.
 
@@ -1593,7 +1686,7 @@ def dataparser(
 
             The help option is typically `-h/--help`. The exception to this is if the `prefix_chars=` is specified and
             does not include `-`, in which case `-h` and `--help` are not valid options. In this case, the first
-            character in `prefix_chars` is used to prefix the help options::
+            character in :argument_link:`prefix_chars<prefix-chars>` is used to prefix the help options::
 
                 >>> parser = argparse.ArgumentParser(prog='PROG', prefix_chars='+/')
                 >>> parser.print_help()
@@ -1601,12 +1694,15 @@ def dataparser(
 
                 options: +h, ++help  show this help message and exit
 
+
+        .. _allow-abbrev:
+
         - `allow_abbrev` (`bool`, optional): Defaults to `True`.
 
             Normally, when you pass an argument list to the :meth:`~argparse.ArgumentParser.parse_args` method of an :class:`~argparse.ArgumentParser`, it recognizes
             abbreviations of long options.
 
-            This feature can be disabled by setting `allow_abbrev` to `False`::
+            This feature can be disabled by setting :argument_link:`allow_abbrev<allow-abbrev>` to `False`::
 
                 >>> parser = argparse.ArgumentParser(prog='PROG', allow_abbrev=False)
                 >>> parser.add_argument('--foobar', action='store_true')
@@ -1617,12 +1713,15 @@ def dataparser(
 
             New in version 3.5.
 
+
+        .. _exit-on-error:
+
         - `exit_on_error` (`bool`, optional): Defaults to `True`.
 
             Normally, when you pass an invalid argument list to the :meth:`~argparse.ArgumentParser.parse_args` method of an :class:`~argparse.ArgumentParser`, it
             will exit with error info.
 
-            If the user would like to catch errors manually, the feature can be enabled by setting `exit_on_error` to
+            If the user would like to catch errors manually, the feature can be enabled by setting :argument_link:`exit_on_error<exit-on-error>` to
             `False`::
 
                 >>> parser = argparse.ArgumentParser(exit_on_error=False)
