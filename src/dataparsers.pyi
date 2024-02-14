@@ -1,7 +1,7 @@
 """
 # dataparsers
 
-A wrapper around `argparse` to get command line argument parsers from `dataclasses`
+A wrapper around `argparse` to get command line argument parsers from `dataclasses`.
 
 ## Basic usage
 
