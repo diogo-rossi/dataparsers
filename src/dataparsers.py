@@ -31,6 +31,9 @@ def arg(
     if group is not None and mutually_exclusive_group is not None:
         raise ValueError("Can't pass both `group` and `mutually_exclusive_group`")
 
+    if "default" in kwargs and not kwargs.get("nargs", None) in ["?", "*"]:
+        make_flag = True
+
     default = kwargs.pop("default", None)
 
     if not is_flag and mutually_exclusive_group is not None:
