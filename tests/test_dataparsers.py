@@ -143,6 +143,22 @@ def test_forced_make_flags(capsys: CapSys, parser: ArgumentParser):
     assert all(name in flags for name in ["--string", "--integer"])
 
 
+def test_with_defaults_and_helps(capsys: CapSys, parser: ArgumentParser):
+    @dataclass
+    class Args:
+        string: str = arg(help="This must be a string")
+        integer: int = arg(default=1, help="This is a integer")
+
+    parse(Args, ["hello"], parser=parser)
+    parser.print_help()
+    output = capsys.readouterr().out
+    output = HelpOutput(output)
+    positionals = output.positionals
+    flags = output.flags
+    assert "string" in positionals
+    assert "--integer" in flags
+
+
 # %% Help output handler
 
 
@@ -175,7 +191,11 @@ class HelpOutput:
             return []
 
     def get_positionals(self) -> list[str]:
-        return [arg.strip() for arg in self.get_section("positional arguments:")]
+        return [
+            arg.strip().split()[0].strip()
+            for arg in self.get_section("positional arguments:")
+            if arg and not arg.startswith(" " * 10)
+        ]
 
     def get_flags(self) -> list[str]:
         flags = []
@@ -188,7 +208,7 @@ class HelpOutput:
     def group(self, group_id) -> list[str]:
         args = []
         for line in self.get_section(f"{group_id}:"):
-            if line:
+            if line and not line.startswith(" " * 10):
                 for part in line.split(","):
                     args.append(part.strip().split()[0])
         return args
