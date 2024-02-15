@@ -418,6 +418,9 @@ Class = TypeVar("Class", covariant=True)
 
 def arg(
     *name_or_flags: str,
+    group_title: str | int | None = None,
+    mutually_exclusive_group_id: str | int | None = None,
+    make_flag: bool | None = None,
     action: (
         Literal[
             "store",
@@ -441,9 +444,6 @@ def arg(
     required: bool | None = None,
     help: str | None = None,
     metavar: str | tuple[str, ...] | None = None,
-    group_title: str | int | None = None,
-    mutually_exclusive_group_id: str | int | None = None,
-    make_flag: bool | None = None,
 ) -> Any:
     """Helper function to create `dataclass` fields storing specification about arguments, used later in the method
     `add_argument()`.
@@ -1219,7 +1219,7 @@ def dataparser(
     """A wrapper around `dataclass` for passing parameters to the `ArgumentParser` constructor.
 
     This function accepts all parameters of the original `ArgumentParser` constructor. Four additional parameters may be
-    supplied, namely `groups_descriptions`, `required_mutually_exclusive_groups, `default_bool` and `help_fmt`.
+    supplied, namely `groups_descriptions`, `required_mutually_exclusive_groups`, `default_bool` and `help_fmt`.
 
     Parameters
     ----------
