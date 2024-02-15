@@ -1,21 +1,15 @@
 # dataparsers
 
-A wrapper around
-[`argparse`](https://docs.python.org/3/library/argparse.html#module-argparse) to
-get command line argument parsers from
-[`dataclasses`](https://docs.python.org/3/library/dataclasses.html#module-dataclasses).
+A simple module to wrap around `argparse` to get command line argument parsers from `dataclasses`.
 
 ## Installation
 
 ```bash
-   pip install dataparsers
+pip install dataparsers
 ```
-
 ## Basic usage
 
-Create a
-[`dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass)
-describing your command line interface, and call `parse()` with the class:
+Create a `dataclass` describing your command line interface, and call `parse()` with the class:
 
 ```python
 # prog.py
@@ -32,13 +26,10 @@ print("Printing `args`:")
 print(args)
 ```
 
-The
-[`dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass)
-fields that have a "default" value are turned into optional arguments, while the
-non default fields will be positional arguments.
+The `dataclass` fields that have a "default" value are turned into optional arguments, while the non default fields will
+be positional arguments.
 
-The script can then be used in the same way as used with
-[`argparse`](https://docs.python.org/3/library/argparse.html#module-argparse):
+The script can then be used in the same way as used with `argparse`:
 
 ```sh
 $ python prog.py -h
@@ -52,8 +43,7 @@ options:
   --bar BAR
 ```
 
-And the resulting type of `args` is `Args` (recognized by type checkers and
-autocompletes):
+And the resulting type of `args` is `Args` (recognized by type checkers and autocompletes):
 
 ```sh
 $ python prog.py test --bar 12
@@ -63,10 +53,7 @@ Args(foo='test', bar=12)
 
 ## Argument specification
 
-To specify detailed information about each argument, call the `arg()` function
-on the
-[`dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass)
-fields:
+To specify detailed information about each argument, call the `arg()` function on the `dataclass` fields:
 
 ```python
 # prog.py
@@ -95,22 +82,12 @@ options:
   --bar BAR   bar help
 ```
 
-In general, the `arg()` function accepts all parameters that are used in the
-original
-[`add_argument()`](https://docs.python.org/3/library/argparse.html#the-add-argument-method)
-method (with few exceptions) and some additional parameters. The `default`
-keyword argument used above makes the argument optional (i.e., passed with flags
-like `--bar`) except in some specific situations.
+In general, the `arg()` function accepts all parameters that are used in the original `add_argument()` method (with few
+exceptions) and some additional parameters. The `default` keyword argument used above makes the argument optional
+(i.e., passed with flags like `--bar`) except in some specific situations.
 
-One parameter of
-[`add_argument()`](https://docs.python.org/3/library/argparse.html#the-add-argument-method)
-that are not possible to pass to `arg()` is the `dest` keyword argument. That's
-because the name of the class attribute is determined by the
-[`dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass)
-field name. So, it is unnecessary to pass the `dest` parameter, since it doesn't
-makes sense in this situation.
+For more information, see the [documentation](https://dataparsers.readthedocs.io/en/latest/index.html).
 
-## Documentation
+# Formalities, features, benefits and drawbacks
 
-For more information, see the
-[documentation](https://dataparsers.readthedocs.io/en/latest/index.html).
+TODO

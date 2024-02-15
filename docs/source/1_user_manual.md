@@ -5,7 +5,7 @@
 
 ## Basic usage
 
-Create a [`dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass) describing your command line interface, and call `parse()` with the class:
+Create a [`dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass) describing your command line interface, and call {py:func}`~dataparsers.parse` with the class:
 
 ```python
 # prog.py
@@ -56,14 +56,14 @@ It is possible to pass arguments in code, in the same way as the original [`pars
 Args(foo='newtest', bar=32)
 ```
 
-To create a argument parser and not immediately parse the arguments (i.e., save it for later), use the `make_parser()`
+To create a argument parser and not immediately parse the arguments (i.e., save it for later), use the {py:func}`~dataparsers.make_parser`
 function:
 
 ```python
 >>> parser = make_parser(Args)
 ```
 
-Both functions `parse()` and `make_parser()` accepts a `parser=...` keyword argument to modify an existing parser:
+Both functions {py:func}`~dataparsers.parse` and {py:func}`~dataparsers.make_parser` accepts a `parser=...` keyword argument to modify an existing parser:
 
 ```python
 >>> from argparse import ArgumentParser
@@ -83,7 +83,7 @@ options:
 
 ## Argument specification
 
-To specify detailed information about each argument, call the `arg()` function on the [`dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass) fields:
+To specify detailed information about each argument, call the {py:func}`~dataparsers.arg` function on the [`dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass) fields:
 
 ```python
 # prog.py
@@ -112,18 +112,18 @@ options:
   --bar BAR   bar help
 ```
 
-In general, the `arg()` function accepts all parameters that are used in the original [`add_argument()`](https://docs.python.org/3/library/argparse.html#the-add-argument-method) method (with few
+In general, the {py:func}`~dataparsers.arg` function accepts all parameters that are used in the original [`add_argument()`](https://docs.python.org/3/library/argparse.html#the-add-argument-method) method (with few
 exceptions) and some additional parameters. The [`default`](./2_available_functions.md#default) keyword argument used above makes the argument optional
 (i.e., passed with flags like `--bar`) except in some specific situations.
 
-One parameter of [`add_argument()`](https://docs.python.org/3/library/argparse.html#the-add-argument-method) that are not possible to pass to `arg()` is the [`dest`](./2_available_functions.md#dest) keyword argument. That's
+One parameter of [`add_argument()`](https://docs.python.org/3/library/argparse.html#the-add-argument-method) that are not possible to pass to {py:func}`~dataparsers.arg` is the [`dest`](./2_available_functions.md#dest) keyword argument. That's
 because the name of the class attribute is determined by the [`dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass) field name. So, it is unnecessary to pass the
 [`dest`](./2_available_functions.md#dest) parameter, since it doesn't makes sense in this situation.
 
 ### Aliases
 
 The first parameter of the the original [`add_argument()`](https://docs.python.org/3/library/argparse.html#the-add-argument-method) method is [`name_or_flags`](./2_available_functions.md#name-or-flags), which is a series of flags, or a
-simple argument name. This parameter can be passed to `arg()` function to define aliases for optional arguments:
+simple argument name. This parameter can be passed to {py:func}`~dataparsers.arg` function to define aliases for optional arguments:
 
 ```python
 @dataclass
@@ -187,7 +187,7 @@ options:
 
 #### Avoiding automatic flag creation
 
-When only single `-` flags are passed to the `arg()` function, it also creates automatically a `--` flag from the
+When only single `-` flags are passed to the {py:func}`~dataparsers.arg` function, it also creates automatically a `--` flag from the
 [`dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass) field name (as can be seen in a past example, in the "Aliases" section). To prevent that from happening,
 pass `make_flag=False`:
 
@@ -215,7 +215,7 @@ options:
 Booleans attributes are considered to be always passed by flag arguments, using the `"store_true"` or `"store_false"`
 values for the [`action`](./2_available_functions.md#action) parameter of the original [`add_argument()`](https://docs.python.org/3/library/argparse.html#the-add-argument-method) method. If the boolean [`dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass) field is created
 with no default value, the flag is still automatically created and the default value for the parameter will be `False`
-(it's defaults can be modified by the keyword argument [`default_bool`](./2_available_functions.md#default-bool) of the `dataparser()` decorator):
+(it's defaults can be modified by the keyword argument [`default_bool`](./2_available_functions.md#default-bool) of the {py:func}`~dataparsers.dataparser` decorator):
 
 ```python
 >>> @dataclass
@@ -269,7 +269,7 @@ Args(path='myfile.txt')
 
 ### Argument groups
 
-Two important additional keyword arguments can be passed to the `arg()` function to specify "argument groups":
+Two important additional keyword arguments can be passed to the {py:func}`~dataparsers.arg` function to specify "argument groups":
 [`group_title`](./2_available_functions.md#group-title) and [`mutually_exclusive_group_id`](./2_available_functions.md#mutually-exclusive-group-id).
 
 #### Conceptual grouping
@@ -303,7 +303,7 @@ Group2:
 ```
 
 Argument groups may have a [`description`](./2_available_functions.md#description) in addition to the name. To define the [`description`](./2_available_functions.md#description) of the argument group, see
-the `dataparser()` decorator, which allows to define options to the [`ArgumentParser`](https://docs.python.org/3/library/argparse.html#argumentparser-objects) object.
+the {py:func}`~dataparsers.dataparser` decorator, which allows to define options to the [`ArgumentParser`](https://docs.python.org/3/library/argparse.html#argumentparser-objects) object.
 
 #### Mutual exclusion
 
@@ -341,7 +341,7 @@ Mutually exclusive arguments are always optionals. If no flag is given, they wil
 [`dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass) field name, regardless of the value of [`make_flag`](./2_available_functions.md#make-flag).
 ```
 Mutually exclusive groups also accepts a [`required`](./2_available_functions.md#required) argument, to indicate that at least one of the mutually exclusive
-arguments is required. To define the [`required`](./2_available_functions.md#required) status of the mutually exclusive argument group, see the `dataparser()`
+arguments is required. To define the [`required`](./2_available_functions.md#required) status of the mutually exclusive argument group, see the {py:func}`~dataparsers.dataparser`
 decorator.
 
 #### Identifying argument groups
@@ -377,13 +377,13 @@ options:
 ```{note}
 Mutually exclusive argument groups do not support the `title` and [`description`](./2_available_functions.md#description) arguments of [`add_argument_group()`](https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.add_argument_group).
 However, a mutually exclusive group can be added to an argument group that has a `title` and [`description`](./2_available_functions.md#description). This is
-achieved by passing both [`group_title`](./2_available_functions.md#group-title) and [`mutually_exclusive_group_id`](./2_available_functions.md#mutually-exclusive-group-id) parameters to the `arg()` function. If
+achieved by passing both [`group_title`](./2_available_functions.md#group-title) and [`mutually_exclusive_group_id`](./2_available_functions.md#mutually-exclusive-group-id) parameters to the {py:func}`~dataparsers.arg` function. If
 there is a conflict (i.e., same mutually exclusive group and different group titles), the mutually exclusive group
 takes precedence.
 ```
 ##  Parser specifications
 
-To specify detailed options to the created [`ArgumentParser`](https://docs.python.org/3/library/argparse.html#argumentparser-objects) object, use the `dataparser()` decorator:
+To specify detailed options to the created [`ArgumentParser`](https://docs.python.org/3/library/argparse.html#argumentparser-objects) object, use the {py:func}`~dataparsers.dataparser` decorator:
     
 ```python
 >>> from dataparsers import dataparser, make_parser
@@ -400,14 +400,14 @@ options:
   -h, --help  show this help message and exit
 ```
 
-In general, the `dataparser()` decorator accepts all parameters that are used in the original `ArgumentParser()`
+In general, the {py:func}`~dataparsers.dataparser` decorator accepts all parameters that are used in the original `ArgumentParser()`
 constructor, and some additional parameters. 
 
 ### Groups [`description`](./2_available_functions.md#description) and [`required`](./2_available_functions.md#required) status
 
-Two important additional parameters accepted by the `dataparser()` decorator are the dictionaries [`groups_descriptions`](./2_available_functions.md#groups-descriptions)
+Two important additional parameters accepted by the {py:func}`~dataparsers.dataparser` decorator are the dictionaries [`groups_descriptions`](./2_available_functions.md#groups-descriptions)
 and [`required_mutually_exclusive_groups`](./2_available_functions.md#required-mutually-exclusive-groups), whose keys should match some value of the arguments [`group_title`](./2_available_functions.md#group-title) or
-[`mutually_exclusive_group_id`](./2_available_functions.md#mutually-exclusive-group-id) passed to `arg()` function (strings or integers) :
+[`mutually_exclusive_group_id`](./2_available_functions.md#mutually-exclusive-group-id) passed to {py:func}`~dataparsers.arg` function (strings or integers) :
 
 ```python
 >>> @dataparser(
@@ -439,7 +439,7 @@ Group2:
 
 ### Default for booleans
 
-Booleans atributes with no default field value (or without [`action`](./2_available_functions.md#action) and [`default`](./2_available_functions.md#default) keyword arguments passed to `arg()`
+Booleans atributes with no default field value (or without [`action`](./2_available_functions.md#action) and [`default`](./2_available_functions.md#default) keyword arguments passed to {py:func}`~dataparsers.arg`
 function) will receive its default value determining `"store_const"` action defined by the parameter [`default_bool`](./2_available_functions.md#default-bool)
 (which is defaults to `False`, i.e., `action="store_true"`):
 

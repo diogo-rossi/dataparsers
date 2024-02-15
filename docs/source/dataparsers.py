@@ -5,7 +5,7 @@ A wrapper around :mod:`~argparse` to get command line argument parsers from :mod
 
 ## Basic usage
 
-Create a :func:`~dataclasses.dataclass` describing your command line interface, and call `parse()` with the class::
+Create a :func:`~dataclasses.dataclass` describing your command line interface, and call :func:`~dataparsers.parse` with the class::
 
     # prog.py
     from dataclasses import dataclass
@@ -48,12 +48,12 @@ It is possible to pass arguments in code, in the same way as the original :meth:
     >>> parse(Args, ["newtest", "--bar", "32"])
     Args(foo='newtest', bar=32)
 
-To create a argument parser and not immediately parse the arguments (i.e., save it for later), use the `make_parser()`
+To create a argument parser and not immediately parse the arguments (i.e., save it for later), use the :func:`~dataparsers.make_parser`
 function::
 
     >>> parser = make_parser(Args)
 
-Both functions `parse()` and `make_parser()` accepts a `parser=...` keyword argument to modify an existing parser::
+Both functions :func:`~dataparsers.parse` and :func:`~dataparsers.make_parser` accepts a `parser=...` keyword argument to modify an existing parser::
 
     >>> from argparse import ArgumentParser
     >>> prev_parser = ArgumentParser(description="Existing parser")
@@ -71,7 +71,7 @@ Both functions `parse()` and `make_parser()` accepts a `parser=...` keyword argu
 
 ## Argument specification
 
-To specify detailed information about each argument, call the `arg()` function on the :func:`~dataclasses.dataclass` fields::
+To specify detailed information about each argument, call the :func:`~dataparsers.arg` function on the :func:`~dataclasses.dataclass` fields::
 
     # prog.py
     from dataclasses import dataclass
@@ -96,18 +96,18 @@ It allows to customize the interface::
       -h, --help  show this help message and exit
       --bar BAR   bar help
 
-In general, the `arg()` function accepts all parameters that are used in the original :meth:`~argparse.ArgumentParser.add_argument` method (with few
+In general, the :func:`~dataparsers.arg` function accepts all parameters that are used in the original :meth:`~argparse.ArgumentParser.add_argument` method (with few
 exceptions) and some additional parameters. The :argument_link:`default<default>` keyword argument used above makes the argument optional
 (i.e., passed with flags like `--bar`) except in some specific situations.
 
-One parameter of :meth:`~argparse.ArgumentParser.add_argument` that are not possible to pass to `arg()` is the :argument_link:`dest<dest>` keyword argument. That's
+One parameter of :meth:`~argparse.ArgumentParser.add_argument` that are not possible to pass to :func:`~dataparsers.arg` is the :argument_link:`dest<dest>` keyword argument. That's
 because the name of the class attribute is determined by the :func:`~dataclasses.dataclass` field name. So, it is unnecessary to pass the
 :argument_link:`dest<dest>` parameter, since it doesn't makes sense in this situation.
 
 ### Aliases
 
 The first parameter of the the original :meth:`~argparse.ArgumentParser.add_argument` method is :argument_link:`name_or_flags<name-or-flags>`, which is a series of flags, or a
-simple argument name. This parameter can be passed to `arg()` function to define aliases for optional arguments::
+simple argument name. This parameter can be passed to :func:`~dataparsers.arg` function to define aliases for optional arguments::
 
     @dataclass
     class Args:
@@ -161,7 +161,7 @@ Both formats above produces the same interface::
 
 #### Avoiding automatic flag creation
 
-When only single `-` flags are passed to the `arg()` function, it also creates automatically a `--` flag from the
+When only single `-` flags are passed to the :func:`~dataparsers.arg` function, it also creates automatically a `--` flag from the
 :func:`~dataclasses.dataclass` field name (as can be seen in a past example, in the "Aliases" section). To prevent that from happening,
 pass `make_flag=False`::
 
@@ -185,7 +185,7 @@ Then, only the single `-` flags will be sent to the interface::
 Booleans attributes are considered to be always passed by flag arguments, using the `"store_true"` or `"store_false"`
 values for the :argument_link:`action<action>` parameter of the original :meth:`~argparse.ArgumentParser.add_argument` method. If the boolean :func:`~dataclasses.dataclass` field is created
 with no default value, the flag is still automatically created and the default value for the parameter will be `False`
-(it's defaults can be modified by the keyword argument :argument_link:`default_bool<default-bool>` of the `dataparser()` decorator)::
+(it's defaults can be modified by the keyword argument :argument_link:`default_bool<default-bool>` of the :func:`~dataparsers.dataparser` decorator)::
 
     >>> @dataclass
     ... class Args:
@@ -231,7 +231,7 @@ In this case, the interface can be customized, and the flag are not related to t
 
 ### Argument groups
 
-Two important additional keyword arguments can be passed to the `arg()` function to specify "argument groups":
+Two important additional keyword arguments can be passed to the :func:`~dataparsers.arg` function to specify "argument groups":
 :argument_link:`group_title<group-title>` and :argument_link:`mutually_exclusive_group_id<mutually-exclusive-group-id>`.
 
 #### Conceptual grouping
@@ -263,7 +263,7 @@ simple more appropriate conceptual groups::
       ham
 
 Argument groups may have a :argument_link:`description<description>` in addition to the name. To define the :argument_link:`description<description>` of the argument group, see
-the `dataparser()` decorator, which allows to define options to the :class:`~argparse.ArgumentParser` object.
+the :func:`~dataparsers.dataparser` decorator, which allows to define options to the :class:`~argparse.ArgumentParser` object.
 
 #### Mutual exclusion
 
@@ -297,7 +297,7 @@ Note:
     :func:`~dataclasses.dataclass` field name, regardless of the value of :argument_link:`make_flag<make-flag>`.
 
 Mutually exclusive groups also accepts a :argument_link:`required<required>` argument, to indicate that at least one of the mutually exclusive
-arguments is required. To define the :argument_link:`required<required>` status of the mutually exclusive argument group, see the `dataparser()`
+arguments is required. To define the :argument_link:`required<required>` status of the mutually exclusive argument group, see the :func:`~dataparsers.dataparser`
 decorator.
 
 #### Identifying argument groups
@@ -331,13 +331,13 @@ prevents the integer to be printed in the displayed help message::
 Note:
     Mutually exclusive argument groups do not support the `title` and :argument_link:`description<description>` arguments of :meth:`~argparse.ArgumentParser.add_argument_group`.
     However, a mutually exclusive group can be added to an argument group that has a `title` and :argument_link:`description<description>`. This is
-    achieved by passing both :argument_link:`group_title<group-title>` and :argument_link:`mutually_exclusive_group_id<mutually-exclusive-group-id>` parameters to the `arg()` function. If
+    achieved by passing both :argument_link:`group_title<group-title>` and :argument_link:`mutually_exclusive_group_id<mutually-exclusive-group-id>` parameters to the :func:`~dataparsers.arg` function. If
     there is a conflict (i.e., same mutually exclusive group and different group titles), the mutually exclusive group
     takes precedence.
 
 ##  Parser specifications
 
-To specify detailed options to the created :class:`~argparse.ArgumentParser` object, use the `dataparser()` decorator::
+To specify detailed options to the created :class:`~argparse.ArgumentParser` object, use the :func:`~dataparsers.dataparser` decorator::
     
     >>> from dataparsers import dataparser, make_parser
     >>> @dataparser(prog='MyProgram', description='A foo that bars')
@@ -352,14 +352,14 @@ To specify detailed options to the created :class:`~argparse.ArgumentParser` obj
     options:
       -h, --help  show this help message and exit
 
-In general, the `dataparser()` decorator accepts all parameters that are used in the original `ArgumentParser()`
+In general, the :func:`~dataparsers.dataparser` decorator accepts all parameters that are used in the original `ArgumentParser()`
 constructor, and some additional parameters. 
 
 ### Groups :argument_link:`description<description>` and :argument_link:`required<required>` status
 
-Two important additional parameters accepted by the `dataparser()` decorator are the dictionaries :argument_link:`groups_descriptions<groups-descriptions>`
+Two important additional parameters accepted by the :func:`~dataparsers.dataparser` decorator are the dictionaries :argument_link:`groups_descriptions<groups-descriptions>`
 and :argument_link:`required_mutually_exclusive_groups<required-mutually-exclusive-groups>`, whose keys should match some value of the arguments :argument_link:`group_title<group-title>` or
-:argument_link:`mutually_exclusive_group_id<mutually-exclusive-group-id>` passed to `arg()` function (strings or integers) ::
+:argument_link:`mutually_exclusive_group_id<mutually-exclusive-group-id>` passed to :func:`~dataparsers.arg` function (strings or integers) ::
 
     >>> @dataparser(
     ...     groups_descriptions={"Group1": "1st group description", "Group2": "2nd group description"},
@@ -389,7 +389,7 @@ and :argument_link:`required_mutually_exclusive_groups<required-mutually-exclusi
 
 ### Default for booleans
 
-Booleans atributes with no default field value (or without :argument_link:`action<action>` and :argument_link:`default<default>` keyword arguments passed to `arg()`
+Booleans atributes with no default field value (or without :argument_link:`action<action>` and :argument_link:`default<default>` keyword arguments passed to :func:`~dataparsers.arg`
 function) will receive its default value determining `"store_const"` action defined by the parameter :argument_link:`default_bool<default-bool>`
 (which is defaults to `False`, i.e., `action="store_true"`)::
 
@@ -461,7 +461,7 @@ def arg(
 
             A list of option strings, e.g. `-f`, `--foo`, i.e., starting with `-`.
 
-            The first arguments passed to `arg()` must be a series of flags, or empty (not pass). It is not possible
+            The first arguments passed to :func:`~dataparsers.arg` must be a series of flags, or empty (not pass). It is not possible
             to pass a simple argument name to identify positional arguments. In that case, that name is already taken
             from the dataclass field name. This is the only argument taken from the original :meth:`~argparse.ArgumentParser.add_argument` method
             which behavior differs from its original behavior.
@@ -502,7 +502,7 @@ def arg(
                   --foo FOO   foo help
                   bar         bar help
 
-            To define the :argument_link:`description<description>` of the argument group, see the `dataparser()` decorator.
+            To define the :argument_link:`description<description>` of the argument group, see the :func:`~dataparsers.dataparser` decorator.
 
 
         .. _mutually-exclusive-group-id:
@@ -533,7 +533,7 @@ def arg(
 
             The original :meth:`~argparse.ArgumentParser.add_mutually_exclusive_group` method also accepts a :argument_link:`required<required>` parameter, to indicate that
             at least one of the mutually exclusive arguments is required. To define the :argument_link:`required<required>` parameter of the
-            mutually exclusive argument group, see the `dataparser()` decorator.
+            mutually exclusive argument group, see the :func:`~dataparsers.dataparser` decorator.
 
             Note:
                 Mutually exclusive are always optionals. If no flag is given, it will be created automatically from the
@@ -873,7 +873,7 @@ def arg(
                 Namespace(foo=42)
 
             Note:
-                Giving some :argument_link:`default<default>` value to the function `arg()` will force the argument to be optional if there is
+                Giving some :argument_link:`default<default>` value to the function :func:`~dataparsers.arg` will force the argument to be optional if there is
                 no flag present in the :argument_link:`name_or_flags<name-or-flags>` argument. That gives the same result as if `make_flag=True`. The
                 only exception occurs when :argument_link:`nargs<nargs>` is passed and it is equal to `?` or `*`. In those cases, passing a
                 :argument_link:`default<default>` value will not force the argument to be optional. To achieve that, a flag must be passed in
@@ -895,7 +895,7 @@ def arg(
         - `type` (`Callable[[str], T] | FileType | None`, optional): Defaults to `None`.
 
             Note:
-                If not given in the `arg()` function, the :argument_link:`type<type>` parameter is automatically inferred from the dataclass
+                If not given in the :func:`~dataparsers.arg` function, the :argument_link:`type<type>` parameter is automatically inferred from the dataclass
                 field type, except for the case when the field type is `bool` (following recommendation below).
 
             The type to which the command-line argument should be converted.
@@ -1146,7 +1146,7 @@ def arg(
 
             Note:
                 The parameter :argument_link:`dest<dest>` is described here just for documentation. It will raise an error if it is passed to
-                the `arg()` function, because it is not necessary: the :argument_link:`dest<dest>` keyword argument of the :meth:`~argparse.ArgumentParser.add_argument`
+                the :func:`~dataparsers.arg` function, because it is not necessary: the :argument_link:`dest<dest>` keyword argument of the :meth:`~argparse.ArgumentParser.add_argument`
                 method is taken from the dataclass field name.
 
             The name of the attribute to be added to the object returned by :meth:`~argparse.ArgumentParser.parse_args`.
@@ -1192,7 +1192,7 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
     """Creates a :class:`~argparse.ArgumentParser` with command-line arguments according to the fields of `cls`.
 
     Use this to create a :class:`~argparse.ArgumentParser` and not immediately parse the arguments (i.e., save it for later).
-    If you do want to parse immediately, use `parse()`.
+    If you do want to parse immediately, use :func:`~dataparsers.parse`.
 
     Parameters
     ----------
@@ -1275,7 +1275,7 @@ def dataparser(
         - `groups_descriptions` (`dict[str | int, str] | None`, optional): Defaults to `None`.
 
             A dictionary with argument groups descriptions (used to customize the CLI display) whose keys should match
-            some value of the argument :argument_link:`group_title<group-title>` passed to the `arg()` function.
+            some value of the argument :argument_link:`group_title<group-title>` passed to the :func:`~dataparsers.arg` function.
 
 
         .. _required-mutually-exclusive-groups:
@@ -1283,7 +1283,7 @@ def dataparser(
         - `required_mutually_exclusive_groups` (`dict[str | int, bool] | None`, optional): Defaults to `None`.
 
             A dictionary with booleans indicating the required status of mutually exclusive groups arguments. The
-            dictionary keys should match some value of the argument :argument_link:`mutually_exclusive_group_id<mutually-exclusive-group-id>` passed to the `arg()`
+            dictionary keys should match some value of the argument :argument_link:`mutually_exclusive_group_id<mutually-exclusive-group-id>` passed to the :func:`~dataparsers.arg`
             function. The value `True` indicates that at least one of the mutually exclusive arguments in the matching
             group is required.
 
