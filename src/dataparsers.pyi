@@ -1407,42 +1407,59 @@ def dataparser(
             `ArgumentParser` objects allow the help formatting to be customized by specifying an alternate formatting
             class. Currently, there are four such classes::
 
-                class argparse.RawDescriptionHelpFormatter class argparse.RawTextHelpFormatter class
-                argparse.ArgumentDefaultsHelpFormatter class argparse.MetavarTypeHelpFormatter
+                class argparse.RawDescriptionHelpFormatter
+                class argparse.RawTextHelpFormatter
+                class argparse.ArgumentDefaultsHelpFormatter
+                class argparse.MetavarTypeHelpFormatter
 
             `RawDescriptionHelpFormatter` and `RawTextHelpFormatter` give more control over how textual descriptions are
             displayed. By default, `ArgumentParser` objects line-wrap the `description` and `epilog` texts in
             command-line help messages::
 
                 >>> parser = argparse.ArgumentParser(
-                ...    prog='PROG', ...    description='''this description ...        was indented weird ... but that is
-                okay''', ...    epilog=''' ...            likewise for this epilog whose whitespace will ... be cleaned
-                up and whose words will be wrapped ...        across a couple lines''') >>> parser.print_help() usage:
-                PROG [-h]
-
+                ...    prog='PROG',
+                ...    description='''this description
+                ...        was indented weird
+                ...            but that is okay''',
+                ...    epilog='''
+                ...            likewise for this epilog whose whitespace will
+                ...        be cleaned up and whose words will be wrapped
+                ...        across a couple lines''')
+                >>> parser.print_help()
+                usage: PROG [-h]
+                
                 this description was indented weird but that is okay
-
+                
                 options:
-                  -h, --help  show this help message and exit
-
-                likewise for this epilog whose whitespace will be cleaned up and whose words will be wrapped across a
-                couple lines
+                 -h, --help  show this help message and exit
+                
+                likewise for this epilog whose whitespace will be cleaned up and whose words
+                will be wrapped across a couple lines
 
             Passing `RawDescriptionHelpFormatter` as `formatter_class=` indicates that `description` and `epilog` are
             already correctly formatted and should not be line-wrapped::
 
                 >>> parser = argparse.ArgumentParser(
-                ...    prog='PROG', ...    formatter_class=argparse.RawDescriptionHelpFormatter, ...
-                description=textwrap.dedent('''\ ...        Please do not mess up this text! ...
-                -------------------------------- ...            I have indented it ...            exactly the way ... I
-                want it ...        ''')) >>> parser.print_help() usage: PROG [-h]
-
+                ...    prog='PROG',
+                ...    formatter_class=argparse.RawDescriptionHelpFormatter,
+                ...    description=textwrap.dedent('''\
+                ...        Please do not mess up this text!
+                ...        --------------------------------
+                ...            I have indented it
+                ...            exactly the way
+                ...            I want it
+                ...        '''))
+                >>> parser.print_help()
+                usage: PROG [-h]
+                
                 Please do not mess up this text!
                 --------------------------------
-                I have indented it exactly the way I want it
-
+                   I have indented it
+                   exactly the way
+                   I want it
+                
                 options:
-                  -h, --help  show this help message and exit
+                 -h, --help  show this help message and exit
 
             `RawTextHelpFormatter` maintains whitespace for all sorts of help text, including argument descriptions.
             However, multiple new lines are replaced with one. If you wish to preserve multiple blank lines, add spaces
@@ -1452,28 +1469,37 @@ def dataparser(
             help messages::
 
                 >>> parser = argparse.ArgumentParser(
-                ...    prog='PROG', ...    formatter_class=argparse.ArgumentDefaultsHelpFormatter) >>>
-                parser.add_argument('--foo', type=int, default=42, help='FOO!') >>> parser.add_argument('bar',
-                nargs='*', default=[1, 2, 3], help='BAR!') >>> parser.print_help() usage: PROG [-h] [--foo FOO] [bar
-                ...]
-
-                positional arguments: bar         BAR! (default: [1, 2, 3])
-
+                ...    prog='PROG',
+                ...    formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+                >>> parser.add_argument('--foo', type=int, default=42, help='FOO!')
+                >>> parser.add_argument('bar', nargs='*', default=[1, 2, 3], help='BAR!')
+                >>> parser.print_help()
+                usage: PROG [-h] [--foo FOO] [bar ...]
+                
+                positional arguments:
+                 bar         BAR! (default: [1, 2, 3])
+                
                 options:
-                  -h, --help  show this help message and exit --foo FOO   FOO! (default: 42)
+                 -h, --help  show this help message and exit
+                 --foo FOO   FOO! (default: 42)
 
             `MetavarTypeHelpFormatter` uses the name of the `type` argument for each argument as the display name for
             its values (rather than using the `dest` as the regular formatter does)::
 
                 >>> parser = argparse.ArgumentParser(
-                ...    prog='PROG', ...    formatter_class=argparse.MetavarTypeHelpFormatter) >>>
-                parser.add_argument('--foo', type=int) >>> parser.add_argument('bar', type=float) >>>
-                parser.print_help() usage: PROG [-h] [--foo int] float
-
-                positional arguments: float
-
+                ...     prog='PROG',
+                ...     formatter_class=argparse.MetavarTypeHelpFormatter)
+                >>> parser.add_argument('--foo', type=int)
+                >>> parser.add_argument('bar', type=float)
+                >>> parser.print_help()
+                usage: PROG [-h] [--foo int] float
+                
+                positional arguments:
+                  float
+                
                 options:
-                  -h, --help  show this help message and exit --foo int
+                  -h, --help  show this help message and exit
+                  --foo int
 
         - `prefix_chars` (`str`, optional): Defaults to `"-"`.
 
@@ -1502,8 +1528,12 @@ def dataparser(
             will be treated as files, and will be replaced by the arguments they contain. For example::
 
                 >>> with open('args.txt', 'w', encoding=sys.getfilesystemencoding()) as fp:
-                ...    fp.write('-f\\nbar') ... >>> parser = argparse.ArgumentParser(fromfile_prefix_chars='@') >>>
-                parser.add_argument('-f') >>> parser.parse_args(['-f', 'foo', '@args.txt']) Namespace(f='bar')
+                ...    fp.write('-f\\nbar') 
+                ... 
+                >>> parser = argparse.ArgumentParser(fromfile_prefix_chars='@') 
+                >>> parser.add_argument('-f') 
+                >>> parser.parse_args(['-f', 'foo', '@args.txt']) 
+                Namespace(f='bar')
 
             Arguments read from a file must by default be one per line (but see also `convert_arg_line_to_args()`) and
             are treated as if they were in the same place as the original file referencing argument on the command line.
@@ -1574,10 +1604,11 @@ def dataparser(
             Add a `-h/--help` option to the parser (default: `True`).
 
             By default, ArgumentParser objects add an option which simply displays the parser's help message. For
-            example, consider a file named myprogram.py containing the following code:
+            example, consider a file named myprogram.py containing the following code::
 
-                import argparse parser = argparse.ArgumentParser() parser.add_argument('--foo', help='foo help') args =
-                parser.parse_args()
+                import argparse parser = argparse.ArgumentParser()
+                parser.add_argument('--foo', help='foo help')
+                args = parser.parse_args()
 
             If `-h` or `--help` is supplied at the command line, the ArgumentParser help will be printed::
 
@@ -1585,7 +1616,8 @@ def dataparser(
                 usage: myprogram.py [-h] [--foo FOO]
 
                 options:
-                  -h, --help  show this help message and exit --foo FOO   foo help
+                  -h, --help  show this help message and exit
+                  --foo FOO   foo help
 
             Occasionally, it may be useful to disable the addition of this help option. This can be achieved by passing
             `False` as the `add_help=` argument to `ArgumentParser`::
