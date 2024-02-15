@@ -17,10 +17,12 @@ import shutil
 # Add source to path
 sys.path.insert(0, os.path.abspath("."))
 
-# process the module file
+# process the module file and readme file
 from process_module import process_module
+from process_readme import process_readme
 
 process_module()
+process_readme()
 
 import dataparsers
 from dataparsers import arg, parse
