@@ -418,6 +418,9 @@ Class = TypeVar("Class", covariant=True)
 
 def arg(
     *name_or_flags: str,
+    group_title: str | int | None = None,
+    mutually_exclusive_group_id: str | int | None = None,
+    make_flag: bool | None = None,
     action: (
         Literal[
             "store",
@@ -441,9 +444,6 @@ def arg(
     required: bool | None = None,
     help: str | None = None,
     metavar: str | tuple[str, ...] | None = None,
-    group_title: str | int | None = None,
-    mutually_exclusive_group_id: str | int | None = None,
-    make_flag: bool | None = None,
 ) -> Any:
     """Helper function to create :func:`~dataclasses.dataclass` fields storing specification about arguments, used later in the method
     :meth:`~argparse.ArgumentParser.add_argument`.
@@ -1265,7 +1265,7 @@ def dataparser(
     """A wrapper around :func:`~dataclasses.dataclass` for passing parameters to the :class:`~argparse.ArgumentParser` constructor.
 
     This function accepts all parameters of the original :class:`~argparse.ArgumentParser` constructor. Four additional parameters may be
-    supplied, namely :argument_link:`groups_descriptions<groups-descriptions>`, `required_mutually_exclusive_groups, :argument_link:`default_bool<default-bool>` and :argument_link:`help_fmt<help-fmt>`.
+    supplied, namely :argument_link:`groups_descriptions<groups-descriptions>`, :argument_link:`required_mutually_exclusive_groups<required-mutually-exclusive-groups>`, :argument_link:`default_bool<default-bool>` and :argument_link:`help_fmt<help-fmt>`.
 
     Parameters
     ----------
