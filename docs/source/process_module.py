@@ -68,6 +68,8 @@ MODULE_FILENAME = "dataparsers.py"
 MODULE_FILEPATH = THIS_DIR / MODULE_FILENAME
 USER_MANUAL_FILE = THIS_DIR / "1_user_manual.md"
 FUNCTIONS_MANUAL = THIS_DIR / "2_available_functions.md"
+TABLES = THIS_DIR / "tables.md"
+FUNCTIONS = THIS_DIR / "functions.md"
 
 
 def process_module():
@@ -110,16 +112,25 @@ def process_module():
 
     # %% ---- process the function manual
 
-    with open(FUNCTIONS_MANUAL, "r") as file:
-        text = file.read()
+    with open(TABLES, "r") as file:
+        tables = file.read()
 
     for link in INTERNAL_LINKS:
-        text = text.replace(link, f"{{py:func}}`~dataparsers.{link.replace('`','').replace('()','')}`")
+        tables = tables.replace(link, f"{{py:func}}`~dataparsers.{link.replace('`','').replace('()','')}`")
     for link in ARGUMENTS_LINKS:
-        text = text.replace(link, f"[{link}](./2_available_functions.md#{link.replace('`','').replace('_','-')})")
+        tables = tables.replace(link, f"[{link}](./2_available_functions.md#{link.replace('`','').replace('_','-')})")
+
+    functions_toc = """```{eval-rst}
+.. autofunction:: dataparsers.arg
+.. autofunction:: dataparsers.dataparser
+.. autofunction:: dataparsers.parse
+.. autofunction:: dataparsers.make_parser
+.. autofunction:: dataparsers.write_help
+```"""
 
     with open(FUNCTIONS_MANUAL, "w") as file:
-        file.write(text)
+        file.write(f"{tables}\n\n")
+        file.write(functions_toc)
 
     # %% ---- process the module file to use `autofunction`
 
@@ -130,10 +141,10 @@ def process_module():
     put_links_on_file(MODULE_FILEPATH, EXTERNAL_LINKS, INTERNAL_LINKS, ARGUMENTS_LINKS)
 
     with open(MODULE_FILEPATH, "r") as file:
-        text = file.read()
+        tables = file.read()
 
     for emphasis in EMPHASIS:
-        text = text.replace(emphasis, f"**{emphasis}**")
+        tables = tables.replace(emphasis, f"**{emphasis}**")
 
     with open(MODULE_FILEPATH, "w") as file:
-        file.write(text)
+        file.write(tables)
