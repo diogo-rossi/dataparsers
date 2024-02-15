@@ -13,7 +13,15 @@ EXTERNAL_LINKS = {
     "`argparse`": "https://docs.python.org/3/library/argparse.html#module-argparse",
     "`dataclasses`": "https://docs.python.org/3/library/dataclasses.html#module-dataclasses",
     "`dataclass`": "https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass",
+    '"Aliases"': "#aliases",
+    '"Default for booleans"': "#default-for-booleans",
 }
+
+EMPHASIS = [
+    "must be a series of flags",
+    "must be passed only with flags",
+    "This may be the most common case",
+]
 
 INTERNAL_LINKS = ["`arg()`", "`parse()`", "`dataparser()`", "`make_parser()`", "`write_help()`"]
 
@@ -67,6 +75,8 @@ def process_module():
     # Copy stub file form `./src` folder to  `./docs/source` folder
     shutil.copy(os.path.abspath(f"{ROOT_DIR}/src/{MODULE_FILENAME}i"), os.path.abspath(MODULE_FILEPATH))
 
+    # ---- process the module docstring to write manual
+
     # Gets module docstring to write the user manual
     module_docstring = initial_docstring(MODULE_FILEPATH).replace(
         "# dataparsers\n\nA wrapper", "# User manual\n\n`dataparsers` is a simple module that wrappers"
@@ -84,6 +94,9 @@ def process_module():
             link, f"[{link}](./2_available_functions.md#{link.replace('`','').replace('_','-')})"
         )
 
+    for emphasis in EMPHASIS:
+        module_docstring = module_docstring.replace(emphasis, f"**{emphasis}**")
+
     # Writes the user manual
     with open(USER_MANUAL_FILE, "w") as file:
         file.write(module_docstring)
@@ -91,8 +104,19 @@ def process_module():
     # format notes and snippets for MyST
     replace_snippets_and_notes(USER_MANUAL_FILE, replace_notes=True, replace_snippets=True)
 
+    # ---- process the module file to use `autofunction`
+
     # remove overloads from the original stub file
     remove_overloads(MODULE_FILEPATH)
 
     # put links on file for sphinx reST file
     put_links_on_file(MODULE_FILEPATH, EXTERNAL_LINKS, INTERNAL_LINKS, ARGUMENTS_LINKS)
+
+    with open(MODULE_FILEPATH, "r") as file:
+        text = file.read()
+
+    for emphasis in EMPHASIS:
+        text = text.replace(emphasis, f"**{emphasis}**")
+
+    with open(MODULE_FILEPATH, "w") as file:
+        file.write(text)
