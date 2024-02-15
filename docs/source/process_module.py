@@ -67,6 +67,7 @@ ROOT_DIR = DOCS_DIR.parent.resolve()
 MODULE_FILENAME = "dataparsers.py"
 MODULE_FILEPATH = THIS_DIR / MODULE_FILENAME
 USER_MANUAL_FILE = THIS_DIR / "1_user_manual.md"
+FUNCTIONS_MANUAL = THIS_DIR / "2_available_functions.md"
 
 
 def process_module():
@@ -75,7 +76,7 @@ def process_module():
     # Copy stub file form `./src` folder to  `./docs/source` folder
     shutil.copy(os.path.abspath(f"{ROOT_DIR}/src/{MODULE_FILENAME}i"), os.path.abspath(MODULE_FILEPATH))
 
-    # ---- process the module docstring to write manual
+    # %% ---- process the module docstring to write manual
 
     # Gets module docstring to write the user manual
     module_docstring = initial_docstring(MODULE_FILEPATH).replace(
@@ -89,7 +90,9 @@ def process_module():
     for link in EXTERNAL_LINKS:
         module_docstring = module_docstring.replace(link, f"[{link}]({EXTERNAL_LINKS[link]})")
     for link in INTERNAL_LINKS:
-        module_docstring = module_docstring.replace(link, f"{{py:func}}`~dataparsers.{link.replace('`','').replace('()','')}`")
+        module_docstring = module_docstring.replace(
+            link, f"{{py:func}}`~dataparsers.{link.replace('`','').replace('()','')}`"
+        )
     for link in ARGUMENTS_LINKS:
         module_docstring = module_docstring.replace(
             link, f"[{link}](./2_available_functions.md#{link.replace('`','').replace('_','-')})"
@@ -105,7 +108,20 @@ def process_module():
     # format notes and snippets for MyST
     replace_snippets_and_notes(USER_MANUAL_FILE, replace_notes=True, replace_snippets=True)
 
-    # ---- process the module file to use `autofunction`
+    # %% ---- process the function manual
+
+    with open(FUNCTIONS_MANUAL, "r") as file:
+        text = file.read()
+
+    for link in INTERNAL_LINKS:
+        text = text.replace(link, f"{{py:func}}`~dataparsers.{link.replace('`','').replace('()','')}`")
+    for link in ARGUMENTS_LINKS:
+        text = text.replace(link, f"[{link}](./2_available_functions.md#{link.replace('`','').replace('_','-')})")
+
+    with open(FUNCTIONS_MANUAL, "w") as file:
+        file.write(text)
+
+    # %% ---- process the module file to use `autofunction`
 
     # remove overloads from the original stub file
     remove_overloads(MODULE_FILEPATH)
