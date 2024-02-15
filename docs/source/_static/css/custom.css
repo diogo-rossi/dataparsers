@@ -11,6 +11,6 @@ dt em.sig-param:last-of-type::after {
 }
 
 /* To have blue background of width of the block (instead of width of content) */
-dl.class > dt:first-of-type {
+dl.function > dt:first-of-type {
     display: block !important;
 }
