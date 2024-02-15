@@ -6,7 +6,7 @@ A wrapper around [`argparse`](https://docs.python.org/3/library/argparse.html#mo
 ## Installation
 
 ```bash
-   pip install dataparsers
+pip install dataparsers
 ```
 
 ```{toctree}
