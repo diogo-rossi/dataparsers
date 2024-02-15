@@ -104,6 +104,9 @@ One parameter of :meth:`~argparse.ArgumentParser.add_argument` that are not poss
 because the name of the class attribute is determined by the :func:`~dataclasses.dataclass` field name. So, it is unnecessary to pass the
 :argument_link:`dest<dest>` parameter, since it doesn't makes sense in this situation.
 
+The parameter :argument_link:`type<type>` is another :meth:`~argparse.ArgumentParser.add_argument` parameter that are inferred from the :func:`~dataclasses.dataclass` field when not
+present.
+
 ### Aliases
 
 The first parameter of the the original :meth:`~argparse.ArgumentParser.add_argument` method is :argument_link:`name_or_flags<name-or-flags>`, which is a series of flags, or a

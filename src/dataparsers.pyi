@@ -104,6 +104,9 @@ One parameter of `add_argument()` that are not possible to pass to `arg()` is th
 because the name of the class attribute is determined by the `dataclass` field name. So, it is unnecessary to pass the
 `dest` parameter, since it doesn't makes sense in this situation.
 
+The parameter `type` is another `add_argument()` parameter that are inferred from the `dataclass` field when not
+present.
+
 ### Aliases
 
 The first parameter of the the original `add_argument()` method is `name_or_flags`, which is a series of flags, or a

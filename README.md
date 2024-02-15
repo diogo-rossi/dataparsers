@@ -88,6 +88,6 @@ exceptions) and some additional parameters. The `default` keyword argument used 
 
 For more information, see the [documentation](https://dataparsers.readthedocs.io/en/latest/index.html).
 
-# Formalities, features, benefits and drawbacks
+## Formalities, features, benefits and drawbacks
 
 TODO

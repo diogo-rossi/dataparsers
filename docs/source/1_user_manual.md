@@ -1,7 +1,9 @@
 
 # User manual
 
-`dataparsers` is a simple module that wrappers around [`argparse`](https://docs.python.org/3/library/argparse.html#module-argparse) to get command line argument parsers from [`dataclasses`](https://docs.python.org/3/library/dataclasses.html#module-dataclasses).
+`dataparsers` is a simple module that wrappers around [`argparse`](https://docs.python.org/3/library/argparse.html#module-argparse) to get command line argument
+        parsers from [`dataclasses`](https://docs.python.org/3/library/dataclasses.html#module-dataclasses). It can create type checkable command line argument parsers using [`dataclasses`](https://docs.python.org/3/library/dataclasses.html#module-dataclasses), which are
+        recognized by type checkers and can be used by autocomplete tools.
 
 ## Basic usage
 
@@ -119,6 +121,9 @@ exceptions) and some additional parameters. The [`default`](./2_available_functi
 One parameter of [`add_argument()`](https://docs.python.org/3/library/argparse.html#the-add-argument-method) that are not possible to pass to {py:func}`~dataparsers.arg` is the [`dest`](./2_available_functions.md#dest) keyword argument. That's
 because the name of the class attribute is determined by the [`dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass) field name. So, it is unnecessary to pass the
 [`dest`](./2_available_functions.md#dest) parameter, since it doesn't makes sense in this situation.
+
+The parameter [`type`](./2_available_functions.md#type) is another [`add_argument()`](https://docs.python.org/3/library/argparse.html#the-add-argument-method) parameter that are inferred from the [`dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass) field when not
+present.
 
 ### Aliases
 

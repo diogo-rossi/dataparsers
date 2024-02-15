@@ -46,7 +46,7 @@ def process_readme():
         file.write(basic_usage)
         file.write(arguments_specification)
         file.write(LINK_TO_DOCS)
-        file.write(f"\n\n{features}")
+        file.write(f"\n\n#{features}")
     
     replace_snippets_and_notes(ROOT_README, True, False)
 

@@ -79,16 +79,17 @@ def process_module():
 
     # Gets module docstring to write the user manual
     module_docstring = initial_docstring(MODULE_FILEPATH).replace(
-        "# dataparsers\n\nA wrapper", "# User manual\n\n`dataparsers` is a simple module that wrappers"
+        "# dataparsers\n\nA wrapper around `argparse` to get command line argument parsers from `dataclasses`.",
+        """# User manual\n\n`dataparsers` is a simple module that wrappers around `argparse` to get command line argument
+        parsers from `dataclasses`. It can create type checkable command line argument parsers using `dataclasses`, which are
+        recognized by type checkers and can be used by autocomplete tools.""",
     )
 
     # Put links in markdown version of user manual
     for link in EXTERNAL_LINKS:
         module_docstring = module_docstring.replace(link, f"[{link}]({EXTERNAL_LINKS[link]})")
     for link in INTERNAL_LINKS:
-        module_docstring = module_docstring.replace(
-            link, f"{{py:func}}`~dataparsers.{link.replace('`','').replace('()','')}`"
-        )
+        module_docstring = module_docstring.replace(link, f"{{py:func}}`~dataparsers.{link.replace('`','').replace('()','')}`")
     for link in ARGUMENTS_LINKS:
         module_docstring = module_docstring.replace(
             link, f"[{link}](./2_available_functions.md#{link.replace('`','').replace('_','-')})"
