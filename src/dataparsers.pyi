@@ -129,22 +129,22 @@ In this case, it also creates automatically a `--` flag ::
       -b BAR, --bar BAR  bar help
 
 However, the parameter `name_or_flags` must be passed only with flags (i.e., starting with `-` or `--`). That's because
-it doesn't make sense to pass a simple name that is not a flag, since the simple name normally determines the class
-attribute's name, which is already defined by the `dataclass` field name in this case.
+doesn't make sense to pass a simple not flag name, since the simple name normally determines the class attribute's name,
+which is already defined by the `dataclass` field name.
 
 ### Automatic flag creation
 
 One situation where the `default` keyword argument does not automatically makes the argument optional (i.e., creating a
-`--` flag) is when the parameter `nargs` is passed and set equal to `?` or `*`. That's because this setting also allows
-that positional arguments may use a `default` value, in the original `add_argument()` method. So, the flags must be
-passed explicitly in this case to make the argument optional::
+`--` flag) is when the parameter `nargs` is set equal to `?` or `*`. That's because this setting also allows that
+positional arguments may use a `default` value in the original `add_argument()` method. So, the flags must be passed
+explicitly to make the argument optional::
 
     @dataclass
     class Args:
         bar: int = arg("--bar", default=42, nargs="?", help="bar help")
 
-An alternative way to force the creation of the flag from the field name is by passing the additional keyword argument
-`make_flag=True`::
+An alternative way to force the creation of the `--` flag from the field name is by passing the additional keyword
+argument `make_flag=True`::
 
     @dataclass
     class Args:
@@ -162,8 +162,8 @@ Both formats above produces the same interface::
 #### Avoiding automatic flag creation
 
 When only single `-` flags are passed to the `arg()` function, it also creates automatically a `--` flag from the
-`dataclass` field name (as can be seen in a past example, in the "Aliases" section). To prevent that from happening,
-pass `make_flag=False`::
+`dataclass` field name (as shown in the example of the "Aliases" section). To prevent that from happening, pass
+`make_flag=False`::
 
     @dataclass
     class Args:
@@ -182,10 +182,10 @@ Then, only the single `-` flags will be sent to the interface::
 
 #### Booleans
 
-Booleans attributes are considered to be always passed by flag arguments, using the `"store_true"` or `"store_false"`
-values for the `action` parameter of the original `add_argument()` method. If the boolean `dataclass` field is created
-with no default value, the flag is still automatically created and the default value for the parameter will be `False`
-(it's defaults can be modified by the keyword argument `default_bool` of the `dataparser()` decorator)::
+Booleans attributes are always considered as flag arguments, using the `"store_true"` or `"store_false"` values for the
+`action` parameter of the original `add_argument()` method. If the boolean `dataclass` field is created with no default
+value, the flag is still automatically created and the default value for the parameter will be `False` (it's defaults
+can be modified by the keyword argument `default_bool` of the `dataparser()` decorator - see "Default for booleans")::
 
     >>> @dataclass
     ... class Args:
@@ -203,7 +203,7 @@ with no default value, the flag is still automatically created and the default v
 
 #### Decoupling code from the command line interface
 
-The automatic flag creation does not occur when `--` flags are already passed (unless it is forced by passing
+The automatic flag creation does not happen when `--` flags are already passed (unless it is forced by passing
 `make_flag=True`)::
 
     @dataclass
@@ -224,7 +224,8 @@ names::
       -f <filepath>, --file-output <filepath>
                             Text file to write output 
 
-In this case, the interface can be customized, and the flag are not related to the attribute names inside the code::
+In this situation, the interface can be customized, and the flags are not related to the attribute names inside the
+code::
 
     $ python prog.py --file-output myfile.txt
     Args(path='myfile.txt')
@@ -263,13 +264,13 @@ simple more appropriate conceptual groups::
       ham
 
 Argument groups may have a `description` in addition to the name. To define the `description` of the argument group, see
-the `dataparser()` decorator, which allows to define options to the `ArgumentParser` object.
+the `dataparser()` decorator, which allows to define options for the `ArgumentParser` object.
 
 #### Mutual exclusion
 
 The `mutually_exclusive_group_id` defines the name (or the ID) of the mutually exclusive argument group in which the
 argument may be included. The identified group will be created later, by the method `add_mutually_exclusive_group()`,
-which is used in `argparse` to creates a mutually exclusive arguments::
+which is used in `argparse` to create mutually exclusive arguments::
 
     >>> @dataclass
     ... class Args:
@@ -285,7 +286,7 @@ which is used in `argparse` to creates a mutually exclusive arguments::
       --foo FOO
       --bar BAR
 
-With that, argparse will make sure that only one of the arguments in the mutually exclusive group was present on the
+With that, `argparse` will make sure that only one of the arguments in the mutually exclusive group was present on the
 command line::
 
     >>> parse(Args,['--foo','test','--bar','newtest'])
@@ -294,7 +295,7 @@ command line::
 
 Note:
     Mutually exclusive arguments are always optionals. If no flag is given, they will be created automatically from the
-    `dataclass` field name, regardless of the value of `make_flag`.
+    `dataclass` field names, regardless of the value of `make_flag`.
 
 Mutually exclusive groups also accepts a `required` argument, to indicate that at least one of the mutually exclusive
 arguments is required. To define the `required` status of the mutually exclusive argument group, see the `dataparser()`
@@ -303,8 +304,8 @@ decorator.
 #### Identifying argument groups
 
 Both parameters `group_title` and `mutually_exclusive_group_id` may be integers. This makes easier to prevent typos when
-identifying the groups. For the `group_title` parameter, if an integer is given, it will be used to identify the group,
-but the value is not passed as `title` to the original `add_argument_group()` method (`None` is passed instead). This
+identifying the groups. For the `group_title` parameter, if an integer is given, it is used to identify the group, but
+the value is not passed as `title` to the original `add_argument_group()` method (`None` is passed instead). This
 prevents the integer to be printed in the displayed help message::
 
     >>> @dataclass
@@ -329,11 +330,11 @@ prevents the integer to be printed in the displayed help message::
       ham
 
 Note:
-    Mutually exclusive argument groups do not support the `title` and `description` arguments of `add_argument_group()`.
-    However, a mutually exclusive group can be added to an argument group that has a `title` and `description`. This is
-    achieved by passing both `group_title` and `mutually_exclusive_group_id` parameters to the `arg()` function. If
-    there is a conflict (i.e., same mutually exclusive group and different group titles), the mutually exclusive group
-    takes precedence.
+    Mutually exclusive argument groups do not support the `title` and `description` arguments of the
+    `add_argument_group()` method. However, a mutually exclusive group can be added to an argument group that has a
+    `title` and `description`. This is achieved by passing both `group_title` and `mutually_exclusive_group_id`
+    parameters to the `arg()` function. If there is a conflict (i.e., same mutually exclusive group and different group
+    titles), the mutually exclusive group takes precedence.
 
 ##  Parser specifications
 
@@ -352,7 +353,7 @@ To specify detailed options to the created `ArgumentParser` object, use the `dat
     options:
       -h, --help  show this help message and exit
 
-In general, the `dataparser()` decorator accepts all parameters that are used in the original `ArgumentParser()`
+In general, the `dataparser()` decorator accepts all parameters that are used in the original `ArgumentParser`
 constructor, and some additional parameters. 
 
 ### Groups `description` and `required` status
@@ -387,11 +388,14 @@ and `required_mutually_exclusive_groups`, whose keys should match some value of 
       --sam
       --ham HAM
 
+OBS: The delimiter `( )` in the "usage" above indicates that the group is required, while the delimiter `[ ]` indicates
+the optional status.
+
 ### Default for booleans
 
 Booleans atributes with no default field value (or without `action` and `default` keyword arguments passed to `arg()`
-function) will receive its default value determining `"store_const"` action defined by the parameter `default_bool`
-(which is defaults to `False`, i.e., `action="store_true"`)::
+function) will receive its default value determining `"store_const"` action defined by the additional parameter
+`default_bool` (which is defaults to `False`, i.e., `action="store_true"`)::
 
     >>> @dataparser
     ... class Args:
@@ -533,7 +537,7 @@ def arg(
         - `make_flag` (`bool | None`, optional): Defaults to `None`.
 
             Wether to force the automatic creation of a flag starting with `--` from the field name.
-            
+
             In general, the `default` keyword argument automatically makes the argument optional (i.e., creates a `--`
             flag), but there are some situation when that doesn't happen, e.g., when the parameter `nargs` is passed and
             set equal to `?` or `*`. To force the automatic `--` flag creation in theses cases, pass `make_flag=True`.
@@ -1249,7 +1253,7 @@ def dataparser(
     ---------------------------------------------------
         - `prog` (`str | None`, optional): Defaults to `None`.
 
-             The name of the program (default: `os.path.basename(sys.argv[0])`)
+            The name of the program (default: `os.path.basename(sys.argv[0])`)
 
             By default, `ArgumentParser` objects use `sys.argv[0]` to determine how to display the name of the program
             in help messages. This default is almost always desirable because it will make the help messages match how
@@ -1539,7 +1543,7 @@ def dataparser(
 
             `ArgumentParser` objects do not allow two actions with the same option string. By default, `ArgumentParser`
             objects raise an exception if an attempt is made to create an argument with an option string that is already
-            in use:
+            in use::
 
                 >>> parser = argparse.ArgumentParser(prog='PROG')
                 >>> parser.add_argument('-f', '--foo', help='old foo help')
@@ -1550,7 +1554,7 @@ def dataparser(
 
             Sometimes (e.g. when using `parents`) it may be useful to simply override any older arguments with the same
             option string. To get this behavior, the value `'resolve'` can be supplied to the `conflict_handler=`
-            argument of `ArgumentParser`:
+            argument of `ArgumentParser`::
 
                 >>> parser = argparse.ArgumentParser(prog='PROG', conflict_handler='resolve')
                 >>> parser.add_argument('-f', '--foo', help='old foo help')
@@ -1655,7 +1659,7 @@ def write_help(
     final_newlines: bool = True,
 ) -> str:
     """Writes formatted help text (wrapped) preserving 'new lines'.
-    May be used when `formatter_class=RawTextHelpFormatter` is passed to `ArgumentParser()`.
+    This is supplied as an option to use in the `help_fmt` argument.
 
     Parameters
     ----------
