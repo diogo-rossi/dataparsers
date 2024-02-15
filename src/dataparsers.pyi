@@ -721,7 +721,7 @@ def arg(
 
                   For more details, see `Action`.
 
-        - `nargs` (`int | Literal[`, optional): Defaults to `None`.
+        - `nargs` (`int | Literal["?", "*", "+"]`, optional): Defaults to `None`.
 
             The number of command-line arguments that should be consumed.
 
