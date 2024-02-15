@@ -128,23 +128,23 @@ In this case, it also creates automatically a `--` flag ::
       -h, --help         show this help message and exit
       -b BAR, --bar BAR  bar help
 
-However, the parameter :argument_link:`name_or_flags<name-or-flags>` must be passed only with flags (i.e., starting with `-` or `--`). That's because
-it doesn't make sense to pass a simple name that is not a flag, since the simple name normally determines the class
-attribute's name, which is already defined by the :func:`~dataclasses.dataclass` field name in this case.
+However, the parameter :argument_link:`name_or_flags<name-or-flags>` **must be passed only with flags** (i.e., starting with `-` or `--`). That's because
+doesn't make sense to pass a simple not flag name, since the simple name normally determines the class attribute's name,
+which is already defined by the :func:`~dataclasses.dataclass` field name.
 
 ### Automatic flag creation
 
 One situation where the :argument_link:`default<default>` keyword argument does not automatically makes the argument optional (i.e., creating a
-`--` flag) is when the parameter :argument_link:`nargs<nargs>` is passed and set equal to `?` or `*`. That's because this setting also allows
-that positional arguments may use a :argument_link:`default<default>` value, in the original :meth:`~argparse.ArgumentParser.add_argument` method. So, the flags must be
-passed explicitly in this case to make the argument optional::
+`--` flag) is when the parameter :argument_link:`nargs<nargs>` is set equal to `?` or `*`. That's because this setting also allows that
+positional arguments may use a :argument_link:`default<default>` value in the original :meth:`~argparse.ArgumentParser.add_argument` method. So, the flags must be passed
+explicitly to make the argument optional::
 
     @dataclass
     class Args:
         bar: int = arg("--bar", default=42, nargs="?", help="bar help")
 
-An alternative way to force the creation of the flag from the field name is by passing the additional keyword argument
-`make_flag=True`::
+An alternative way to force the creation of the `--` flag from the field name is by passing the additional keyword
+argument `make_flag=True`::
 
     @dataclass
     class Args:
@@ -162,8 +162,8 @@ Both formats above produces the same interface::
 #### Avoiding automatic flag creation
 
 When only single `-` flags are passed to the :func:`~dataparsers.arg` function, it also creates automatically a `--` flag from the
-:func:`~dataclasses.dataclass` field name (as can be seen in a past example, in the "Aliases" section). To prevent that from happening,
-pass `make_flag=False`::
+:func:`~dataclasses.dataclass` field name (as shown in the example of the "Aliases" section). To prevent that from happening, pass
+`make_flag=False`::
 
     @dataclass
     class Args:
@@ -182,10 +182,10 @@ Then, only the single `-` flags will be sent to the interface::
 
 #### Booleans
 
-Booleans attributes are considered to be always passed by flag arguments, using the `"store_true"` or `"store_false"`
-values for the :argument_link:`action<action>` parameter of the original :meth:`~argparse.ArgumentParser.add_argument` method. If the boolean :func:`~dataclasses.dataclass` field is created
-with no default value, the flag is still automatically created and the default value for the parameter will be `False`
-(it's defaults can be modified by the keyword argument :argument_link:`default_bool<default-bool>` of the :func:`~dataparsers.dataparser` decorator)::
+Booleans attributes are always considered as flag arguments, using the `"store_true"` or `"store_false"` values for the
+:argument_link:`action<action>` parameter of the original :meth:`~argparse.ArgumentParser.add_argument` method. If the boolean :func:`~dataclasses.dataclass` field is created with no default
+value, the flag is still automatically created and the default value for the parameter will be `False` (it's defaults
+can be modified by the keyword argument :argument_link:`default_bool<default-bool>` of the :func:`~dataparsers.dataparser` decorator - see "Default for booleans")::
 
     >>> @dataclass
     ... class Args:
@@ -203,7 +203,7 @@ with no default value, the flag is still automatically created and the default v
 
 #### Decoupling code from the command line interface
 
-The automatic flag creation does not occur when `--` flags are already passed (unless it is forced by passing
+The automatic flag creation does not happen when `--` flags are already passed (unless it is forced by passing
 `make_flag=True`)::
 
     @dataclass
@@ -213,7 +213,7 @@ The automatic flag creation does not occur when `--` flags are already passed (u
     args = parse(Args)
     print(args)
 
-This may be the most common case when the intention is to decouple the command line interface from the class attribute
+**This may be the most common case** when the intention is to decouple the command line interface from the class attribute
 names::
 
     $ python prog.py -h
@@ -224,7 +224,8 @@ names::
       -f <filepath>, --file-output <filepath>
                             Text file to write output 
 
-In this case, the interface can be customized, and the flag are not related to the attribute names inside the code::
+In this situation, the interface can be customized, and the flags are not related to the attribute names inside the
+code::
 
     $ python prog.py --file-output myfile.txt
     Args(path='myfile.txt')
@@ -263,13 +264,13 @@ simple more appropriate conceptual groups::
       ham
 
 Argument groups may have a :argument_link:`description<description>` in addition to the name. To define the :argument_link:`description<description>` of the argument group, see
-the :func:`~dataparsers.dataparser` decorator, which allows to define options to the :class:`~argparse.ArgumentParser` object.
+the :func:`~dataparsers.dataparser` decorator, which allows to define options for the :class:`~argparse.ArgumentParser` object.
 
 #### Mutual exclusion
 
 The :argument_link:`mutually_exclusive_group_id<mutually-exclusive-group-id>` defines the name (or the ID) of the mutually exclusive argument group in which the
 argument may be included. The identified group will be created later, by the method :meth:`~argparse.ArgumentParser.add_mutually_exclusive_group`,
-which is used in :mod:`~argparse` to creates a mutually exclusive arguments::
+which is used in :mod:`~argparse` to create mutually exclusive arguments::
 
     >>> @dataclass
     ... class Args:
@@ -285,7 +286,7 @@ which is used in :mod:`~argparse` to creates a mutually exclusive arguments::
       --foo FOO
       --bar BAR
 
-With that, argparse will make sure that only one of the arguments in the mutually exclusive group was present on the
+With that, :mod:`~argparse` will make sure that only one of the arguments in the mutually exclusive group was present on the
 command line::
 
     >>> parse(Args,['--foo','test','--bar','newtest'])
@@ -294,7 +295,7 @@ command line::
 
 Note:
     Mutually exclusive arguments are always optionals. If no flag is given, they will be created automatically from the
-    :func:`~dataclasses.dataclass` field name, regardless of the value of :argument_link:`make_flag<make-flag>`.
+    :func:`~dataclasses.dataclass` field names, regardless of the value of :argument_link:`make_flag<make-flag>`.
 
 Mutually exclusive groups also accepts a :argument_link:`required<required>` argument, to indicate that at least one of the mutually exclusive
 arguments is required. To define the :argument_link:`required<required>` status of the mutually exclusive argument group, see the :func:`~dataparsers.dataparser`
@@ -303,8 +304,8 @@ decorator.
 #### Identifying argument groups
 
 Both parameters :argument_link:`group_title<group-title>` and :argument_link:`mutually_exclusive_group_id<mutually-exclusive-group-id>` may be integers. This makes easier to prevent typos when
-identifying the groups. For the :argument_link:`group_title<group-title>` parameter, if an integer is given, it will be used to identify the group,
-but the value is not passed as `title` to the original :meth:`~argparse.ArgumentParser.add_argument_group` method (`None` is passed instead). This
+identifying the groups. For the :argument_link:`group_title<group-title>` parameter, if an integer is given, it is used to identify the group, but
+the value is not passed as `title` to the original :meth:`~argparse.ArgumentParser.add_argument_group` method (`None` is passed instead). This
 prevents the integer to be printed in the displayed help message::
 
     >>> @dataclass
@@ -329,11 +330,11 @@ prevents the integer to be printed in the displayed help message::
       ham
 
 Note:
-    Mutually exclusive argument groups do not support the `title` and :argument_link:`description<description>` arguments of :meth:`~argparse.ArgumentParser.add_argument_group`.
-    However, a mutually exclusive group can be added to an argument group that has a `title` and :argument_link:`description<description>`. This is
-    achieved by passing both :argument_link:`group_title<group-title>` and :argument_link:`mutually_exclusive_group_id<mutually-exclusive-group-id>` parameters to the :func:`~dataparsers.arg` function. If
-    there is a conflict (i.e., same mutually exclusive group and different group titles), the mutually exclusive group
-    takes precedence.
+    Mutually exclusive argument groups do not support the `title` and :argument_link:`description<description>` arguments of the
+    :meth:`~argparse.ArgumentParser.add_argument_group` method. However, a mutually exclusive group can be added to an argument group that has a
+    `title` and :argument_link:`description<description>`. This is achieved by passing both :argument_link:`group_title<group-title>` and :argument_link:`mutually_exclusive_group_id<mutually-exclusive-group-id>`
+    parameters to the :func:`~dataparsers.arg` function. If there is a conflict (i.e., same mutually exclusive group and different group
+    titles), the mutually exclusive group takes precedence.
 
 ##  Parser specifications
 
@@ -352,7 +353,7 @@ To specify detailed options to the created :class:`~argparse.ArgumentParser` obj
     options:
       -h, --help  show this help message and exit
 
-In general, the :func:`~dataparsers.dataparser` decorator accepts all parameters that are used in the original `ArgumentParser()`
+In general, the :func:`~dataparsers.dataparser` decorator accepts all parameters that are used in the original :class:`~argparse.ArgumentParser`
 constructor, and some additional parameters. 
 
 ### Groups :argument_link:`description<description>` and :argument_link:`required<required>` status
@@ -387,11 +388,14 @@ and :argument_link:`required_mutually_exclusive_groups<required-mutually-exclusi
       --sam
       --ham HAM
 
+OBS: The delimiter `( )` in the "usage" above indicates that the group is required, while the delimiter `[ ]` indicates
+the optional status.
+
 ### Default for booleans
 
 Booleans atributes with no default field value (or without :argument_link:`action<action>` and :argument_link:`default<default>` keyword arguments passed to :func:`~dataparsers.arg`
-function) will receive its default value determining `"store_const"` action defined by the parameter :argument_link:`default_bool<default-bool>`
-(which is defaults to `False`, i.e., `action="store_true"`)::
+function) will receive its default value determining `"store_const"` action defined by the additional parameter
+:argument_link:`default_bool<default-bool>` (which is defaults to `False`, i.e., `action="store_true"`)::
 
     >>> @dataparser
     ... class Args:
@@ -406,6 +410,10 @@ function) will receive its default value determining `"store_const"` action defi
     ...
     >>> parse(Args, ["--foo"])
     Args(foo=False)
+
+### Help formatter function
+
+TODO
 
 """
 
@@ -461,7 +469,7 @@ def arg(
 
             A list of option strings, e.g. `-f`, `--foo`, i.e., starting with `-`.
 
-            The first arguments passed to :func:`~dataparsers.arg` must be a series of flags, or empty (not pass). It is not possible
+            The first arguments passed to :func:`~dataparsers.arg` **must be a series of flags**, or empty (not pass). It is not possible
             to pass a simple argument name to identify positional arguments. In that case, that name is already taken
             from the dataclass field name. This is the only argument taken from the original :meth:`~argparse.ArgumentParser.add_argument` method
             which behavior differs from its original behavior.
@@ -545,7 +553,7 @@ def arg(
         - `make_flag` (`bool | None`, optional): Defaults to `None`.
 
             Wether to force the automatic creation of a flag starting with `--` from the field name.
-            
+
             In general, the :argument_link:`default<default>` keyword argument automatically makes the argument optional (i.e., creates a `--`
             flag), but there are some situation when that doesn't happen, e.g., when the parameter :argument_link:`nargs<nargs>` is passed and
             set equal to `?` or `*`. To force the automatic `--` flag creation in theses cases, pass `make_flag=True`.
@@ -1310,7 +1318,7 @@ def dataparser(
 
         - `prog` (`str | None`, optional): Defaults to `None`.
 
-             The name of the program (default: `os.path.basename(sys.argv[0])`)
+            The name of the program (default: `os.path.basename(sys.argv[0])`)
 
             By default, :class:`~argparse.ArgumentParser` objects use `sys.argv[0]` to determine how to display the name of the program
             in help messages. This default is almost always desirable because it will make the help messages match how
@@ -1479,42 +1487,59 @@ def dataparser(
             :class:`~argparse.ArgumentParser` objects allow the help formatting to be customized by specifying an alternate formatting
             class. Currently, there are four such classes::
 
-                class argparse.RawDescriptionHelpFormatter class argparse.RawTextHelpFormatter class
-                argparse.ArgumentDefaultsHelpFormatter class argparse.MetavarTypeHelpFormatter
+                class argparse.RawDescriptionHelpFormatter
+                class argparse.RawTextHelpFormatter
+                class argparse.ArgumentDefaultsHelpFormatter
+                class argparse.MetavarTypeHelpFormatter
 
             `RawDescriptionHelpFormatter` and `RawTextHelpFormatter` give more control over how textual descriptions are
             displayed. By default, :class:`~argparse.ArgumentParser` objects line-wrap the :argument_link:`description<description>` and :argument_link:`epilog<epilog>` texts in
             command-line help messages::
 
                 >>> parser = argparse.ArgumentParser(
-                ...    prog='PROG', ...    description='''this description ...        was indented weird ... but that is
-                okay''', ...    epilog=''' ...            likewise for this epilog whose whitespace will ... be cleaned
-                up and whose words will be wrapped ...        across a couple lines''') >>> parser.print_help() usage:
-                PROG [-h]
-
+                ...    prog='PROG',
+                ...    description='''this description
+                ...        was indented weird
+                ...            but that is okay''',
+                ...    epilog='''
+                ...            likewise for this epilog whose whitespace will
+                ...        be cleaned up and whose words will be wrapped
+                ...        across a couple lines''')
+                >>> parser.print_help()
+                usage: PROG [-h]
+                
                 this description was indented weird but that is okay
-
+                
                 options:
-                  -h, --help  show this help message and exit
-
-                likewise for this epilog whose whitespace will be cleaned up and whose words will be wrapped across a
-                couple lines
+                 -h, --help  show this help message and exit
+                
+                likewise for this epilog whose whitespace will be cleaned up and whose words
+                will be wrapped across a couple lines
 
             Passing `RawDescriptionHelpFormatter` as `formatter_class=` indicates that :argument_link:`description<description>` and :argument_link:`epilog<epilog>` are
             already correctly formatted and should not be line-wrapped::
 
                 >>> parser = argparse.ArgumentParser(
-                ...    prog='PROG', ...    formatter_class=argparse.RawDescriptionHelpFormatter, ...
-                description=textwrap.dedent('''\ ...        Please do not mess up this text! ...
-                -------------------------------- ...            I have indented it ...            exactly the way ... I
-                want it ...        ''')) >>> parser.print_help() usage: PROG [-h]
-
+                ...    prog='PROG',
+                ...    formatter_class=argparse.RawDescriptionHelpFormatter,
+                ...    description=textwrap.dedent('''\
+                ...        Please do not mess up this text!
+                ...        --------------------------------
+                ...            I have indented it
+                ...            exactly the way
+                ...            I want it
+                ...        '''))
+                >>> parser.print_help()
+                usage: PROG [-h]
+                
                 Please do not mess up this text!
                 --------------------------------
-                I have indented it exactly the way I want it
-
+                   I have indented it
+                   exactly the way
+                   I want it
+                
                 options:
-                  -h, --help  show this help message and exit
+                 -h, --help  show this help message and exit
 
             `RawTextHelpFormatter` maintains whitespace for all sorts of help text, including argument descriptions.
             However, multiple new lines are replaced with one. If you wish to preserve multiple blank lines, add spaces
@@ -1524,28 +1549,37 @@ def dataparser(
             help messages::
 
                 >>> parser = argparse.ArgumentParser(
-                ...    prog='PROG', ...    formatter_class=argparse.ArgumentDefaultsHelpFormatter) >>>
-                parser.add_argument('--foo', type=int, default=42, help='FOO!') >>> parser.add_argument('bar',
-                nargs='*', default=[1, 2, 3], help='BAR!') >>> parser.print_help() usage: PROG [-h] [--foo FOO] [bar
-                ...]
-
-                positional arguments: bar         BAR! (default: [1, 2, 3])
-
+                ...    prog='PROG',
+                ...    formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+                >>> parser.add_argument('--foo', type=int, default=42, help='FOO!')
+                >>> parser.add_argument('bar', nargs='*', default=[1, 2, 3], help='BAR!')
+                >>> parser.print_help()
+                usage: PROG [-h] [--foo FOO] [bar ...]
+                
+                positional arguments:
+                 bar         BAR! (default: [1, 2, 3])
+                
                 options:
-                  -h, --help  show this help message and exit --foo FOO   FOO! (default: 42)
+                 -h, --help  show this help message and exit
+                 --foo FOO   FOO! (default: 42)
 
             `MetavarTypeHelpFormatter` uses the name of the :argument_link:`type<type>` argument for each argument as the display name for
             its values (rather than using the :argument_link:`dest<dest>` as the regular formatter does)::
 
                 >>> parser = argparse.ArgumentParser(
-                ...    prog='PROG', ...    formatter_class=argparse.MetavarTypeHelpFormatter) >>>
-                parser.add_argument('--foo', type=int) >>> parser.add_argument('bar', type=float) >>>
-                parser.print_help() usage: PROG [-h] [--foo int] float
-
-                positional arguments: float
-
+                ...     prog='PROG',
+                ...     formatter_class=argparse.MetavarTypeHelpFormatter)
+                >>> parser.add_argument('--foo', type=int)
+                >>> parser.add_argument('bar', type=float)
+                >>> parser.print_help()
+                usage: PROG [-h] [--foo int] float
+                
+                positional arguments:
+                  float
+                
                 options:
-                  -h, --help  show this help message and exit --foo int
+                  -h, --help  show this help message and exit
+                  --foo int
 
 
         .. _prefix-chars:
@@ -1580,8 +1614,12 @@ def dataparser(
             will be treated as files, and will be replaced by the arguments they contain. For example::
 
                 >>> with open('args.txt', 'w', encoding=sys.getfilesystemencoding()) as fp:
-                ...    fp.write('-f\\nbar') ... >>> parser = argparse.ArgumentParser(fromfile_prefix_chars='@') >>>
-                parser.add_argument('-f') >>> parser.parse_args(['-f', 'foo', '@args.txt']) Namespace(f='bar')
+                ...    fp.write('-f\\nbar') 
+                ... 
+                >>> parser = argparse.ArgumentParser(fromfile_prefix_chars='@') 
+                >>> parser.add_argument('-f') 
+                >>> parser.parse_args(['-f', 'foo', '@args.txt']) 
+                Namespace(f='bar')
 
             Arguments read from a file must by default be one per line (but see also `convert_arg_line_to_args()`) and
             are treated as if they were in the same place as the original file referencing argument on the command line.
@@ -1627,7 +1665,7 @@ def dataparser(
 
             :class:`~argparse.ArgumentParser` objects do not allow two actions with the same option string. By default, :class:`~argparse.ArgumentParser`
             objects raise an exception if an attempt is made to create an argument with an option string that is already
-            in use:
+            in use::
 
                 >>> parser = argparse.ArgumentParser(prog='PROG')
                 >>> parser.add_argument('-f', '--foo', help='old foo help')
@@ -1638,7 +1676,7 @@ def dataparser(
 
             Sometimes (e.g. when using :argument_link:`parents<parents>`) it may be useful to simply override any older arguments with the same
             option string. To get this behavior, the value `'resolve'` can be supplied to the `conflict_handler=`
-            argument of :class:`~argparse.ArgumentParser`:
+            argument of :class:`~argparse.ArgumentParser`::
 
                 >>> parser = argparse.ArgumentParser(prog='PROG', conflict_handler='resolve')
                 >>> parser.add_argument('-f', '--foo', help='old foo help')
@@ -1661,10 +1699,11 @@ def dataparser(
             Add a `-h/--help` option to the parser (default: `True`).
 
             By default, ArgumentParser objects add an option which simply displays the parser's help message. For
-            example, consider a file named myprogram.py containing the following code:
+            example, consider a file named myprogram.py containing the following code::
 
-                import argparse parser = argparse.ArgumentParser() parser.add_argument('--foo', help='foo help') args =
-                parser.parse_args()
+                import argparse parser = argparse.ArgumentParser()
+                parser.add_argument('--foo', help='foo help')
+                args = parser.parse_args()
 
             If `-h` or `--help` is supplied at the command line, the ArgumentParser help will be printed::
 
@@ -1672,7 +1711,8 @@ def dataparser(
                 usage: myprogram.py [-h] [--foo FOO]
 
                 options:
-                  -h, --help  show this help message and exit --foo FOO   foo help
+                  -h, --help  show this help message and exit
+                  --foo FOO   foo help
 
             Occasionally, it may be useful to disable the addition of this help option. This can be achieved by passing
             `False` as the `add_help=` argument to :class:`~argparse.ArgumentParser`::
@@ -1752,7 +1792,7 @@ def write_help(
     final_newlines: bool = True,
 ) -> str:
     """Writes formatted help text (wrapped) preserving 'new lines'.
-    May be used when `formatter_class=RawTextHelpFormatter` is passed to `ArgumentParser()`.
+    This is supplied as an option to use in the :argument_link:`help_fmt<help-fmt>` argument.
 
     Parameters
     ----------

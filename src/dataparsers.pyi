@@ -411,6 +411,10 @@ function) will receive its default value determining `"store_const"` action defi
     >>> parse(Args, ["--foo"])
     Args(foo=False)
 
+### Help formatter function
+
+TODO
+
 """
 
 from argparse import ArgumentParser, Action, FileType, HelpFormatter
