@@ -14,6 +14,9 @@ EXTERNAL_LINKS = {
     "`dataclasses`": "https://docs.python.org/3/library/dataclasses.html#module-dataclasses",
     "`dataclass`": "https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass",
 }
+
+INTERNAL_LINKS = ["`arg()`", "`parse()`", "`dataparser()`", "`make_parser()`", "`write_help()`"]
+
 ARGUMENTS_LINKS = [
     "`name_or_flags`",
     "`group_title`",
@@ -72,6 +75,10 @@ def process_module():
     # Put links in markdown version of user manual
     for link in EXTERNAL_LINKS:
         module_docstring = module_docstring.replace(link, f"[{link}]({EXTERNAL_LINKS[link]})")
+    for link in INTERNAL_LINKS:
+        module_docstring = module_docstring.replace(
+            link, f"{{py:func}}`~dataparsers.{link.replace('`','').replace('()','')}`"
+        )
     for link in ARGUMENTS_LINKS:
         module_docstring = module_docstring.replace(
             link, f"[{link}](./2_available_functions.md#{link.replace('`','').replace('_','-')})"
@@ -88,4 +95,4 @@ def process_module():
     remove_overloads(MODULE_FILEPATH)
 
     # put links on file for sphinx reST file
-    put_links_on_file(MODULE_FILEPATH, EXTERNAL_LINKS, ARGUMENTS_LINKS)
+    put_links_on_file(MODULE_FILEPATH, EXTERNAL_LINKS, INTERNAL_LINKS, ARGUMENTS_LINKS)

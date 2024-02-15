@@ -40,7 +40,9 @@ def make_rst_link(link: str):
     return link
 
 
-def put_links_on_file(filepath: Path, external_links: dict[str, str], arguments_links: list[str]):
+def put_links_on_file(
+    filepath: Path, external_links: dict[str, str], internal_links: list[str], arguments_links: list[str]
+):
     """Put links on the module file to be processed by sphinx
 
     - External links to python documentation
@@ -51,6 +53,8 @@ def put_links_on_file(filepath: Path, external_links: dict[str, str], arguments_
         for line in file:
             for link in external_links:
                 line = line.replace(link, make_rst_link(link))
+            for func in internal_links:
+                line = line.replace(func, f":func:`~dataparsers.{func.replace('`','').replace('()','')}`")
             for arg in arguments_links:
                 arg_without_backticks = arg.replace("`", "")
                 arg_without_backticks_and_under_for_hifen = arg_without_backticks.replace("_", "-")
