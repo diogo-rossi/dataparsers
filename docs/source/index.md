@@ -1,6 +1,6 @@
 # Documentation for `dataparsers`
 
-A simple wrapper around
+This project provides a simple module that wrappers around
 [`argparse`](https://docs.python.org/3/library/argparse.html#module-argparse) to
 get command line argument parsers from
 [`dataclasses`](https://docs.python.org/3/library/dataclasses.html#module-dataclasses).
@@ -17,6 +17,10 @@ pip install dataparsers
 
 1_user_manual
 2_available_functions
+```
+
+```{toctree}
+:maxdepth: 1
 3_features
 ```
 

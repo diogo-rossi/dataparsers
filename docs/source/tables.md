@@ -13,9 +13,19 @@ arguments:
 - Parameters of the original `add_argument()` method used in the `arg()`
   function:
 
-| `action`  |  `nargs`   | `const` | `default` | `type` |
-| :-------: | :--------: | :-----: | :-------: | :----: |
-| `choices` | `required` | `help`  | `metavar` | `dest` |
+| name      |
+| :-------: |
+| `action`  |  
+| `nargs`   | 
+| `const`   | 
+| `default` |
+| `type`    |
+
+| `choices` |
+| `required`|
+| `help`    |
+| `metavar` |
+| `dest`    |
 
 - Additional parameters for the `dataparser()` decorator:
 

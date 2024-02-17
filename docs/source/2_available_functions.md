@@ -13,9 +13,19 @@ arguments:
 - Parameters of the original `add_argument()` method used in the {py:func}`~dataparsers.arg`
   function:
 
-| [`action`](./2_available_functions.md#action)  |  [`nargs`](./2_available_functions.md#nargs)   | [`const`](./2_available_functions.md#const) | [`default`](./2_available_functions.md#default) | [`type`](./2_available_functions.md#type) |
-| :-------: | :--------: | :-----: | :-------: | :----: |
-| [`choices`](./2_available_functions.md#choices) | [`required`](./2_available_functions.md#required) | [`help`](./2_available_functions.md#help)  | [`metavar`](./2_available_functions.md#metavar) | [`dest`](./2_available_functions.md#dest) |
+| name      |
+| :-------: |
+| [`action`](./2_available_functions.md#action)  |  
+| [`nargs`](./2_available_functions.md#nargs)   | 
+| [`const`](./2_available_functions.md#const)   | 
+| [`default`](./2_available_functions.md#default) |
+| [`type`](./2_available_functions.md#type)    |
+
+| [`choices`](./2_available_functions.md#choices) |
+| [`required`](./2_available_functions.md#required)|
+| [`help`](./2_available_functions.md#help)    |
+| [`metavar`](./2_available_functions.md#metavar) |
+| [`dest`](./2_available_functions.md#dest)    |
 
 - Additional parameters for the {py:func}`~dataparsers.dataparser` decorator:
 

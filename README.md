@@ -90,4 +90,63 @@ For more information, see the [documentation](https://dataparsers.readthedocs.io
 
 ## Formalities, features, benefits and drawbacks
 
-TODO
+This project basically consists of a simple module [`dataparsers.py`]() with a
+few functions that allows to define typed arguments parsers in a single place,
+based on `dataclasses`.
+
+## Formalities
+
+The main strategy of the module is based on the same approach of the
+[package `datargs`](https://pypi.org/project/datargs/), which consists in using
+the
+[`metadata` attribute of the dataclass fields](https://docs.python.org/3/library/dataclasses.html#dataclasses.Field)
+to store argument parameters. Some additional features of this project have
+already been contributed back upstream.
+
+There are a lot of alternative libraries out there that do similar things. The
+[README file](https://github.com/roee30/datargs/blob/master/README.md) of the
+[`datargs` repository](https://github.com/roee30/datargs) provides a great
+[list for existing solutions and differences](https://github.com/roee30/datargs?tab=readme-ov-file#why-nots-and-design-choices).
+I could also add to that list the libraries
+[Python `fire`](https://github.com/google/python-fire) and
+[`dargparser`](https://github.com/konstantinjdobler/dargparser), just to give
+few examples.
+
+## Features and benefits
+
+Use this project if you want particular added features, such as:
+
+- More control over the interface display
+- More control over the argument flag creation
+- Support for argument groups and mutually exclusive argument groups
+- More simplicity
+
+The simplicity is mentioned because it is just a simple module
+[`dataparsers.py`]() that doesn't have additional dependencies (it is pure
+Python) which can be downloaded directly and placed in your CLI scripts folder
+to import from.
+
+In deed, the module consists of a 200 lines
+[IPython code cell region](https://docs.spyder-ide.org/current/panes/editor.html#code-cells)
+(which starts and ends with a `#%%` line comment block), that can also be placed
+on top of your "single file" CLI script to directly distribute. The used names
+are just the few [provided functions](./2_available_functions.md), the stdlib
+imports and `Class` (a `TypeVar`)
+
+Additionally, this project also provides a stub file [`dataparsers.pyi`] that
+can be used by type checkers but, moreover, may be used by some code editors to
+give helper documentation including the related docs of `argparse` methods,
+which are also provided in this current documentation for convenience. The stub
+can be downloaded directly but it is installed with the module by default.
+
+## Drawbacks
+
+Unlike the `datargs` package, `dataparsers` doesn't support:
+
+- The library `attrs` (only works with pure python `dataclasses`)
+- Enums
+- Complex types (Sequences, Optionals, and Literals)
+- Sub Commands (subparsers)
+
+If you want any of these features, use the `datargs` package. If you need the
+added features of `dataparsers`, use this module instead.
