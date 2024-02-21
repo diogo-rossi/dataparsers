@@ -74,7 +74,7 @@ def dataparser(
     groups_descriptions: dict[str | int, str] | None = None,
     required_mutually_exclusive_groups: dict[str | int, bool] | None = None,
     default_bool: bool = False,
-    help_fmt: Callable[[str], str] | None = None,
+    help_formatter: Callable[[str], str] | None = None,
     **kwargs,
 ) -> type[Class] | Callable[[type[Class]], type[Class]]:
     if cls is not None:
@@ -91,7 +91,7 @@ def dataparser(
         setattr(
             cls,
             "__dataparsers_params__",
-            (kwargs, groups_descriptions, required_mutually_exclusive_groups, default_bool, help_fmt),
+            (kwargs, groups_descriptions, required_mutually_exclusive_groups, default_bool, help_formatter),
         )
         return cls
 
