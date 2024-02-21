@@ -4,40 +4,71 @@ For a quick reference, below there is a summary for all parameters of the
 function `arg()` and the `dataparser()` decorator, which have more than 5
 arguments:
 
-- Additional parameters for the `arg()` function:
+<details>
+<summary>Additional parameters for the <code>arg()</code> function:</summary>
+<br>
 
-| `name_or_flags` |          `make_flag`          |
-| :-------------: | :---------------------------: |
-|  `group_title`  | `mutually_exclusive_group_id` |
+|             Name              |                       Quick description                        |
+| :---------------------------: | :------------------------------------------------------------: |
+|        `name_or_flags`        |          A list of option strings, starting with `-`.          |
+|         `group_title`         |    The title (or a simple id integer) of the argument group    |
+| `mutually_exclusive_group_id` | The name (or a simple integer) of the mutually exclusive group |
+|          `make_flag`          |        Wether to force the automatic creation of a flag        |
 
-- Parameters of the original `add_argument()` method used in the `arg()`
-  function:
+</details>
+<br>
+<details>
+<summary>Parameters of the original <code>add_argument()</code> method used in the <code>arg()</code> function:</summary>
+<br>
 
-| name      |
-| :-------: |
-| `action`  |  
-| `nargs`   | 
-| `const`   | 
-| `default` |
-| `type`    |
+|    Name    |                            Quick description                            |
+| :--------: | :---------------------------------------------------------------------: |
+|  `action`  |                  The basic type of action to be taken                   |
+|  `nargs`   |      The number of command-line arguments that should be consumed       |
+|  `const`   |      A constant value required by some action and nargs selections      |
+| `default`  |   The value produced if the argument is absent from the command line    |
+|   `type`   |     The type to which the command-line argument should be converted     |
+| `choices`  |           A sequence of the allowable values for the argument           |
+| `required` |          Whether or not the command-line option may be omitted          |
+|   `help`   |              A brief description of what the argument does              |
+| `metavar`  |               A name for the argument in usage messages.                |
+|   `dest`   | The name of the attribute to be added to the object returned (not used) |
 
-| `choices` |
-| `required`|
-| `help`    |
-| `metavar` |
-| `dest`    |
+</details>
+<br>
+<details>
+<summary>Additional parameters for the <code>dataparser()</code> decorator:</summary>
+<br>
 
-- Additional parameters for the `dataparser()` decorator:
+|                 Name                 |                  Quick description                  |
+| :----------------------------------: | :-------------------------------------------------: |
+|        `groups_descriptions`         |   A dictionary with argument groups descriptions    |
+| `required_mutually_exclusive_groups` |             A dictionary with booleans              |
+|            `default_bool`            | The default boolean value used in in boolean fields |
+|           `help_formatter`           |  A formatter function used to format the help text  |
 
-| `groups_descriptions` | `required_mutually_exclusive_groups` |
-| :-------------------: | :----------------------------------: |
-|    `default_bool`     |              `help_fmt`              |
+</details>
+<br>
+<details>
+<summary>Parameters of the original <code>ArgumentParser</code> constructor used in the <code>dataparser()</code> decorator:</summary>
+<br>
 
-- Parameters of the original `ArgumentParser` constructor used in the
-  `dataparser()` decorator:
+|          Name           |                     Quick description                     |
+| :---------------------: | :-------------------------------------------------------: |
+|         `prog`          |                  The name of the program                  |
+|         `usage`         |          The string describing the program usage          |
+|      `description`      |         Text to display before the argument help          |
+|        `epilog`         |          Text to display after the argument help          |
+|        `parents`        |             A list of ArgumentParser objects              |
+|    `formatter_class`    |          A class for customizing the help output          |
+|     `prefix_chars`      |   The set of characters that prefix optional arguments    |
+| `fromfile_prefix_chars` |                   The set of characters                   |
+|   `argument_default`    |          The global default value for arguments           |
+|   `conflict_handler`    |     The strategy for resolving conflicting optionals      |
+|       `add_help`        |          Add a `-h/--help` option to the parser           |
+|     `allow_abbrev`      |           Allows long options to be abbreviated           |
+|     `exit_on_error`     | Determines whether or not ArgumentParser exits with error |
 
-|       `prog`       |      `usage`       | `description`  |        `epilog`         |
-| :----------------: | :----------------: | :------------: | :---------------------: |
-|     `parents`      | `formatter_class`  | `prefix_chars` | `fromfile_prefix_chars` |
-| `argument_default` | `conflict_handler` |   `add_help`   |     `allow_abbrev`      |
-|  `exit_on_error`   |                    |                |                         |
+</details>
+
+---
