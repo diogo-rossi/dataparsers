@@ -41,14 +41,17 @@ def process_readme():
     with open(FEATURES_FILE, "r") as file:
         features = file.read()
 
+    features = features.replace("##", "###")
+
     with open(ROOT_README, "w") as file:
         file.write(INITIAL_README)
         file.write(basic_usage)
         file.write(arguments_specification)
         file.write(LINK_TO_DOCS)
         file.write(f"\n\n#{features}")
-    
+
     replace_snippets_and_notes(ROOT_README, True, False)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     process_readme()

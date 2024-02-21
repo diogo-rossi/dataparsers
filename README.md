@@ -94,7 +94,7 @@ This project basically consists of a simple module `dataparsers.py` with few
 functions that allows to define typed arguments parsers in a single place, based
 on `dataclasses`.
 
-## Formalities
+### Formalities
 
 The main strategy of the module is based on the same approach of the
 [package `datargs`](https://pypi.org/project/datargs/), which consists in using
@@ -112,7 +112,7 @@ I could also add to that list the libraries
 [package `dargparser`](https://github.com/konstantinjdobler/dargparser), just to
 give few examples.
 
-## Features and benefits
+### Features and benefits
 
 Use this project if you want particular added features, such as:
 
@@ -141,7 +141,7 @@ methods, which are also provided in this project's documentation, for
 convenience. The stub file can be downloaded directly but it is installed with
 the module by default.
 
-## Drawbacks
+### Drawbacks
 
 Unlike the `datargs` package, `dataparsers` doesn't support:
 
