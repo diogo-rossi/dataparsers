@@ -205,7 +205,7 @@ class Args:
     foo: str = arg(
         default=12.5,
         help='''This description is printed as written here.
-                It preserves new lines breaks.''',
+                It preserves lines breaks.''',
     )
     bar: float = arg(
         default=25.5,
