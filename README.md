@@ -128,10 +128,11 @@ downloaded directly and placed in your CLI scripts folder to import from.
 
 In deed, the module consists of a 200 lines
 [IPython code cell region](https://docs.spyder-ide.org/current/panes/editor.html#code-cells)
-(i.e., which starts and ends with a `#%%` line comment block), that can also be
-placed on top of your "single file" CLI script to directly distribute. The used
-names are just the few [provided functions](./2_available_functions.md), the
-_stdlib_ imports and `Class` (which is a `TypeVar`).
+(i.e., starts and ends with a `#%%` line comment block), that can also be placed
+on top of your "single file" CLI script to directly distribute. The used names
+are just the few
+[provided functions](https://dataparsers.readthedocs.io/en/latest/2_available_functions.html),
+the _stdlib_ imports and `Class` (a `TypeVar`).
 
 Additionally, this project also provides a
 [stub file (`.pyi`)](https://github.com/Diogo-Rossi/dataparsers/blob/main/src/dataparsers/__init__.pyi)
@@ -150,5 +151,6 @@ Unlike the `datargs` package, `dataparsers` doesn't support:
 - Complex types (Sequences, Optionals, and Literals)
 - Sub Commands (subparsers)
 
-If you want any of these features, use the `datargs` package. If you need the
-added features of `dataparsers`, use this module instead.
+If you want any of these features, use the
+[package `datargs`](https://pypi.org/project/datargs/). If you need the added
+features of `dataparsers`, use this module instead.
