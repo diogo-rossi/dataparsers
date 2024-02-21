@@ -76,7 +76,7 @@ def process_module():
     """Copy the stub file and process the module to use `autofunction` - replace links and format markdown"""
 
     # Copy stub file form `./src` folder to  `./docs/source` folder
-    shutil.copy(os.path.abspath(f"{ROOT_DIR}/src/{MODULE_FILENAME}i"), os.path.abspath(MODULE_FILEPATH))
+    shutil.copy(os.path.abspath(f"{ROOT_DIR}/src/dataparsers/__init__.pyi"), os.path.abspath(MODULE_FILEPATH))
 
     # %% ---- process the module docstring to write manual
 

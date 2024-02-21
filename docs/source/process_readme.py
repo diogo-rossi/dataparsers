@@ -9,8 +9,8 @@ THIS_FILE = Path(__file__)
 THIS_DIR = THIS_FILE.parent.resolve()
 DOCS_DIR = THIS_DIR.parent.resolve()
 ROOT_DIR = DOCS_DIR.parent.resolve()
-MODULE_STUB = "dataparsers.pyi"
-MODULE_FILEPATH = ROOT_DIR / "src" / MODULE_STUB
+MODULE_STUB = "__init__.pyi"
+MODULE_FILEPATH = ROOT_DIR / "src/dataparsers" / MODULE_STUB
 FEATURES_FILE = THIS_DIR / "3_features.md"
 ROOT_README = ROOT_DIR / "README.md"
 
