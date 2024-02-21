@@ -11,7 +11,7 @@ sys.path.insert(0, str(SRC_DIR))
 # %% Imports
 
 from dataclasses import dataclass
-from dataparsers import arg, make_parser, dataparser, parse
+from dataparsers import arg, make_parser, dataparser, parse, write_help
 
 # %% Example 1: Basic usage
 
@@ -184,10 +184,35 @@ make_parser(Args).print_help()
 class Args:
     foo: bool
 
+
 parse(Args, ["--foo"])
+
 
 @dataparser(default_bool=True)
 class Args:
     foo: bool = arg(help="Boolean value")
 
+
 parse(Args, ["--foo"])
+
+
+# %% Example 15: Help formatter
+
+from dataparsers import arg, make_parser, dataparser, write_help
+
+@dataparser(help_formatter=write_help)
+class Args:
+    foo: str = arg(
+        default=12.5,
+        help='''This description is printed as written here.
+                It preserves new lines breaks.''',
+    )
+    bar: float = arg(
+        default=25.5,
+        help='''This description is also formatted by `write_help` and
+                it is separated from the previous by a blank line.
+                The parameter has default value of %(default)s.''',
+    )
+
+
+make_parser(Args).print_help()
