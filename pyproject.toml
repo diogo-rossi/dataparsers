@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dataparsers"
-version = "0.1.0"
+version = "1.0.0"
 description = "A wrapper around argparse to get command line argument parsers from dataclasses"
 authors = ["Diogo Rossi <rossi.diogo@gmail.com>"]
 readme = "README.md"
