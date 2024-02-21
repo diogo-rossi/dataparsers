@@ -4,49 +4,94 @@ For a quick reference, below there is a summary for all parameters of the
 function {py:func}`~dataparsers.arg` and the {py:func}`~dataparsers.dataparser` decorator, which have more than 5
 arguments:
 
-- Additional parameters for the {py:func}`~dataparsers.arg` function:
+<details>
+<summary>Additional parameters for the <code>arg()</code> function:</summary>
+<br>
 
-| [`name_or_flags`](./2_available_functions.md#name-or-flags) |          [`make_flag`](./2_available_functions.md#make-flag)          |
-| :-------------: | :---------------------------: |
-|  [`group_title`](./2_available_functions.md#group-title)  | [`mutually_exclusive_group_id`](./2_available_functions.md#mutually-exclusive-group-id) |
+|             Name              |                       Quick description                        |
+| :---------------------------: | :------------------------------------------------------------: |
+|        [`name_or_flags`](./2_available_functions.md#name-or-flags)        |          A list of option strings, starting with `-`.          |
+|         [`group_title`](./2_available_functions.md#group-title)         |    The title (or a simple id integer) of the argument group    |
+| [`mutually_exclusive_group_id`](./2_available_functions.md#mutually-exclusive-group-id) | The name (or a simple integer) of the mutually exclusive group |
+|          [`make_flag`](./2_available_functions.md#make-flag)          |        Wether to force the automatic creation of a flag        |
 
-- Parameters of the original `add_argument()` method used in the {py:func}`~dataparsers.arg`
-  function:
+</details>
+<br>
+<details>
+<summary>Parameters of the original <code>add_argument()</code> method used in the <code>arg()</code> function:</summary>
+<br>
 
-| name      |
-| :-------: |
-| [`action`](./2_available_functions.md#action)  |  
-| [`nargs`](./2_available_functions.md#nargs)   | 
-| [`const`](./2_available_functions.md#const)   | 
-| [`default`](./2_available_functions.md#default) |
-| [`type`](./2_available_functions.md#type)    |
+|    Name    |                            Quick description                            |
+| :--------: | :---------------------------------------------------------------------: |
+|  [`action`](./2_available_functions.md#action)  |                  The basic type of action to be taken                   |
+|  [`nargs`](./2_available_functions.md#nargs)   |      The number of command-line arguments that should be consumed       |
+|  [`const`](./2_available_functions.md#const)   |      A constant value required by some action and nargs selections      |
+| [`default`](./2_available_functions.md#default)  |   The value produced if the argument is absent from the command line    |
+|   [`type`](./2_available_functions.md#type)   |     The type to which the command-line argument should be converted     |
+| [`choices`](./2_available_functions.md#choices)  |           A sequence of the allowable values for the argument           |
+| [`required`](./2_available_functions.md#required) |          Whether or not the command-line option may be omitted          |
+|   [`help`](./2_available_functions.md#help)   |              A brief description of what the argument does              |
+| [`metavar`](./2_available_functions.md#metavar)  |               A name for the argument in usage messages.                |
+|   [`dest`](./2_available_functions.md#dest)   | The name of the attribute to be added to the object returned (not used) |
 
-| [`choices`](./2_available_functions.md#choices) |
-| [`required`](./2_available_functions.md#required)|
-| [`help`](./2_available_functions.md#help)    |
-| [`metavar`](./2_available_functions.md#metavar) |
-| [`dest`](./2_available_functions.md#dest)    |
+</details>
+<br>
+<details>
+<summary>Additional parameters for the <code>dataparser()</code> decorator:</summary>
+<br>
 
-- Additional parameters for the {py:func}`~dataparsers.dataparser` decorator:
+|                 Name                 |                  Quick description                  |
+| :----------------------------------: | :-------------------------------------------------: |
+|        [`groups_descriptions`](./2_available_functions.md#groups-descriptions)         |   A dictionary with argument groups descriptions    |
+| [`required_mutually_exclusive_groups`](./2_available_functions.md#required-mutually-exclusive-groups) |             A dictionary with booleans              |
+|            [`default_bool`](./2_available_functions.md#default-bool)            | The default boolean value used in in boolean fields |
+|           [`help_formatter`](./2_available_functions.md#help-formatter)           |  A formatter function used to format the help text  |
 
-| [`groups_descriptions`](./2_available_functions.md#groups-descriptions) | [`required_mutually_exclusive_groups`](./2_available_functions.md#required-mutually-exclusive-groups) |
-| :-------------------: | :----------------------------------: |
-|    [`default_bool`](./2_available_functions.md#default-bool)     |              [`help_fmt`](./2_available_functions.md#help-fmt)              |
+</details>
+<br>
+<details>
+<summary>Parameters of the original <code>ArgumentParser</code> constructor used in the <code>dataparser()</code> decorator:</summary>
+<br>
 
-- Parameters of the original `ArgumentParser` constructor used in the
-  {py:func}`~dataparsers.dataparser` decorator:
+|          Name           |                     Quick description                     |
+| :---------------------: | :-------------------------------------------------------: |
+|         [`prog`](./2_available_functions.md#prog)          |                  The name of the program                  |
+|         [`usage`](./2_available_functions.md#usage)         |          The string describing the program usage          |
+|      [`description`](./2_available_functions.md#description)      |         Text to display before the argument help          |
+|        [`epilog`](./2_available_functions.md#epilog)         |          Text to display after the argument help          |
+|        [`parents`](./2_available_functions.md#parents)        |             A list of ArgumentParser objects              |
+|    [`formatter_class`](./2_available_functions.md#formatter-class)    |          A class for customizing the help output          |
+|     [`prefix_chars`](./2_available_functions.md#prefix-chars)      |   The set of characters that prefix optional arguments    |
+| [`fromfile_prefix_chars`](./2_available_functions.md#fromfile-prefix-chars) |                   The set of characters                   |
+|   [`argument_default`](./2_available_functions.md#argument-default)    |          The global default value for arguments           |
+|   [`conflict_handler`](./2_available_functions.md#conflict-handler)    |     The strategy for resolving conflicting optionals      |
+|       [`add_help`](./2_available_functions.md#add-help)        |          Add a `-h/--help` option to the parser           |
+|     [`allow_abbrev`](./2_available_functions.md#allow-abbrev)      |           Allows long options to be abbreviated           |
+|     [`exit_on_error`](./2_available_functions.md#exit-on-error)     | Determines whether or not ArgumentParser exits with error |
 
-|       [`prog`](./2_available_functions.md#prog)       |      [`usage`](./2_available_functions.md#usage)       | [`description`](./2_available_functions.md#description)  |        [`epilog`](./2_available_functions.md#epilog)         |
-| :----------------: | :----------------: | :------------: | :---------------------: |
-|     [`parents`](./2_available_functions.md#parents)      | [`formatter_class`](./2_available_functions.md#formatter-class)  | [`prefix_chars`](./2_available_functions.md#prefix-chars) | [`fromfile_prefix_chars`](./2_available_functions.md#fromfile-prefix-chars) |
-| [`argument_default`](./2_available_functions.md#argument-default) | [`conflict_handler`](./2_available_functions.md#conflict-handler) |   [`add_help`](./2_available_functions.md#add-help)   |     [`allow_abbrev`](./2_available_functions.md#allow-abbrev)      |
-|  [`exit_on_error`](./2_available_functions.md#exit-on-error)   |                    |                |                         |
+</details>
+
+---
+
 
 
 ```{eval-rst}
 .. autofunction:: dataparsers.arg
+```
+---
+```{eval-rst}
 .. autofunction:: dataparsers.dataparser
+```
+---
+```{eval-rst}
 .. autofunction:: dataparsers.parse
+```
+---
+```{eval-rst}
 .. autofunction:: dataparsers.make_parser
+```
+---
+```{eval-rst}
 .. autofunction:: dataparsers.write_help
 ```
+---

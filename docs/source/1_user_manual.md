@@ -470,5 +470,41 @@ Args(foo=False)
 
 ### Help formatter function
 
-TODO
+A last additional parameter accepted by the {py:func}`~dataparsers.dataparser` decorator is the [`help_formatter`](./2_available_functions.md#help-formatter) function, which is used to format
+the arguments help text, allowing the help formatting to be customized. This function must be defined accepting a single `str`
+as first positional argument and returning the string formatted text, i.e., `(str) -> str`. When this option is used, the
+[`formatter_class`](./2_available_functions.md#formatter-class) parameter passed to the [`ArgumentParser`](https://docs.python.org/3/library/argparse.html#argumentparser-objects) constructor is assumed to be `RawDescriptionHelpFormatter`.
+
+This project provides a built-in predefined function {py:func}`~dataparsers.write_help`, that can be used in the [`help_formatter`](./2_available_functions.md#help-formatter) option to preserve
+new line breaks and add blank lines between parameters descriptions:
+
+```python
+>>> from dataparsers import arg, make_parser, dataparser, write_help
+>>> @dataparser(help_formatter=write_help)
+... class Args:
+...     foo: str = arg(
+...         default=12.5,
+...         help='''This description is printed as written here.
+...                 It preserves lines breaks.''',
+...     )
+...     bar: float = arg(
+...         default=25.5,
+...         help='''This description is also formatted by `write_help` and
+...                 it is separated from the previous by a blank line.
+...                 The parameter has default value of %(default)s.''',
+...     )
+...
+>>>
+>>> make_parser(Args).print_help()
+usage: [-h] [--foo FOO] [--bar BAR]
+
+options:
+  -h, --help  show this help message and exit
+  --foo FOO   This description is printed as written here.
+              It preserves lines breaks.
+
+  --bar BAR   This description is also formatted by `write_help` and
+              it is separated from the previous by a blank line.
+              The parameter has default value of 25.5.
+```
 
