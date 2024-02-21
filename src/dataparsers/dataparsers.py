@@ -99,16 +99,16 @@ def dataparser(
 
 
 def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentParser:
-    kwargs, groups_descriptions, required_groups_status, default_bool, help_fmt = getattr(
+    kwargs, groups_descriptions, required_groups_status, default_bool, help_formatter = getattr(
         cls, "__dataparsers_params__", ({}, {}, {}, False, None)
     )
 
     if parser is None:
-        if help_fmt is not None and "formatter_class" not in kwargs:
+        if help_formatter is not None and "formatter_class" not in kwargs:
             kwargs["formatter_class"] = RawTextHelpFormatter
         parser = ArgumentParser(**kwargs)
 
-    help_fmt = help_fmt or str
+    help_formatter = help_formatter or str
     groups: dict[str | int, _ArgumentGroup] = {}
     mutually_exclusive_groups: dict[str | int, _MutuallyExclusiveGroup] = {}
 
@@ -116,7 +116,7 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
         arg_metadata = dict(arg.metadata)
 
         if "help" in arg_metadata:
-            arg_metadata["help"] = help_fmt(arg_metadata["help"])
+            arg_metadata["help"] = help_formatter(arg_metadata["help"])
 
         arg_field_has_default = arg.default is not arg.default_factory
         make_flag = arg_metadata.pop("make_flag", True)
