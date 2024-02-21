@@ -120,13 +120,28 @@ def process_module():
     for link in ARGUMENTS_LINKS:
         tables = tables.replace(link, f"[{link}](./2_available_functions.md#{link.replace('`','').replace('_','-')})")
 
-    functions_toc = """```{eval-rst}
+    functions_toc = """
+```{eval-rst}
 .. autofunction:: dataparsers.arg
+```
+---
+```{eval-rst}
 .. autofunction:: dataparsers.dataparser
+```
+---
+```{eval-rst}
 .. autofunction:: dataparsers.parse
+```
+---
+```{eval-rst}
 .. autofunction:: dataparsers.make_parser
+```
+---
+```{eval-rst}
 .. autofunction:: dataparsers.write_help
-```"""
+```
+---
+"""
 
     with open(FUNCTIONS_MANUAL, "w") as file:
         file.write(f"{tables}\n\n")
