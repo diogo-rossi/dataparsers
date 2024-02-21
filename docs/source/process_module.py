@@ -43,7 +43,7 @@ ARGUMENTS_LINKS = [
     "`groups_descriptions`",
     "`required_mutually_exclusive_groups`",
     "`default_bool`",
-    "`help_fmt`",
+    "`help_formatter`",
     "`prog`",
     "`usage`",
     "`description`",
