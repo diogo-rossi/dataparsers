@@ -113,6 +113,8 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
     mutually_exclusive_groups: dict[str | int, _MutuallyExclusiveGroup] = {}
 
     for arg in fields(cls):  # type: ignore
+        if type(arg.type) == str:
+            arg.type = eval(arg.type)
         arg_metadata = dict(arg.metadata)
 
         if "help" in arg_metadata:
