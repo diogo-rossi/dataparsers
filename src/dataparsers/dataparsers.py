@@ -2,8 +2,8 @@
 import os, textwrap
 from dataclasses import dataclass, field, fields
 from argparse import ArgumentParser, RawTextHelpFormatter
-from argparse import _MutuallyExclusiveGroup, _ArgumentGroup  # only for typing annotation
-from typing import Any, TypeVar, Sequence, Callable, overload
+from argparse import _MutuallyExclusiveGroup, _ArgumentGroup, _SubParsersAction  # only for typing annotation
+from typing import Any, TypeVar, Sequence, Callable, overload, ClassVar, get_type_hints, get_origin
 
 Class = TypeVar("Class", covariant=True)
 
@@ -52,6 +52,33 @@ def arg(
     metadict = {key: value for key, value in metadict.items() if value is not None}
 
     return field(default=default, metadata=metadict)
+
+
+def group(*args, **kwargs) -> Any:
+    argument_group_kwargs = dict(**{k: v for k, v in zip(["title", "description"], args)}, **kwargs)
+    return field(metadata={"argument_group_kwargs": argument_group_kwargs})
+
+
+def mutually_exclusive_group(**kwargs) -> Any:
+    return field(metadata={"mutually_exclusive_group_kwargs": kwargs})
+
+
+def subparsers(**kwargs) -> Any:
+    return field(default=None, metadata={"is_subparsers_group": True, "subparsers_group_kwargs": kwargs})
+
+
+def default(default=None):
+    return field(default=default, metadata={"is_post_default": True})
+
+
+@dataclass(frozen=True)
+class SubParser:
+    defaults: dict[str, Any] | None
+    kwargs: dict[str, Any]
+
+
+def subparser(*, defaults: dict[str, Any] | None = None, **kwargs) -> Any:
+    return SubParser(defaults=defaults, kwargs=kwargs)
 
 
 @overload
@@ -111,6 +138,31 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
     help_formatter = help_formatter or str
     groups: dict[str | int, _ArgumentGroup] = {}
     mutually_exclusive_groups: dict[str | int, _MutuallyExclusiveGroup] = {}
+    subparsers: dict[str, ArgumentParser] = {}
+    subparsers_group: _SubParsersAction | None = None
+
+    for fld in fields(cls):  # type: ignore
+        if type(fld.type) == str:
+            fld.type = eval(fld.type)
+
+        if fld.metadata.get("is_subparsers_group", False):
+            subparsers_group_kwargs = fld.metadata.get("subparsers_group_kwargs", {})
+            subparsers_group_kwargs.pop("dest", None)
+            subparsers_group = parser.add_subparsers(dest=fld.name, **subparsers_group_kwargs)
+
+    handler = parser
+    classvars = {k: v for (k, v) in get_type_hints(cls).items() if v == ClassVar or get_origin(v) is ClassVar}
+    for field_name in classvars:
+        attr = getattr(cls, field_name)
+        if isinstance(attr, SubParser):
+            subparsers_kwargs = attr.kwargs.get("subparsers_kwargs", {})
+            subparser_defaults = attr.defaults
+            if subparsers_group is None:
+                subparsers_group = handler.add_subparsers()
+            if field_name not in subparsers:
+                subparsers[field_name] = subparsers_group.add_parser(field_name, **subparsers_kwargs)
+                if subparser_defaults is not None:
+                    subparsers[field_name].set_defaults(**subparser_defaults)
 
     for arg in fields(cls):  # type: ignore
         if type(arg.type) == str:
