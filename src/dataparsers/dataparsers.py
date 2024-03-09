@@ -164,39 +164,39 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
                 if subparser_defaults is not None:
                     subparsers[field_name].set_defaults(**subparser_defaults)
 
-    for arg in fields(cls):  # type: ignore
-        if type(arg.type) == str:
-            arg.type = eval(arg.type)
-        arg_metadata = dict(arg.metadata)
+    for fld in fields(cls):  # type: ignore
+        if type(fld.type) == str:
+            fld.type = eval(fld.type)
+        arg_metadata = dict(fld.metadata)
 
         if "help" in arg_metadata:
             arg_metadata["help"] = help_formatter(arg_metadata["help"])
 
-        arg_field_has_default = arg.default is not arg.default_factory
+        arg_field_has_default = fld.default is not fld.default_factory
         make_flag = arg_metadata.pop("make_flag", True)
-        if (arg_field_has_default and arg_metadata.pop("is_flag", True)) or arg.type == bool:
+        if (arg_field_has_default and arg_metadata.pop("is_flag", True)) or fld.type == bool:
             if "name_or_flags" not in arg_metadata:
                 arg_metadata["name_or_flags"] = ()
-            if make_flag or (arg.type == bool and not arg_metadata["name_or_flags"]):
-                arg_metadata["name_or_flags"] += (f'--{arg.name.replace("_", "-")}',)
-            if arg.type == bool and (not arg_field_has_default or arg.default is None):
-                arg.default = default_bool
+            if make_flag or (fld.type == bool and not arg_metadata["name_or_flags"]):
+                arg_metadata["name_or_flags"] += (f'--{fld.name.replace("_", "-")}',)
+            if fld.type == bool and (not arg_field_has_default or fld.default is None):
+                fld.default = default_bool
 
         if not arg_metadata.get("name_or_flags"):  # no flag arg
-            arg_metadata["name_or_flags"] = (arg.name,)
+            arg_metadata["name_or_flags"] = (fld.name,)
         else:  # flag arg
-            arg_metadata["dest"] = arg.name
+            arg_metadata["dest"] = fld.name
 
         name_or_flags = arg_metadata.pop("name_or_flags")
 
-        if "type" not in arg_metadata and arg.type != bool:
-            arg_metadata["type"] = arg.type
+        if "type" not in arg_metadata and fld.type != bool:
+            arg_metadata["type"] = fld.type
 
-        if "action" not in arg_metadata and arg.type == bool:
-            arg_metadata["action"] = "store_false" if arg.default else "store_true"
+        if "action" not in arg_metadata and fld.type == bool:
+            arg_metadata["action"] = "store_false" if fld.default else "store_true"
 
-        if arg.type == bool:
-            arg.default = arg_metadata["action"] == "store_false"
+        if fld.type == bool:
+            fld.default = arg_metadata["action"] == "store_false"
 
         group_id: str | int | None = arg_metadata.pop("group_title", None)
         exclusive_group_id: str | int | None = arg_metadata.pop("mutually_exclusive_group_id", None)
@@ -222,10 +222,10 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
 
                 handler = mutually_exclusive_groups[exclusive_group_id]
 
-            handler.add_argument(*name_or_flags, default=arg.default, **arg_metadata)
+            handler.add_argument(*name_or_flags, default=fld.default, **arg_metadata)
 
         else:
-            parser.add_argument(*name_or_flags, default=arg.default, **arg_metadata)
+            parser.add_argument(*name_or_flags, default=fld.default, **arg_metadata)
 
     return parser
 
