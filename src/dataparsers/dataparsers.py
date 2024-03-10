@@ -66,11 +66,6 @@ def mutually_exclusive_group(**kwargs) -> Any:
 def subparsers(**kwargs) -> Any:
     return field(default=None, metadata={"is_subparsers_group": True, "subparsers_group_kwargs": kwargs})
 
-
-def default(default=None):
-    return field(default=default, metadata={"is_post_default": True})
-
-
 @dataclass(frozen=True)
 class SubParser:
     defaults: dict[str, Any] | None
@@ -79,6 +74,10 @@ class SubParser:
 
 def subparser(*, defaults: dict[str, Any] | None = None, **kwargs) -> Any:
     return SubParser(defaults=defaults, kwargs=kwargs)
+
+
+def default(default=None):
+    return field(default=default, metadata={"is_post_default": True})
 
 
 @overload
