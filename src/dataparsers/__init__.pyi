@@ -456,6 +456,7 @@ new line breaks and add blank lines between parameters descriptions::
 
 from argparse import ArgumentParser, Action, FileType, HelpFormatter
 from typing import Literal, TypeVar, Callable, Iterable, Sequence, Any, overload
+from dataclasses import dataclass, Field
 
 T = TypeVar("T", covariant=True)
 
@@ -463,6 +464,9 @@ Class = TypeVar("Class", covariant=True)
 
 def arg(
     *name_or_flags: str,
+    group: Field[Any] | int | str | None = None,
+    mutually_exclusive_group: Field[Any] | int | str | None = None,
+    subparser: Field[Any] | None = None,
     group_title: str | int | None = None,
     mutually_exclusive_group_id: str | int | None = None,
     make_flag: bool | None = None,
@@ -497,7 +501,7 @@ def arg(
     parameters may be supplied, namely `group_title`, `mutually_exclusive_group_id` and `make_flag`. The parameter
     `name_or_flags`, taken from the original `add_argument()` method, behaves a little different.
 
-    Parameters
+    Parameters #TODO: add new parameters
     ----------
         - `name_or_flags` (`str`):
 
@@ -1188,6 +1192,212 @@ def arg(
     -------
         `default@arg | Field`: A `dataclass` field with given `default` value of the field and `metadata` dictionary
         filled with argument parameters.
+    """
+    ...
+
+def group(title: str | None = None, description: str | None = None) -> Any:
+    """_summary_ #TODO
+
+    _extended_summary_
+
+    Parameters
+    ----------
+        - `title` (`str | None`, optional): Defaults to `None`.
+
+            The title of the argument group.
+
+        - `description` (`str | None`, optional): Defaults to `None`.
+
+            The description of the argument group.
+
+    Returns
+    -------
+        `Field`: A `dataclass` field with `metadata` dictionary filled with argument group parameters.
+    """
+    ...
+
+def mutually_exclusive_group(*, required: bool = False) -> Any:
+    """_summary_ #TODO
+
+    _extended_summary_
+
+    Parameters
+    ----------
+        - `required` (`bool`, optional): Defaults to `False`.
+
+            Indicate that at least one of the mutually exclusive arguments is required.
+
+    Returns
+    -------
+        `Field`: A `dataclass` field with `metadata` dictionary filled with mutually exclusive group parameters.
+    """
+    ...
+
+def subparsers(
+    *,
+    title: str = "subcommands",
+    description: str | None = None,
+    prog: str = ...,
+    parser_class: type = ArgumentParser,
+    action: type[Action] = ...,
+    dest: str | None = None,
+    required: bool = False,
+    help: str | None = None,
+    metavar: str | None = None,
+) -> Any:
+    """_summary_ #TODO
+
+    _extended_summary_
+
+    Parameters
+    ----------
+        - `title` (`str`, optional): Defaults to `"subcommands"`.
+
+            Title for the sub-parser group in help output; by default "subcommands" if description is provided,
+            otherwise uses title for positional arguments
+
+        - `description` (`str | None`, optional): Defaults to `None`.
+
+            Description for the sub-parser group in help output.
+
+        - `prog` (`str`, optional): Defaults to the name of the program and any positional arguments before the
+          subparser argument.
+
+            Usage information that will be displayed with sub-command help.
+
+        - `parser_class` (`type`, optional): Defaults to `ArgumentParser`.
+
+            Class which will be used to create sub-parser instances, by default the class of the current parser (e.g.
+            ArgumentParser).
+
+        - `action` (`type[Action]`, optional): Defaults to `...`.
+
+            The basic type of action to be taken when this argument is encountered at the command line.
+
+        - `dest` (`str | None`, optional): Defaults to `None`.
+
+            Name of the attribute under which sub-command name will be stored. By default `None` and no value is stored.
+
+        - `required` (`bool`, optional): Defaults to `False`.
+
+            Whether or not a subcommand must be provided (added in 3.7).
+
+        - `help` (`str | None`, optional): Defaults to `None`.
+
+            Help for sub-parser group in help output.
+
+        - `metavar` (`str | None`, optional): Defaults to `None`.
+
+            String presenting available sub-commands in help. By default it is `None` and presents sub-commands in form
+            `{cmd1, cmd2, ..}`
+
+    Returns
+    -------
+        `Field`: A `dataclass` field with `metadata` dictionary filled with subparser group parameters.
+    """
+    ...
+
+@dataclass(frozen=True)
+class SubParser:
+    defaults: dict[str, Any] | None
+    kwargs: dict[str, Any]
+
+def subparser(
+    *,
+    defaults: dict[str, Any] | None = None,
+    aliases: Sequence[str] = ...,
+    help: str = ...,
+    prog: str | None = None,
+    usage: str | None = None,
+    description: str | None = None,
+    epilog: str | None = None,
+    parents: Sequence[ArgumentParser] = [],
+    formatter_class: HelpFormatter = ...,
+    prefix_chars: str = "-",
+    fromfile_prefix_chars: str | None = None,
+    argument_default: Any = None,
+    conflict_handler: str = "error",
+    add_help: bool = True,
+    allow_abbrev: bool = True,
+    exit_on_error: bool = True,
+) -> Any:
+    """_summary_ #TODO
+
+    _extended_summary_
+
+    Parameters
+    ----------
+        - `subparsers_group` (`Field[Any] | None`, optional): Defaults to `None`. # TODO remove
+
+            _description_
+
+    Additional parameters from the original `add_parser()` method
+    -------------------------------------------------------------
+        - `aliases` (`Sequence[str]`, optional):
+
+            An additional argument which allows multiple strings to refer to the same subparser. This example, like
+            `svn`, aliases `co` as a shorthand for `checkout`::
+
+                >>> parser = argparse.ArgumentParser()
+                >>> subparsers = parser.add_subparsers()
+                >>> checkout = subparsers.add_parser('checkout', aliases=['co'])
+                >>> checkout.add_argument('foo')
+                >>> parser.parse_args(['co', 'bar'])
+                Namespace(foo='bar')
+
+        - `help` (`str`, optional):
+
+            A help message for each subparser command can be given by supplying this argument o `add_parser()` as
+            below::
+
+                >>> # create the top-level parser
+                >>> parser = argparse.ArgumentParser(prog='PROG')
+                >>> parser.add_argument('--foo', action='store_true', help='foo help')
+                >>> subparsers = parser.add_subparsers(help='sub-command help')
+                >>>
+                >>> # create the parser for the "a" command
+                >>> parser_a = subparsers.add_parser('a', help='a help')
+                >>> parser_a.add_argument('bar', type=int, help='bar help')
+                >>>
+                >>> # create the parser for the "b" command
+                >>> parser_b = subparsers.add_parser('b', help='b help')
+                >>> parser_b.add_argument('--baz', choices='XYZ', help='baz help')
+                >>> parser.parse_args(['--help'])
+                usage: PROG [-h] [--foo] {a,b} ...
+
+                positional arguments:
+                  {a,b}   sub-command help
+                    a     a help
+                    b     b help
+
+                options:
+                  -h, --help  show this help message and exit
+                  --foo   foo help
+
+    Parameters from the original `ArgumentParser` constructor
+    ---------------------------------------------------------
+
+
+    Returns
+    -------
+        `Any`: _description_
+    """
+    ...
+
+def default(default: T | None = None) -> T:
+    """_summary_
+
+    _extended_summary_
+
+    Parameters
+    ----------
+        - `default` (`T | None`, optional): Defaults to `None`.
+
+            _description_
+
+    Returns
+    -------
+        `T`: _description_
     """
     ...
 
