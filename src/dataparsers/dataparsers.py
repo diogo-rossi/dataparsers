@@ -90,6 +90,7 @@ def dataparser(
     groups_descriptions: dict[str | int, str] | None = None,
     required_mutually_exclusive_groups: dict[str | int, bool] | None = None,
     default_bool: bool = False,
+    help_formatter: Callable[[str], str] | None = None,
     **kwargs,
 ) -> Callable[[type[Class]], type[Class]]: ...
 
