@@ -153,7 +153,7 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
 
     for fld in fields(cls):  # type: ignore
         if type(fld.type) == str:
-            fld.type = eval(fld.type)
+            fld.type = eval(fld.type) if not "Callable" in fld.type and callable(eval(fld.type)) else None
 
         if fld.metadata.get("is_subparsers_group", False):
             subparsers_group_kwargs = fld.metadata.get("subparsers_group_kwargs", {})
@@ -177,7 +177,7 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
 
     for fld in fields(cls):  # type: ignore
         if type(fld.type) == str:
-            fld.type = eval(fld.type)
+            fld.type = eval(fld.type) if not "Callable" in fld.type and callable(eval(fld.type)) else None
 
         if fld.metadata.get("is_subparsers_group", False):
             continue
