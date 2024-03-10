@@ -10,6 +10,9 @@ Class = TypeVar("Class", covariant=True)
 
 def arg(
     *name_or_flags: str,
+    group: Field[Any] | int | str | None = None,
+    mutually_exclusive_group: Field[Any] | int | str | None = None,
+    subparser: Field[Any] | None = None,
     group_title: str | int | None = None,
     mutually_exclusive_group_id: str | int | None = None,
     make_flag: bool | None = None,
@@ -34,7 +37,7 @@ def arg(
 
     default = kwargs.pop("default", None)
 
-    if not is_flag and mutually_exclusive_group_id is not None:
+    if not is_flag and mutually_exclusive_group_id is not None or mutually_exclusive_group is not None:
         make_flag = True
 
     make_flag = bool(make_flag)
@@ -42,6 +45,9 @@ def arg(
 
     metadict = {
         "name_or_flags": name_or_flags,
+        "group": group,
+        "mutually_exclusive_group": mutually_exclusive_group,
+        "subparser": subparser,
         "group_title": group_title,
         "mutually_exclusive_group_id": mutually_exclusive_group_id,
         "is_flag": is_flag,
