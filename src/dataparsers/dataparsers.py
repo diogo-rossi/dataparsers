@@ -175,6 +175,14 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
     for fld in fields(cls):  # type: ignore
         if type(fld.type) == str:
             fld.type = eval(fld.type)
+
+        if fld.metadata.get("is_subparsers_group", False):
+            continue
+
+        if fld.metadata.get("is_post_default", False):
+            parser.set_defaults(**{fld.name: fld.default})
+            continue
+
         argument_kwargs = fld.metadata.get("argument_kwargs", {})
 
         if "help" in argument_kwargs:
