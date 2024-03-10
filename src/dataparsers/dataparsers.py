@@ -161,16 +161,17 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
     handler = parser
     classvars = {k: v for (k, v) in get_type_hints(cls).items() if v == ClassVar or get_origin(v) is ClassVar}
     for field_name in classvars:
-        attr = getattr(cls, field_name)
-        if isinstance(attr, SubParser):
-            subparsers_kwargs = attr.kwargs.get("subparsers_kwargs", {})
-            subparser_defaults = attr.defaults
-            if subparsers_group is None:
-                subparsers_group = handler.add_subparsers()
-            if field_name not in subparsers:
-                subparsers[field_name] = subparsers_group.add_parser(field_name, **subparsers_kwargs)
-                if subparser_defaults is not None:
-                    subparsers[field_name].set_defaults(**subparser_defaults)
+        if hasattr(cls, field_name):
+            attr = getattr(cls, field_name)
+            if isinstance(attr, SubParser):
+                subparsers_kwargs = attr.kwargs.get("subparsers_kwargs", {})
+                subparser_defaults = attr.defaults
+                if subparsers_group is None:
+                    subparsers_group = handler.add_subparsers()
+                if field_name not in subparsers:
+                    subparsers[field_name] = subparsers_group.add_parser(field_name, **subparsers_kwargs)
+                    if subparser_defaults is not None:
+                        subparsers[field_name].set_defaults(**subparser_defaults)
 
     for fld in fields(cls):  # type: ignore
         if type(fld.type) == str:
