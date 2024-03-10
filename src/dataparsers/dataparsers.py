@@ -4,6 +4,8 @@ from dataclasses import dataclass, field, fields, Field, is_dataclass
 from argparse import ArgumentParser, RawTextHelpFormatter
 from argparse import _MutuallyExclusiveGroup, _ArgumentGroup, _SubParsersAction  # only for typing annotation
 from typing import Any, TypeVar, Sequence, Callable, overload, ClassVar, get_type_hints, get_origin, cast
+from collections.abc import Mapping
+from types import MappingProxyType
 
 Class = TypeVar("Class", covariant=True)
 
@@ -76,11 +78,11 @@ def subparsers(**kwargs) -> Any:
 @dataclass(frozen=True)
 class SubParser:
     defaults: dict[str, Any] | None
-    kwargs: dict[str, Any]
+    kwargs: Mapping[str, Any]
 
 
 def subparser(*, defaults: dict[str, Any] | None = None, **kwargs) -> Any:
-    return SubParser(defaults=defaults, kwargs=kwargs)
+    return field(default=SubParser(defaults=defaults, kwargs=MappingProxyType(kwargs)))
 
 
 def default(default=None):
@@ -164,7 +166,7 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
         if hasattr(cls, field_name):
             attr = getattr(cls, field_name)
             if isinstance(attr, SubParser):
-                subparsers_kwargs = attr.kwargs.get("subparsers_kwargs", {})
+                subparsers_kwargs = attr.kwargs
                 subparser_defaults = attr.defaults
                 if subparsers_group is None:
                     subparsers_group = handler.add_subparsers()
@@ -217,13 +219,13 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
 
         group: Field | int | str | None = fld.metadata.get("group", None)
         mutually_exclusive_group: Field | int | str | None = fld.metadata.get("mutually_exclusive_group", None)
-        subparser: dict[str, Any] | None = fld.metadata.get("subparser", None)
+        subparser: Field | None = fld.metadata.get("subparser", None)
         if any(id is not None for id in [group_id, exclusive_group_id, group, mutually_exclusive_group, subparser]):
 
             handler = parser
 
             if subparser is not None:
-                handler = subparsers[subparser["name"]]
+                handler = subparsers[subparser.name]
 
             if group is not None:
                 if type(group) is Field:
