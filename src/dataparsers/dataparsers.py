@@ -1,9 +1,9 @@
 # %% ################################################# dataparsers region ######################################################
 import os, textwrap
-from dataclasses import dataclass, field, fields, Field
+from dataclasses import dataclass, field, fields, Field, is_dataclass
 from argparse import ArgumentParser, RawTextHelpFormatter
 from argparse import _MutuallyExclusiveGroup, _ArgumentGroup, _SubParsersAction  # only for typing annotation
-from typing import Any, TypeVar, Sequence, Callable, overload, ClassVar, get_type_hints, get_origin
+from typing import Any, TypeVar, Sequence, Callable, overload, ClassVar, get_type_hints, get_origin, cast
 
 Class = TypeVar("Class", covariant=True)
 
@@ -105,7 +105,8 @@ def dataparser(
     **kwargs,
 ) -> type[Class] | Callable[[type[Class]], type[Class]]:
     if cls is not None:
-        return dataclass(cls)
+        cls = cast(type[Class], cls)
+        return dataclass(cls) if not is_dataclass(cls) else cls
 
     if groups_descriptions is None:
         groups_descriptions = {}
@@ -114,7 +115,7 @@ def dataparser(
         required_mutually_exclusive_groups = {}
 
     def wrap(cls: type[Class]) -> type[Class]:
-        cls = dataclass(cls)
+        cls = dataclass(cls) if not is_dataclass(cls) else cls
         setattr(
             cls,
             "__dataparsers_params__",
