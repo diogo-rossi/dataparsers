@@ -1,3 +1,4 @@
+from __future__ import annotations
 import os
 import sys
 from pathlib import Path
@@ -7,9 +8,9 @@ sys.path.insert(0, str(SRC_DIR))
 
 from dataclasses import dataclass
 from dataparsers import parse, make_parser, dataparser
-from dataparsers import arg, subparsers, subparser
+from dataparsers import arg, subparsers, subparser, default
 from resources import HelpDisplay, CapSys
-from typing import ClassVar, Any, TypeAlias
+from typing import ClassVar, Any, TypeAlias, Callable
 
 
 def parse_args_without_sysexit(cls: type, args: list[str]) -> None:
@@ -69,3 +70,30 @@ def test_subcommands_02(capsys: CapSys):
     subcommand_section = [s.strip() for s in output_display.get_section("subcommands")]
     assert "valid subcommands" in subcommand_section
     # assert "additional help" in subcommand_section
+
+
+def foo(args):
+    return args.x * args.y
+
+
+def bar(args):
+    return "((%s))" % args.z
+
+
+def test_subcommands_03():
+
+    @dataclass
+    class Args:
+        func: Callable = default()
+        subparsers: str = subparsers(required=True)
+        foo: ClassVar = subparser(defaults=dict(func=foo))
+        x: int = arg("-x", default=1, make_flag=False, subparser=foo)
+        y: float = arg(subparser=foo)
+        bar: ClassVar = subparser(defaults=dict(func=bar))
+        z: str = arg(subparser=bar)
+
+    args = parse(Args, "foo 1 -x 2".split())
+    assert args.func(args) == 2.0
+
+    args = parse(Args, "bar XYZYX".split())
+    assert args.func(args) == "((XYZYX))"
