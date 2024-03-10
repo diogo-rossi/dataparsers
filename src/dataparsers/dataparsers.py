@@ -72,6 +72,7 @@ def mutually_exclusive_group(**kwargs) -> Any:
 def subparsers(**kwargs) -> Any:
     return field(default=None, metadata={"is_subparsers_group": True, "subparsers_group_kwargs": kwargs})
 
+
 @dataclass(frozen=True)
 class SubParser:
     defaults: dict[str, Any] | None
@@ -208,7 +209,6 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
         group: Field | int | str | None = fld.metadata.get("group", None)
         mutually_exclusive_group: Field | int | str | None = fld.metadata.get("mutually_exclusive_group", None)
         subparser: dict[str, Any] | None = fld.metadata.get("subparser", None)
-
         if any(id is not None for id in [group_id, exclusive_group_id, group, mutually_exclusive_group, subparser]):
 
             handler = parser
