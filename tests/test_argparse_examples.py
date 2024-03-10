@@ -7,8 +7,7 @@ sys.path.insert(0, str(SRC_DIR))
 
 from dataclasses import dataclass
 from dataparsers import parse, make_parser, dataparser
-from dataparsers import arg, arg_group, mutually_exclusive_group, subparsers_group, subparser, post_default
-from dataparsers import ArgumentGroup, MutuallyExclusiveGroup, SubparsersGroup, Subparse
+from dataparsers import arg, subparsers, subparser
 from resources import HelpDisplay, CapSys
 from typing import ClassVar, Any, TypeAlias
 
@@ -25,7 +24,7 @@ def test_subcommands_01(capsys: CapSys):
     @dataclass
     class Args:
         foo: bool = arg(help="foo help")
-        subparser_name: SubparsersGroup = subparsers_group(help="sub-command help")
+        subparser_name: str = subparsers(help="sub-command help")
         a: ClassVar = subparser(help="a help")
         bar: int = arg(help="bar help", subparser=a)
         b: ClassVar = subparser(help="b help")
@@ -61,9 +60,7 @@ def test_subcommands_01(capsys: CapSys):
 def test_subcommands_02(capsys: CapSys):
     @dataclass
     class Args:
-        subparser_name: SubparsersGroup = subparsers_group(
-            title="subcommands", description="valid subcommands", help="additional help"
-        )
+        subparser_name: str = subparsers(title="subcommands", description="valid subcommands", help="additional help")
         foo: ClassVar = subparser()
         bar: ClassVar = subparser()
 

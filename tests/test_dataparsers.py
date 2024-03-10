@@ -8,8 +8,9 @@ sys.path.insert(0, os.path.abspath("./src"))
 
 from dataclasses import dataclass, fields
 from dataparsers import arg, dataparser, parse, make_parser
-from dataparsers import ArgumentGroup, arg_group, MutuallyExclusiveGroup, mutually_exclusive_group
+from dataparsers import group, mutually_exclusive_group
 from resources import HelpDisplay, CapSys
+from typing import ClassVar
 
 
 def test_00_only_positionals(capsys: CapSys):
@@ -72,29 +73,29 @@ def test_03_automatic_make_flags(capsys: CapSys):
 def test_04_with_one_group(capsys: CapSys):
     @dataclass
     class Args:
-        MyGroup: ArgumentGroup = arg_group("group1")
+        MyGroup: ClassVar = group("group1")
         string: str = arg(group=MyGroup)
         integer: int = arg(group=MyGroup)
 
     parser = make_parser(Args)
     parser.print_help()
     output = capsys.readouterr().out
-    group = HelpDisplay(output).group("group1")
-    assert all(name in group for name in [f.name for f in fields(Args)])
+    g = HelpDisplay(output).group("group1")
+    assert all(name in g for name in [f.name for f in fields(Args)])
 
 
 def test_05_with_one_group_with_one_flag(capsys: CapSys):
     @dataclass
     class Args:
-        MyGroup: ArgumentGroup = arg_group("group1")
+        MyGroup: ClassVar = group("group1")
         string: str = arg(group=MyGroup)
         integer: int = arg(group=MyGroup, make_flag=True)
 
     parser = make_parser(Args)
     parser.print_help()
     output = capsys.readouterr().out
-    group = HelpDisplay(output).group("group1")
-    assert all(name in group for name in ["string", "--integer"])
+    g = HelpDisplay(output).group("group1")
+    assert all(name in g for name in ["string", "--integer"])
 
 
 def test_06_with_multually_exclusive_groups(capsys: CapSys):
@@ -113,7 +114,7 @@ def test_06_with_multually_exclusive_groups(capsys: CapSys):
 def test_07_with_required_multually_exclusive_groups_and_no_given_flags(capsys: CapSys):
     @dataparser
     class Args:
-        MyGroup: MutuallyExclusiveGroup = mutually_exclusive_group(required=True)
+        MyGroup: ClassVar = mutually_exclusive_group(required=True)
         string: str = arg(mutually_exclusive_group=MyGroup)
         integer: int = arg(mutually_exclusive_group=MyGroup)
 
@@ -127,7 +128,7 @@ def test_07_with_required_multually_exclusive_groups_and_no_given_flags(capsys: 
 def test_08_with_required_multually_exclusive_groups_and_given_single_flags(capsys: CapSys):
     @dataparser
     class Args:
-        MyGroup: MutuallyExclusiveGroup = mutually_exclusive_group(required=True)
+        MyGroup: ClassVar = mutually_exclusive_group(required=True)
         string: str = arg("-s", mutually_exclusive_group=MyGroup)
         integer: int = arg("-i", mutually_exclusive_group=MyGroup)
 
