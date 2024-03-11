@@ -238,7 +238,7 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
                     group_name = group
                     group_kwargs = {}
                 if group_name not in groups:
-                    groups[group_name] = parser.add_argument_group(**group_kwargs)
+                    groups[group_name] = handler.add_argument_group(**group_kwargs)
 
                 handler = groups[group_name]
 
