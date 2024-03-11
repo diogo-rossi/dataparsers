@@ -214,6 +214,9 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
         if fld.type == bool:
             fld.default = argument_kwargs["action"] == "store_false"
 
+        if argument_kwargs.get("action", None) in ["store_const", "store_true", "store_false"]:
+            argument_kwargs.pop("type", None)
+
         group_id: str | int | None = fld.metadata.get("group_title", None)
         exclusive_group_id: str | int | None = fld.metadata.get("mutually_exclusive_group_id", None)
 
