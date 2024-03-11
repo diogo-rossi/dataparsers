@@ -24,6 +24,7 @@ def parse_args_without_sysexit(cls: type, args: list[str]) -> None:
 
 def test_example(capsys: CapSys):
     @dataparser(description="Process some integers.")
+    @dataclass
     class Args:
         integers: int = arg(metavar="N", nargs="+", help="an integer for the accumulator")
         accumulate: Callable = arg(
@@ -38,6 +39,8 @@ def test_example(capsys: CapSys):
     assert args.accumulate(args.integers) == 4
     args = parse(Args, "1 2 3 4 --sum".split())
     assert args.accumulate(args.integers) == 10
+    args = parse(Args, ["--sum", "7", "-1", "42"])
+    assert args == Args(accumulate=sum, integers=[7, -1, 42])
 
 
 def test_subcommands_01(capsys: CapSys):
