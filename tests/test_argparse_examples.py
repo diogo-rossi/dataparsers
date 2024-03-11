@@ -6,6 +6,7 @@ from pathlib import Path
 SRC_DIR = Path(__file__).parent.parent.resolve() / "src"
 sys.path.insert(0, str(SRC_DIR))
 
+import argparse
 from dataclasses import dataclass
 from dataparsers import parse, make_parser, dataparser, arg, subparsers, subparser, default, dataparser
 from dataparsers import group, mutually_exclusive_group
@@ -171,6 +172,14 @@ def test_parser_defaults_02():  # this test does not make much sense
 
 
 def test_argument_groups_01(capsys: CapSys):
+
+    parser = argparse.ArgumentParser(prog="PROG", add_help=False)
+    group = parser.add_argument_group("group")
+    group.add_argument("--foo", help="foo help")
+    group.add_argument("bar", help="bar help")
+    parser.print_help()
+    argparse_help = capsys.readouterr().out
+
     @dataparser(prog="PROG", add_help=False)
     class Args:
         group: ClassVar = group(title="group")
@@ -178,7 +187,33 @@ def test_argument_groups_01(capsys: CapSys):
         bar: str = arg(help="bar help", group=group)
 
     make_parser(Args).print_help()
-    output = HelpDisplay(capsys.readouterr().out)
+    dataparsers_help = capsys.readouterr().out
+
+    assert dataparsers_help == argparse_help
+
+    output = HelpDisplay(dataparsers_help)
     assert "PROG [--foo FOO] bar" in output.usage
     assert any(["--foo" in a for a in output.get_section("group")])
     assert any(["bar" in a for a in output.get_section("group")])
+
+
+def test_argument_group_02(capsys: CapSys):
+    parser = argparse.ArgumentParser(prog="PROG", add_help=False)
+    group1 = parser.add_argument_group("group1", "group1 description")
+    group1.add_argument("foo", help="foo help")
+    group2 = parser.add_argument_group("group2", "group2 description")
+    group2.add_argument("--bar", help="bar help")
+    parser.print_help()
+    argparse_help = capsys.readouterr().out
+
+    @dataparser(prog="PROG", add_help=False)
+    class Args:
+        group1: ClassVar = group("group1", "group1 description")
+        group2: ClassVar = group("group2", "group2 description")
+        foo: str = arg(help="foo help", group=group1)
+        bar: str = arg(make_flag=True, help="bar help", group=group2)
+
+    make_parser(Args).print_help()
+    dataparsers_help = capsys.readouterr().out
+
+    assert dataparsers_help == argparse_help
