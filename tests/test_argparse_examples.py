@@ -43,6 +43,9 @@ def test_example(capsys: CapSys):
     assert args == Args(accumulate=sum, integers=[7, -1, 42])
 
 
+# %% Subcommands: https://docs.python.org/3/library/argparse.html#sub-commands
+
+
 def test_subcommands_01(capsys: CapSys):
     @dataparser(prog="PROG")
     @dataclass
@@ -92,7 +95,7 @@ def test_subcommands_02(capsys: CapSys):
     output_display = HelpDisplay(capsys.readouterr().out)
     subcommand_section = [s.strip() for s in output_display.get_section("subcommands")]
     assert "valid subcommands" in subcommand_section
-    # assert "additional help" in subcommand_section
+    assert any(["additional help" in elem for elem in subcommand_section])
 
 
 def foo(args):
