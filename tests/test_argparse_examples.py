@@ -7,8 +7,7 @@ SRC_DIR = Path(__file__).parent.parent.resolve() / "src"
 sys.path.insert(0, str(SRC_DIR))
 
 from dataclasses import dataclass
-from dataparsers import parse, make_parser, dataparser
-from dataparsers import arg, subparsers, subparser, default
+from dataparsers import parse, make_parser, dataparser, arg, subparsers, subparser, default, dataparser
 from resources import HelpDisplay, CapSys
 from typing import ClassVar, Any, TypeAlias, Callable
 
@@ -18,6 +17,27 @@ def parse_args_without_sysexit(cls: type, args: list[str]) -> None:
         parse(cls, args)
     except SystemExit:
         pass
+
+
+# %% Example: https://docs.python.org/3/library/argparse.html#example
+
+
+def test_example(capsys: CapSys):
+    @dataparser(description="Process some integers.")
+    class Args:
+        integers: int = arg(metavar="N", nargs="+", help="an integer for the accumulator")
+        accumulate: Callable = arg(
+            "--sum", action="store_const", default=max, const=sum, help="sum the integers (default: find the max)"
+        )
+
+    make_parser(Args).print_help()
+    output_display = HelpDisplay(capsys.readouterr().out)
+    assert "N" in output_display.positionals
+    assert "--sum" in output_display.flags
+    args = parse(Args, "1 2 3 4".split())
+    assert args.accumulate(args.integers) == 4
+    args = parse(Args, "1 2 3 4 --sum".split())
+    assert args.accumulate(args.integers) == 10
 
 
 def test_subcommands_01(capsys: CapSys):
@@ -86,9 +106,11 @@ def test_subcommands_03():
     class Args:
         func: Callable = default()
         subparsers: str = subparsers(required=True)
+
         foo: ClassVar = subparser(defaults=dict(func=foo))
         x: int = arg("-x", default=1, make_flag=False, subparser=foo)
         y: float = arg(subparser=foo)
+
         bar: ClassVar = subparser(defaults=dict(func=bar))
         z: str = arg(subparser=bar)
 
@@ -97,3 +119,20 @@ def test_subcommands_03():
 
     args = parse(Args, "bar XYZYX".split())
     assert args.func(args) == "((XYZYX))"
+
+
+def test_subcommands_04():
+
+    @dataclass
+    class Args:
+
+        subparser_name: str = subparsers()
+
+        s1: ClassVar = subparser()
+        x: str = arg("-x", make_flag=False, subparser=s1)
+
+        s2: ClassVar = subparser()
+        y: str = arg(subparser=s2)
+
+    args = parse(Args, ["s2", "frobble"])
+    assert args == Args(subparser_name="s2", y="frobble")
