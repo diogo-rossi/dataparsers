@@ -3,9 +3,9 @@ import os, textwrap
 from dataclasses import dataclass, field, fields, Field, is_dataclass
 from argparse import ArgumentParser, RawTextHelpFormatter
 from argparse import _MutuallyExclusiveGroup, _ArgumentGroup, _SubParsersAction  # only for typing annotation
-from typing import Any, TypeVar, Sequence, Callable, overload, ClassVar, get_type_hints, get_origin, cast
+from typing import Any, TypeVar, Sequence, Callable, overload, ClassVar, get_type_hints, get_origin, cast, get_args, Union
 from collections.abc import Mapping
-from types import MappingProxyType
+from types import MappingProxyType, UnionType
 
 Class = TypeVar("Class", covariant=True)
 
@@ -152,9 +152,6 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
     subparsers_group: _SubParsersAction | None = None
 
     for fld in fields(cls):  # type: ignore
-        if type(fld.type) == str:
-            fld.type = eval(fld.type) if not "Callable" in fld.type and callable(eval(fld.type)) else None
-
         if fld.metadata.get("is_subparsers_group", False):
             subparsers_group_kwargs = fld.metadata.get("subparsers_group_kwargs", {})
             subparsers_group_kwargs.pop("dest", None)
@@ -177,7 +174,11 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
 
     for fld in fields(cls):  # type: ignore
         if type(fld.type) == str:
-            fld.type = eval(fld.type) if not "Callable" in fld.type and callable(eval(fld.type)) else None
+            fld.type = eval(fld.type)
+        if get_origin(fld.type) is list or (get_origin(fld.type) in [Union, UnionType] and type(None) in get_args(fld.type)):
+            fld.type = [a for a in get_args(fld.type) if a is not type(None)][0]
+        if get_origin(fld.type) is Callable or not callable(fld.type):
+            fld.type = None
 
         if fld.metadata.get("is_subparsers_group", False):
             continue
