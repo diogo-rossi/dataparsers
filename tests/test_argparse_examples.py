@@ -8,6 +8,7 @@ sys.path.insert(0, str(SRC_DIR))
 
 from dataclasses import dataclass
 from dataparsers import parse, make_parser, dataparser, arg, subparsers, subparser, default, dataparser
+from dataparsers import group, mutually_exclusive_group
 from resources import HelpDisplay, CapSys
 from typing import ClassVar, Any, TypeAlias, Callable
 
@@ -142,3 +143,42 @@ def test_subcommands_04():
 
     args = parse(Args, ["s2", "frobble"])
     assert args == Args(subparser_name="s2", y="frobble")
+
+
+# %% Parser defaults: https://docs.python.org/3/library/argparse.html#parser-defaults
+
+
+def test_parser_defaults_01():
+    @dataclass
+    class Args:
+        foo: int
+        bar: int = default(42)
+        baz: str = default("badger")
+
+    assert parse(Args, ["736"]) == Args(foo=736, bar=42, baz="badger")
+
+
+def test_parser_defaults_02():  # this test does not make much sense
+    @dataclass
+    class Args:
+        foo: str = arg(default="bar")
+        foo: str = default("spam")
+
+    assert parse(Args, []) == Args(foo="spam")
+
+
+# %% Argument groups: https://docs.python.org/3/library/argparse.html#argument-groups
+
+
+def test_argument_groups_01(capsys: CapSys):
+    @dataparser(prog="PROG", add_help=False)
+    class Args:
+        group: ClassVar = group(title="group")
+        foo: str = arg(make_flag=True, help="foo help", group=group)
+        bar: str = arg(help="bar help", group=group)
+
+    make_parser(Args).print_help()
+    output = HelpDisplay(capsys.readouterr().out)
+    assert "PROG [--foo FOO] bar" in output.usage
+    assert any(["--foo" in a for a in output.get_section("group")])
+    assert any(["bar" in a for a in output.get_section("group")])
