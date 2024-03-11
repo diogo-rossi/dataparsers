@@ -26,7 +26,7 @@ def test_example(capsys: CapSys):
     @dataparser(description="Process some integers.")
     @dataclass
     class Args:
-        integers: int = arg(metavar="N", nargs="+", help="an integer for the accumulator")
+        integers: list[int] = arg(metavar="N", nargs="+", help="an integer for the accumulator")
         accumulate: Callable = arg(
             "--sum", action="store_const", default=max, const=sum, help="sum the integers (default: find the max)"
         )
@@ -53,9 +53,9 @@ def test_subcommands_01(capsys: CapSys):
         foo: bool = arg(help="foo help")
         subparser_name: str = subparsers(help="sub-command help")
         a: ClassVar = subparser(help="a help")
-        bar: int = arg(help="bar help", subparser=a)
+        bar: int | None = arg(help="bar help", subparser=a)
         b: ClassVar = subparser(help="b help")
-        baz: str = arg(make_flag=True, choices="XYZ", help="baz help", subparser=b)
+        baz: str | None = arg(make_flag=True, choices="XYZ", help="baz help", subparser=b)
 
     parse_args_without_sysexit(Args, ["-h"])
     output_display = HelpDisplay(capsys.readouterr().out)
