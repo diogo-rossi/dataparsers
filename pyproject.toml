@@ -20,4 +20,4 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
-addopts = "-rx -v -s --tb=short"
+addopts = "-rx -vv -s --tb=short"
