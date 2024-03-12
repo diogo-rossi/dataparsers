@@ -237,7 +237,7 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
                     group_kwargs = group.metadata.get("argument_group_kwargs", {})
                 if type(group) is str or type(group) is int:
                     group_name = group
-                    group_kwargs = {}
+                    group_kwargs = {"title": group} if type(group) is str else {}
                 if group_name not in groups:
                     groups[group_name] = handler.add_argument_group(**group_kwargs)
 
