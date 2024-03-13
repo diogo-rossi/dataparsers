@@ -204,15 +204,57 @@ from dataparsers import arg, make_parser, dataparser, write_help
 class Args:
     foo: str = arg(
         default=12.5,
-        help='''This description is printed as written here.
-                It preserves lines breaks.''',
+        help="""This description is printed as written here.
+                It preserves lines breaks.""",
     )
     bar: float = arg(
         default=25.5,
-        help='''This description is also formatted by `write_help` and
+        help="""This description is also formatted by `write_help` and
                 it is separated from the previous by a blank line.
-                The parameter has default value of %(default)s.''',
+                The parameter has default value of %(default)s.""",
     )
 
+
+make_parser(Args).print_help()
+
+
+# %% Example 16: Argument groups as ClassVars
+
+from dataclasses import dataclass
+from dataparsers import arg, make_parser, group
+from typing import ClassVar
+
+
+@dataclass
+class Args:
+    my_first_group: ClassVar = group()
+    foo: str = arg(group=my_first_group)
+    bar: str = arg(group=my_first_group)
+
+    my_second_group: ClassVar = group()
+    sam: str = arg(group=my_second_group)
+    ham: str = arg(group=my_second_group)
+
+
+make_parser(Args).print_help()
+
+
+# %% Example 17: Argument groups as ClassVars with options
+
+from dataclasses import dataclass
+from dataparsers import arg, make_parser, group, mutually_exclusive_group
+from typing import ClassVar
+
+
+@dataclass
+class Args:
+    my_first_group: ClassVar = group(title="Group1", description="First group description")
+    foo: str = arg(group=my_first_group)
+    bar: str = arg(group=my_first_group)
+    
+    my_second_group: ClassVar = group(title="Group2", description="Second group description")
+    my_exclusive_group: ClassVar = mutually_exclusive_group(required=True)
+    sam: str = arg(group=my_second_group, mutually_exclusive_group=my_exclusive_group)
+    ham: str = arg(group=my_second_group, mutually_exclusive_group=my_exclusive_group)
 
 make_parser(Args).print_help()
