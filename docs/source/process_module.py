@@ -76,6 +76,10 @@ THIS_FILE = Path(__file__)
 THIS_DIR = THIS_FILE.parent.resolve()
 DOCS_DIR = THIS_DIR.parent.resolve()
 ROOT_DIR = DOCS_DIR.parent.resolve()
+
+STUB_FILE = ROOT_DIR / "src/dataparsers/__init__.pyi"
+MARK_FILE = ROOT_DIR / "src/dataparsers/__init__.md"
+
 MODULE_FILENAME = "dataparsers.py"
 MODULE_FILEPATH = THIS_DIR / MODULE_FILENAME
 USER_MANUAL_FILE = THIS_DIR / "1_user_manual.md"
@@ -86,6 +90,17 @@ FUNCTIONS = THIS_DIR / "functions.md"
 
 def process_module():
     """Copy the stub file and process the module to use `autofunction` - replace links and format markdown"""
+
+    with open(MARK_FILE, "r") as file:
+        txt = file.read()
+
+    with open(STUB_FILE, "r") as file:
+        stub = file.read()
+
+    stub = txt + "\n" + stub[stub.index('"""', 10) :]
+
+    with open(STUB_FILE, "w") as file:
+        file.write(stub)
 
     # Copy stub file form `./src` folder to  `./docs/source` folder
     shutil.copy(os.path.abspath(f"{ROOT_DIR}/src/dataparsers/__init__.pyi"), os.path.abspath(MODULE_FILEPATH))
@@ -104,9 +119,7 @@ def process_module():
     for link in EXTERNAL_LINKS:
         module_docstring = module_docstring.replace(link, f"[{link}]({EXTERNAL_LINKS[link]})")
     for link in INTERNAL_LINKS:
-        module_docstring = module_docstring.replace(
-            link, f"{{py:func}}`~dataparsers.{link.replace('`','').replace('()','')}`"
-        )
+        module_docstring = module_docstring.replace(link, f"{{py:func}}`~dataparsers.{link.replace('`','').replace('()','')}`")
     for link in ARGUMENTS_LINKS:
         module_docstring = module_docstring.replace(
             link, f"[{link}](./2_available_functions.md#{link.replace('`','').replace('_','-')})"
