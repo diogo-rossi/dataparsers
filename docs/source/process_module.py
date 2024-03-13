@@ -13,6 +13,7 @@ EXTERNAL_LINKS = {
     "`argparse`": "https://docs.python.org/3/library/argparse.html#module-argparse",
     "`dataclasses`": "https://docs.python.org/3/library/dataclasses.html#module-dataclasses",
     "`dataclass`": "https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass",
+    "`ClassVar`": "https://docs.python.org/3/library/typing.html#typing.ClassVar",
     '"Aliases"': "#aliases",
     '"Default for booleans"': "#default-for-booleans",
 }
@@ -23,11 +24,22 @@ EMPHASIS = [
     "This may be the most common case",
 ]
 
-INTERNAL_LINKS = ["`arg()`", "`parse()`", "`dataparser()`", "`make_parser()`", "`write_help()`"]
+INTERNAL_LINKS = [
+    "`arg()`",
+    "`parse()`",
+    "`dataparser()`",
+    "`make_parser()`",
+    "`write_help()`",
+    "`group()`",
+    "`mutually_exclusive_group()`",
+]
 
 ARGUMENTS_LINKS = [
     "`name_or_flags`",
+    "`group`",
     "`group_title`",
+    "`title`",
+    "`mutually_exclusive_group`",
     "`mutually_exclusive_group_id`",
     "`make_flag`",
     "`action`",
@@ -123,6 +135,14 @@ def process_module():
     functions_toc = """
 ```{eval-rst}
 .. autofunction:: dataparsers.arg
+```
+---
+```{eval-rst}
+.. autofunction:: dataparsers.group
+```
+---
+```{eval-rst}
+.. autofunction:: dataparsers.mutually_exclusive_group
 ```
 ---
 ```{eval-rst}

@@ -115,8 +115,8 @@ options:
 ```
 
 In general, the {py:func}`~dataparsers.arg` function accepts all parameters that are used in the original [`add_argument()`](https://docs.python.org/3/library/argparse.html#the-add-argument-method) method (with few
-exceptions) and some additional parameters. The [`default`](./2_available_functions.md#default) keyword argument used above makes the argument optional
-(i.e., passed with flags like `--bar`) except in some specific situations.
+exceptions) and some additional parameters. The [`default`](./2_available_functions.md#default) keyword argument used above makes the argument optional (i.e.,
+passed with flags like `--bar`) except in some specific situations.
 
 One parameter of [`add_argument()`](https://docs.python.org/3/library/argparse.html#the-add-argument-method) that are not possible to pass to {py:func}`~dataparsers.arg` is the [`dest`](./2_available_functions.md#dest) keyword argument. That's
 because the name of the class attribute is determined by the [`dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass) field name. So, it is unnecessary to pass the
@@ -354,7 +354,7 @@ decorator.
 
 Both parameters [`group_title`](./2_available_functions.md#group-title) and [`mutually_exclusive_group_id`](./2_available_functions.md#mutually-exclusive-group-id) may be integers. This makes easier to prevent typos when
 identifying the groups. For the [`group_title`](./2_available_functions.md#group-title) parameter, if an integer is given, it is used to identify the group, but
-the value is not passed as `title` to the original [`add_argument_group()`](https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.add_argument_group) method (`None` is passed instead). This
+the value is not passed as [`title`](./2_available_functions.md#title) to the original [`add_argument_group()`](https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.add_argument_group) method (`None` is passed instead). This
 prevents the integer to be printed in the displayed help message:
 
 ```python
@@ -381,12 +381,74 @@ options:
 ```
 
 ```{note}
-Mutually exclusive argument groups do not support the `title` and [`description`](./2_available_functions.md#description) arguments of the
+Mutually exclusive argument groups do not support the [`title`](./2_available_functions.md#title) and [`description`](./2_available_functions.md#description) arguments of the
 [`add_argument_group()`](https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.add_argument_group) method. However, a mutually exclusive group can be added to an argument group that has a
-`title` and [`description`](./2_available_functions.md#description). This is achieved by passing both [`group_title`](./2_available_functions.md#group-title) and [`mutually_exclusive_group_id`](./2_available_functions.md#mutually-exclusive-group-id)
+[`title`](./2_available_functions.md#title) and [`description`](./2_available_functions.md#description). This is achieved by passing both [`group_title`](./2_available_functions.md#group-title) and [`mutually_exclusive_group_id`](./2_available_functions.md#mutually-exclusive-group-id)
 parameters to the {py:func}`~dataparsers.arg` function. If there is a conflict (i.e., same mutually exclusive group and different group
 titles), the mutually exclusive group takes precedence.
 ```
+#### Argument groups using [`ClassVar`](https://docs.python.org/3/library/typing.html#typing.ClassVar) (v2.1)
+
+Two new additional keyword arguments were introduced in v2.1 with functionality analogue to the previous parameters.
+
+The [`group`](./2_available_functions.md#group) and [`mutually_exclusive_group`](./2_available_functions.md#mutually-exclusive-group) keyword arguments also accepts a predefined [`ClassVar`](https://docs.python.org/3/library/typing.html#typing.ClassVar), that can be defined
+using 2 new functions: {py:func}`~dataparsers.group` and {py:func}`~dataparsers.mutually_exclusive_group`:
+
+```python
+from dataclasses import dataclass
+from dataparsers import arg, make_parser, group
+from typing import ClassVar
+
+@dataclass
+class Args:
+    my_first_group: ClassVar = group()
+    foo: str = arg(group=my_first_group)
+    bar: str = arg(group=my_first_group)
+
+    my_second_group: ClassVar = group()
+    sam: str = arg(group=my_second_group)
+    ham: str = arg(group=my_second_group)
+```
+
+Using [`ClassVar`](https://docs.python.org/3/library/typing.html#typing.ClassVar) names makes it even more easier to prevent typos when identifying groups inside the class. Moreover:
+the functions {py:func}`~dataparsers.group` and {py:func}`~dataparsers.mutually_exclusive_group` accepts the keyword arguments [`title`](./2_available_functions.md#title), [`description`](./2_available_functions.md#description) and
+[`required`](./2_available_functions.md#required), respectively, which helps to describe the groups without the need of the {py:func}`~dataparsers.dataparser` decorator:
+
+```python
+>>> @dataclass
+... class Args:
+...     my_first_group: ClassVar = group(title="Group1", description="First group description")
+...     foo: str = arg(group=my_first_group)
+...     bar: str = arg(group=my_first_group)
+...     ...
+...     my_second_group: ClassVar = group(title="Group2", description="Second group description")
+...     my_exclusive_group: ClassVar = mutually_exclusive_group(required=True)
+...     sam: str = arg(group=my_second_group, mutually_exclusive_group=my_exclusive_group)
+...     ham: str = arg(group=my_second_group, mutually_exclusive_group=my_exclusive_group)
+...
+>>> make_parser(Args).print_help()
+usage: [-h] (--sam SAM | --ham HAM) foo bar
+
+options:
+  -h, --help  show this help message and exit
+
+Group1:
+  First group description
+
+  foo
+  bar
+
+Group2:
+  Second group description
+
+  --sam SAM
+  --ham HAM
+```
+
+The [`group`](./2_available_functions.md#group) and [`mutually_exclusive_group`](./2_available_functions.md#mutually-exclusive-group) keyword arguments still accepts integers and strings, keeping the
+functionality compatible with the previous version parameters. When strings are passed to the [`group`](./2_available_functions.md#group) keyword argument,
+it is associated to the group title.
+
 ##  Parser specifications
 
 To specify detailed options to the created [`ArgumentParser`](https://docs.python.org/3/library/argparse.html#argumentparser-objects) object, use the {py:func}`~dataparsers.dataparser` decorator:
@@ -470,13 +532,14 @@ Args(foo=False)
 
 ### Help formatter function
 
-A last additional parameter accepted by the {py:func}`~dataparsers.dataparser` decorator is the [`help_formatter`](./2_available_functions.md#help-formatter) function, which is used to format
-the arguments help text, allowing the help formatting to be customized. This function must be defined accepting a single `str`
-as first positional argument and returning the string formatted text, i.e., `(str) -> str`. When this option is used, the
-[`formatter_class`](./2_available_functions.md#formatter-class) parameter passed to the [`ArgumentParser`](https://docs.python.org/3/library/argparse.html#argumentparser-objects) constructor is assumed to be `RawDescriptionHelpFormatter`.
+A last additional parameter accepted by the {py:func}`~dataparsers.dataparser` decorator is the [`help_formatter`](./2_available_functions.md#help-formatter) function, which is used to
+format the arguments help text, allowing the help formatting to be customized. This function must be defined accepting a
+single `str` as first positional argument and returning the string formatted text, i.e., `(str) -> str`. When this
+option is used, the [`formatter_class`](./2_available_functions.md#formatter-class) parameter passed to the [`ArgumentParser`](https://docs.python.org/3/library/argparse.html#argumentparser-objects) constructor is assumed to be
+`RawDescriptionHelpFormatter`.
 
-This project provides a built-in predefined function {py:func}`~dataparsers.write_help`, that can be used in the [`help_formatter`](./2_available_functions.md#help-formatter) option to preserve
-new line breaks and add blank lines between parameters descriptions:
+This project provides a built-in predefined function {py:func}`~dataparsers.write_help`, that can be used in the [`help_formatter`](./2_available_functions.md#help-formatter) option to
+preserve new line breaks and add blank lines between parameters descriptions:
 
 ```python
 >>> from dataparsers import arg, make_parser, dataparser, write_help

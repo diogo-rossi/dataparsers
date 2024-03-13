@@ -97,8 +97,8 @@ It allows to customize the interface::
       --bar BAR   bar help
 
 In general, the `arg()` function accepts all parameters that are used in the original `add_argument()` method (with few
-exceptions) and some additional parameters. The `default` keyword argument used above makes the argument optional
-(i.e., passed with flags like `--bar`) except in some specific situations.
+exceptions) and some additional parameters. The `default` keyword argument used above makes the argument optional (i.e.,
+passed with flags like `--bar`) except in some specific situations.
 
 One parameter of `add_argument()` that are not possible to pass to `arg()` is the `dest` keyword argument. That's
 because the name of the class attribute is determined by the `dataclass` field name. So, it is unnecessary to pass the
@@ -339,6 +339,64 @@ Note:
     parameters to the `arg()` function. If there is a conflict (i.e., same mutually exclusive group and different group
     titles), the mutually exclusive group takes precedence.
 
+#### Argument groups using `ClassVar` (v2.1)
+
+Two new additional keyword arguments were introduced in v2.1 with functionality analogue to the previous parameters.
+
+The `group` and `mutually_exclusive_group` keyword arguments also accepts a predefined `ClassVar`, that can be defined
+using 2 new functions: `group()` and `mutually_exclusive_group()`::
+
+    from dataclasses import dataclass
+    from dataparsers import arg, make_parser, group
+    from typing import ClassVar
+    
+    @dataclass
+    class Args:
+        my_first_group: ClassVar = group()
+        foo: str = arg(group=my_first_group)
+        bar: str = arg(group=my_first_group)
+        
+        my_second_group: ClassVar = group()
+        sam: str = arg(group=my_second_group)
+        ham: str = arg(group=my_second_group)
+
+Using `ClassVar` names makes it even more easier to prevent typos when identifying groups inside the class. Moreover:
+the functions `group()` and `mutually_exclusive_group()` accepts the keyword arguments `title`, `description` and
+`required`, respectively, which helps to describe the groups without the need of the `dataparser()` decorator::
+
+    >>> @dataclass
+    ... class Args:
+    ...     my_first_group: ClassVar = group(title="Group1", description="First group description")
+    ...     foo: str = arg(group=my_first_group)
+    ...     bar: str = arg(group=my_first_group)
+    ...     ...
+    ...     my_second_group: ClassVar = group(title="Group2", description="Second group description")
+    ...     my_exclusive_group: ClassVar = mutually_exclusive_group(required=True)
+    ...     sam: str = arg(group=my_second_group, mutually_exclusive_group=my_exclusive_group)
+    ...     ham: str = arg(group=my_second_group, mutually_exclusive_group=my_exclusive_group)
+    ... 
+    >>> make_parser(Args).print_help()
+    usage: [-h] (--sam SAM | --ham HAM) foo bar
+    
+    options:
+      -h, --help  show this help message and exit
+    
+    Group1:
+      First group description
+    
+      foo
+      bar
+    
+    Group2:
+      Second group description
+    
+      --sam SAM
+      --ham HAM
+
+The `group` and `mutually_exclusive_group` keyword arguments still accepts integers and strings, keeping the
+functionality compatible with the previous version parameters. When strings are passed to the `group` keyword argument,
+it is associated to the group title.
+
 ##  Parser specifications
 
 To specify detailed options to the created `ArgumentParser` object, use the `dataparser()` decorator::
@@ -416,13 +474,14 @@ function) will receive its default value determining `"store_const"` action defi
 
 ### Help formatter function
 
-A last additional parameter accepted by the `dataparser()` decorator is the `help_formatter` function, which is used to format
-the arguments help text, allowing the help formatting to be customized. This function must be defined accepting a single `str`
-as first positional argument and returning the string formatted text, i.e., `(str) -> str`. When this option is used, the
-`formatter_class` parameter passed to the `ArgumentParser` constructor is assumed to be `RawDescriptionHelpFormatter`.
+A last additional parameter accepted by the `dataparser()` decorator is the `help_formatter` function, which is used to
+format the arguments help text, allowing the help formatting to be customized. This function must be defined accepting a
+single `str` as first positional argument and returning the string formatted text, i.e., `(str) -> str`. When this
+option is used, the `formatter_class` parameter passed to the `ArgumentParser` constructor is assumed to be
+`RawDescriptionHelpFormatter`.
 
-This project provides a built-in predefined function `write_help()`, that can be used in the `help_formatter` option to preserve
-new line breaks and add blank lines between parameters descriptions::
+This project provides a built-in predefined function `write_help()`, that can be used in the `help_formatter` option to
+preserve new line breaks and add blank lines between parameters descriptions::
 
     >>> from dataparsers import arg, make_parser, dataparser, write_help
     >>> @dataparser(help_formatter=write_help)

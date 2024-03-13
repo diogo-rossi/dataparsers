@@ -80,6 +80,14 @@ arguments:
 ```
 ---
 ```{eval-rst}
+.. autofunction:: dataparsers.group
+```
+---
+```{eval-rst}
+.. autofunction:: dataparsers.mutually_exclusive_group
+```
+---
+```{eval-rst}
 .. autofunction:: dataparsers.dataparser
 ```
 ---

@@ -97,8 +97,8 @@ It allows to customize the interface::
       --bar BAR   bar help
 
 In general, the :func:`~dataparsers.arg` function accepts all parameters that are used in the original :meth:`~argparse.ArgumentParser.add_argument` method (with few
-exceptions) and some additional parameters. The :argument_link:`default<default>` keyword argument used above makes the argument optional
-(i.e., passed with flags like `--bar`) except in some specific situations.
+exceptions) and some additional parameters. The :argument_link:`default<default>` keyword argument used above makes the argument optional (i.e.,
+passed with flags like `--bar`) except in some specific situations.
 
 One parameter of :meth:`~argparse.ArgumentParser.add_argument` that are not possible to pass to :func:`~dataparsers.arg` is the :argument_link:`dest<dest>` keyword argument. That's
 because the name of the class attribute is determined by the :func:`~dataclasses.dataclass` field name. So, it is unnecessary to pass the
@@ -308,7 +308,7 @@ decorator.
 
 Both parameters :argument_link:`group_title<group-title>` and :argument_link:`mutually_exclusive_group_id<mutually-exclusive-group-id>` may be integers. This makes easier to prevent typos when
 identifying the groups. For the :argument_link:`group_title<group-title>` parameter, if an integer is given, it is used to identify the group, but
-the value is not passed as `title` to the original :meth:`~argparse.ArgumentParser.add_argument_group` method (`None` is passed instead). This
+the value is not passed as :argument_link:`title<title>` to the original :meth:`~argparse.ArgumentParser.add_argument_group` method (`None` is passed instead). This
 prevents the integer to be printed in the displayed help message::
 
     >>> @dataclass
@@ -333,11 +333,69 @@ prevents the integer to be printed in the displayed help message::
       ham
 
 Note:
-    Mutually exclusive argument groups do not support the `title` and :argument_link:`description<description>` arguments of the
+    Mutually exclusive argument groups do not support the :argument_link:`title<title>` and :argument_link:`description<description>` arguments of the
     :meth:`~argparse.ArgumentParser.add_argument_group` method. However, a mutually exclusive group can be added to an argument group that has a
-    `title` and :argument_link:`description<description>`. This is achieved by passing both :argument_link:`group_title<group-title>` and :argument_link:`mutually_exclusive_group_id<mutually-exclusive-group-id>`
+    :argument_link:`title<title>` and :argument_link:`description<description>`. This is achieved by passing both :argument_link:`group_title<group-title>` and :argument_link:`mutually_exclusive_group_id<mutually-exclusive-group-id>`
     parameters to the :func:`~dataparsers.arg` function. If there is a conflict (i.e., same mutually exclusive group and different group
     titles), the mutually exclusive group takes precedence.
+
+#### Argument groups using :class:`~argparse.ClassVar` (v2.1)
+
+Two new additional keyword arguments were introduced in v2.1 with functionality analogue to the previous parameters.
+
+The :argument_link:`group<group>` and :argument_link:`mutually_exclusive_group<mutually-exclusive-group>` keyword arguments also accepts a predefined :class:`~argparse.ClassVar`, that can be defined
+using 2 new functions: :func:`~dataparsers.group` and :func:`~dataparsers.mutually_exclusive_group`::
+
+    from dataclasses import dataclass
+    from dataparsers import arg, make_parser, group
+    from typing import ClassVar
+    
+    @dataclass
+    class Args:
+        my_first_group: ClassVar = group()
+        foo: str = arg(group=my_first_group)
+        bar: str = arg(group=my_first_group)
+        
+        my_second_group: ClassVar = group()
+        sam: str = arg(group=my_second_group)
+        ham: str = arg(group=my_second_group)
+
+Using :class:`~argparse.ClassVar` names makes it even more easier to prevent typos when identifying groups inside the class. Moreover:
+the functions :func:`~dataparsers.group` and :func:`~dataparsers.mutually_exclusive_group` accepts the keyword arguments :argument_link:`title<title>`, :argument_link:`description<description>` and
+:argument_link:`required<required>`, respectively, which helps to describe the groups without the need of the :func:`~dataparsers.dataparser` decorator::
+
+    >>> @dataclass
+    ... class Args:
+    ...     my_first_group: ClassVar = group(title="Group1", description="First group description")
+    ...     foo: str = arg(group=my_first_group)
+    ...     bar: str = arg(group=my_first_group)
+    ...     ...
+    ...     my_second_group: ClassVar = group(title="Group2", description="Second group description")
+    ...     my_exclusive_group: ClassVar = mutually_exclusive_group(required=True)
+    ...     sam: str = arg(group=my_second_group, mutually_exclusive_group=my_exclusive_group)
+    ...     ham: str = arg(group=my_second_group, mutually_exclusive_group=my_exclusive_group)
+    ... 
+    >>> make_parser(Args).print_help()
+    usage: [-h] (--sam SAM | --ham HAM) foo bar
+    
+    options:
+      -h, --help  show this help message and exit
+    
+    Group1:
+      First group description
+    
+      foo
+      bar
+    
+    Group2:
+      Second group description
+    
+      --sam SAM
+      --ham HAM
+
+The :argument_link:`group<group>` and :argument_link:`mutually_exclusive_group<mutually-exclusive-group>` keyword arguments still accepts integers and strings, keeping the
+functionality compatible with the previous version parameters. When strings are passed to the :argument_link:`group<group>` keyword argument,
+it is associated to the group title.
 
 ##  Parser specifications
 
@@ -416,13 +474,14 @@ function) will receive its default value determining `"store_const"` action defi
 
 ### Help formatter function
 
-A last additional parameter accepted by the :func:`~dataparsers.dataparser` decorator is the :argument_link:`help_formatter<help-formatter>` function, which is used to format
-the arguments help text, allowing the help formatting to be customized. This function must be defined accepting a single `str`
-as first positional argument and returning the string formatted text, i.e., `(str) -> str`. When this option is used, the
-:argument_link:`formatter_class<formatter-class>` parameter passed to the :class:`~argparse.ArgumentParser` constructor is assumed to be `RawDescriptionHelpFormatter`.
+A last additional parameter accepted by the :func:`~dataparsers.dataparser` decorator is the :argument_link:`help_formatter<help-formatter>` function, which is used to
+format the arguments help text, allowing the help formatting to be customized. This function must be defined accepting a
+single `str` as first positional argument and returning the string formatted text, i.e., `(str) -> str`. When this
+option is used, the :argument_link:`formatter_class<formatter-class>` parameter passed to the :class:`~argparse.ArgumentParser` constructor is assumed to be
+`RawDescriptionHelpFormatter`.
 
-This project provides a built-in predefined function :func:`~dataparsers.write_help`, that can be used in the :argument_link:`help_formatter<help-formatter>` option to preserve
-new line breaks and add blank lines between parameters descriptions::
+This project provides a built-in predefined function :func:`~dataparsers.write_help`, that can be used in the :argument_link:`help_formatter<help-formatter>` option to
+preserve new line breaks and add blank lines between parameters descriptions::
 
     >>> from dataparsers import arg, make_parser, dataparser, write_help
     >>> @dataparser(help_formatter=write_help)
@@ -456,6 +515,7 @@ new line breaks and add blank lines between parameters descriptions::
 
 from argparse import ArgumentParser, Action, FileType, HelpFormatter
 from typing import Literal, TypeVar, Callable, Iterable, Sequence, Any, overload
+from dataclasses import dataclass, Field
 
 T = TypeVar("T", covariant=True)
 
@@ -463,6 +523,9 @@ Class = TypeVar("Class", covariant=True)
 
 def arg(
     *name_or_flags: str,
+    group: Field[Any] | int | str | None = None,
+    mutually_exclusive_group: Field[Any] | int | str | None = None,
+    subparser: Field[Any] | None = None,
     group_title: str | int | None = None,
     mutually_exclusive_group_id: str | int | None = None,
     make_flag: bool | None = None,
@@ -497,7 +560,7 @@ def arg(
     parameters may be supplied, namely :argument_link:`group_title<group-title>`, :argument_link:`mutually_exclusive_group_id<mutually-exclusive-group-id>` and :argument_link:`make_flag<make-flag>`. The parameter
     :argument_link:`name_or_flags<name-or-flags>`, taken from the original :meth:`~argparse.ArgumentParser.add_argument` method, behaves a little different.
 
-    Parameters
+    Parameters #TODO: add new parameters
     ----------
 
         .. _name-or-flags:
@@ -519,17 +582,17 @@ def arg(
 
         - `group_title` (`str | int | None`, optional): Defaults to `None`.
 
-            The `title` (or a simple id integer) of the argument group in which the argument may be added.
+            The :argument_link:`title<title>` (or a simple id integer) of the argument group in which the argument may be added.
 
             This is quick way to use the functionality of the method :meth:`~argparse.ArgumentParser.add_argument_group` of the standard
             `argparse.ArgumentParser` class.
 
             By default, `argparse.ArgumentParser` groups command-line arguments into "positional arguments" and
             "options" when displaying help messages. When there is a better conceptual grouping of arguments than this
-            default one, appropriate groups can be created using the :meth:`~argparse.ArgumentParser.add_argument_group` method, that accepts `title`
+            default one, appropriate groups can be created using the :meth:`~argparse.ArgumentParser.add_argument_group` method, that accepts :argument_link:`title<title>`
             and :argument_link:`description<description>` parameters, which can be used to customize the help display.
 
-            The :argument_link:`group_title<group-title>` parameter identifies the `title` of the argument group to include the argument::
+            The :argument_link:`group_title<group-title>` parameter identifies the :argument_link:`title<title>` of the argument group to include the argument::
 
                 >>> @dataclass
                 ... class Args:
@@ -1230,6 +1293,251 @@ def arg(
     -------
         `default@arg | Field`: A :func:`~dataclasses.dataclass` field with given :argument_link:`default<default>` value of the field and `metadata` dictionary
         filled with argument parameters.
+    """
+    ...
+
+def group(title: str | None = None, description: str | None = None) -> Any:
+    """_summary_ #TODO
+
+    _extended_summary_
+
+    Parameters
+    ----------
+
+        .. _title:
+
+        - `title` (`str | None`, optional): Defaults to `None`.
+
+            The title of the argument group.
+
+
+        .. _description:
+
+        - `description` (`str | None`, optional): Defaults to `None`.
+
+            The description of the argument group.
+
+    Returns
+    -------
+        `Field`: A :func:`~dataclasses.dataclass` field with `metadata` dictionary filled with argument group parameters.
+    """
+    ...
+
+def mutually_exclusive_group(*, required: bool = False) -> Any:
+    """_summary_ #TODO
+
+    _extended_summary_
+
+    Parameters
+    ----------
+
+        .. _required:
+
+        - `required` (`bool`, optional): Defaults to `False`.
+
+            Indicate that at least one of the mutually exclusive arguments is required.
+
+    Returns
+    -------
+        `Field`: A :func:`~dataclasses.dataclass` field with `metadata` dictionary filled with mutually exclusive group parameters.
+    """
+    ...
+
+def subparsers(
+    *,
+    title: str = "subcommands",
+    description: str | None = None,
+    prog: str = ...,
+    parser_class: type = ArgumentParser,
+    action: type[Action] = ...,
+    dest: str | None = None,
+    required: bool = False,
+    help: str | None = None,
+    metavar: str | None = None,
+) -> Any:
+    """_summary_ #TODO
+
+    _extended_summary_
+
+    Parameters
+    ----------
+
+        .. _title:
+
+        - `title` (`str`, optional): Defaults to `"subcommands"`.
+
+            Title for the sub-parser group in help output; by default "subcommands" if description is provided,
+            otherwise uses title for positional arguments
+
+
+        .. _description:
+
+        - `description` (`str | None`, optional): Defaults to `None`.
+
+            Description for the sub-parser group in help output.
+
+
+        .. _prog:
+
+        - `prog` (`str`, optional): Defaults to the name of the program and any positional arguments before the
+          subparser argument.
+
+            Usage information that will be displayed with sub-command help.
+
+        - `parser_class` (:argument_link:`type<type>`, optional): Defaults to :class:`~argparse.ArgumentParser`.
+
+            Class which will be used to create sub-parser instances, by default the class of the current parser (e.g.
+            ArgumentParser).
+
+
+        .. _action:
+
+        - `action` (`type[Action]`, optional): Defaults to `...`.
+
+            The basic type of action to be taken when this argument is encountered at the command line.
+
+
+        .. _dest:
+
+        - `dest` (`str | None`, optional): Defaults to `None`.
+
+            Name of the attribute under which sub-command name will be stored. By default `None` and no value is stored.
+
+
+        .. _required:
+
+        - `required` (`bool`, optional): Defaults to `False`.
+
+            Whether or not a subcommand must be provided (added in 3.7).
+
+
+        .. _help:
+
+        - `help` (`str | None`, optional): Defaults to `None`.
+
+            Help for sub-parser group in help output.
+
+
+        .. _metavar:
+
+        - `metavar` (`str | None`, optional): Defaults to `None`.
+
+            String presenting available sub-commands in help. By default it is `None` and presents sub-commands in form
+            `{cmd1, cmd2, ..}`
+
+    Returns
+    -------
+        `Field`: A :func:`~dataclasses.dataclass` field with `metadata` dictionary filled with subparser group parameters.
+    """
+    ...
+
+@dataclass(frozen=True)
+class SubParser:
+    defaults: dict[str, Any] | None
+    kwargs: dict[str, Any]
+
+def subparser(
+    *,
+    defaults: dict[str, Any] | None = None,
+    aliases: Sequence[str] = ...,
+    help: str = ...,
+    prog: str | None = None,
+    usage: str | None = None,
+    description: str | None = None,
+    epilog: str | None = None,
+    parents: Sequence[ArgumentParser] = [],
+    formatter_class: HelpFormatter = ...,
+    prefix_chars: str = "-",
+    fromfile_prefix_chars: str | None = None,
+    argument_default: Any = None,
+    conflict_handler: str = "error",
+    add_help: bool = True,
+    allow_abbrev: bool = True,
+    exit_on_error: bool = True,
+) -> Any:
+    """_summary_ #TODO
+
+    _extended_summary_
+
+    Parameters
+    ----------
+        - `subparsers_group` (`Field[Any] | None`, optional): Defaults to `None`. # TODO remove
+
+            _description_
+
+    Additional parameters from the original `add_parser()` method
+    --------------------------------------------------------------
+        - `aliases` (`Sequence[str]`, optional):
+
+            An additional argument which allows multiple strings to refer to the same subparser. This example, like
+            `svn`, aliases `co` as a shorthand for `checkout`::
+
+                >>> parser = argparse.ArgumentParser()
+                >>> subparsers = parser.add_subparsers()
+                >>> checkout = subparsers.add_parser('checkout', aliases=['co'])
+                >>> checkout.add_argument('foo')
+                >>> parser.parse_args(['co', 'bar'])
+                Namespace(foo='bar')
+
+
+        .. _help:
+
+        - `help` (`str`, optional):
+
+            A help message for each subparser command can be given by supplying this argument o `add_parser()` as
+            below::
+
+                >>> # create the top-level parser
+                >>> parser = argparse.ArgumentParser(prog='PROG')
+                >>> parser.add_argument('--foo', action='store_true', help='foo help')
+                >>> subparsers = parser.add_subparsers(help='sub-command help')
+                >>>
+                >>> # create the parser for the "a" command
+                >>> parser_a = subparsers.add_parser('a', help='a help')
+                >>> parser_a.add_argument('bar', type=int, help='bar help')
+                >>>
+                >>> # create the parser for the "b" command
+                >>> parser_b = subparsers.add_parser('b', help='b help')
+                >>> parser_b.add_argument('--baz', choices='XYZ', help='baz help')
+                >>> parser.parse_args(['--help'])
+                usage: PROG [-h] [--foo] {a,b} ...
+
+                positional arguments:
+                  {a,b}   sub-command help
+                    a     a help
+                    b     b help
+
+                options:
+                  -h, --help  show this help message and exit
+                  --foo   foo help
+
+    Parameters from the original :class:`~argparse.ArgumentParser` constructor
+    ---------------------------------------------------------------------------
+
+
+    Returns
+    -------
+        `Any`: _description_
+    """
+    ...
+
+def default(default: T | None = None) -> T:
+    """_summary_
+
+    _extended_summary_
+
+    Parameters
+    ----------
+
+        .. _default:
+
+        - `default` (`T | None`, optional): Defaults to `None`.
+
+            _description_
+
+    Returns
+    -------
+        `T`: _description_
     """
     ...
 
