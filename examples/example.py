@@ -11,7 +11,7 @@ sys.path.insert(0, str(SRC_DIR))
 # %% Imports
 
 from dataclasses import dataclass
-from dataparsers import arg, make_parser, dataparser, parse, write_help
+from dataparsers import arg, make_parser, dataparser, parse, write_help, default
 
 # %% Example 1: Basic usage
 
@@ -200,6 +200,7 @@ parse(Args, ["--foo"])
 
 from dataparsers import arg, make_parser, dataparser, write_help
 
+
 @dataparser(help_formatter=write_help)
 class Args:
     foo: str = arg(
@@ -242,19 +243,33 @@ make_parser(Args).print_help()
 # %% Example 17: Argument groups as ClassVars with options
 
 from dataclasses import dataclass
-from dataparsers import arg, make_parser, group, mutually_exclusive_group
+from dataparsers import arg, make_parser, group, mutually_exclusive_group, group
 from typing import ClassVar
 
 
 @dataclass
 class Args:
     my_first_group: ClassVar = group(title="Group1", description="First group description")
-    foo: str = arg(group=my_first_group)
-    bar: str = arg(group=my_first_group)
-    
+    my_1st_exclusive_group: ClassVar = mutually_exclusive_group(required=False)
+    foo: str = arg(group=my_first_group, mutually_exclusive_group=my_1st_exclusive_group)
+    bar: str = arg(group=my_first_group, mutually_exclusive_group=my_1st_exclusive_group)
+    ...
     my_second_group: ClassVar = group(title="Group2", description="Second group description")
-    my_exclusive_group: ClassVar = mutually_exclusive_group(required=True)
-    sam: str = arg(group=my_second_group, mutually_exclusive_group=my_exclusive_group)
-    ham: str = arg(group=my_second_group, mutually_exclusive_group=my_exclusive_group)
+    my_2nd_exclusive_group: ClassVar = mutually_exclusive_group(required=True)
+    sam: str = arg(group=my_second_group, mutually_exclusive_group=my_2nd_exclusive_group)
+    ham: str = arg(group=my_second_group, mutually_exclusive_group=my_2nd_exclusive_group)
+
 
 make_parser(Args).print_help()
+
+
+# %% Example 18: Parser defaults https://docs.python.org/3/library/argparse.html#parser-defaults
+
+from dataparsers import parse, default
+@dataclass
+class Args:
+    foo: int
+    bar: int = default(42)
+    baz: str = default("badger")
+
+parse(Args, ["736"])

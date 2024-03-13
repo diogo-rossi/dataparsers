@@ -1,4 +1,5 @@
 """
+
 # dataparsers
 
 A wrapper around :mod:`~argparse` to get command line argument parsers from :mod:`~dataclasses`.
@@ -10,7 +11,7 @@ Create a :func:`~dataclasses.dataclass` describing your command line interface, 
     # prog.py
     from dataclasses import dataclass
     from dataparsers import parse
-    
+
     @dataclass
     class Args:
         foo: str
@@ -27,10 +28,10 @@ The script can then be used in the same way as used with :mod:`~argparse`::
 
     $ python prog.py -h
     usage: prog.py [-h] [--bar BAR] foo
-    
+
     positional arguments:
       foo
-    
+
     options:
       -h, --help  show this help message and exit
       --bar BAR
@@ -59,12 +60,12 @@ Both functions :func:`~dataparsers.parse` and :func:`~dataparsers.make_parser` a
     >>> prev_parser = ArgumentParser(description="Existing parser")
     >>> parse(Args, ["-h"], parser=prev_parser)
     usage: [-h] [--bar BAR] foo
-    
+
     Existing parser
-    
+
     positional arguments:
       foo
-    
+
     options:
       -h, --help  show this help message and exit
       --bar BAR
@@ -88,10 +89,10 @@ It allows to customize the interface::
 
     $ python prog.py -h
     usage: prog.py [-h] [--bar BAR] foo
-    
+
     positional arguments:
       foo         foo help
-    
+
     options:
       -h, --help  show this help message and exit
       --bar BAR   bar help
@@ -123,10 +124,10 @@ In this case, it also creates automatically a `--` flag ::
 
     $ python prog.py -h
     usage: prog.py [-h] [-b BAR] foo
-    
+
     positional arguments:
       foo                foo help
-    
+
     options:
       -h, --help         show this help message and exit
       -b BAR, --bar BAR  bar help
@@ -157,7 +158,7 @@ Both formats above produces the same interface::
 
     $ python prog.py -h
     usage: prog.py [-h] [--bar [BAR]]
-    
+
     options:
       -h, --help   show this help message and exit
       --bar [BAR]  bar help
@@ -196,13 +197,12 @@ can be modified by the keyword argument :argument_link:`default_bool<default-boo
     ...
     >>> make_parser(Args).print_help()
     usage: [-h] [--bar]
-    
+
     options:
       -h, --help  show this help message and exit
       --bar
     >>> parse(Args, [])
     Args(bar=False)
-
 
 #### Decoupling code from the command line interface
 
@@ -225,7 +225,7 @@ names::
     options:
       -h, --help            show this help message and exit
       -f <filepath>, --file-output <filepath>
-                            Text file to write output 
+                            Text file to write output
 
 In this situation, the interface can be customized, and the flags are not related to the attribute names inside the
 code::
@@ -322,13 +322,13 @@ prevents the integer to be printed in the displayed help message::
     >>> parser = make_parser(Args)
     >>> parser.print_help()
     usage: [-h] foo bar sam ham
-    
+
     options:
       -h, --help  show this help message and exit
-    
+
       foo
       bar
-    
+
       sam
       ham
 
@@ -339,7 +339,7 @@ Note:
     parameters to the :func:`~dataparsers.arg` function. If there is a conflict (i.e., same mutually exclusive group and different group
     titles), the mutually exclusive group takes precedence.
 
-#### Argument groups using :class:`~argparse.ClassVar` (v2.1)
+### Argument groups using :class:`~argparse.ClassVar` (v2.1)
 
 Two new additional keyword arguments were introduced in v2.1 with functionality analogue to the previous parameters.
 
@@ -349,13 +349,13 @@ using 2 new functions: :func:`~dataparsers.group` and :func:`~dataparsers.mutual
     from dataclasses import dataclass
     from dataparsers import arg, make_parser, group
     from typing import ClassVar
-    
+
     @dataclass
     class Args:
         my_first_group: ClassVar = group()
         foo: str = arg(group=my_first_group)
         bar: str = arg(group=my_first_group)
-        
+
         my_second_group: ClassVar = group()
         sam: str = arg(group=my_second_group)
         ham: str = arg(group=my_second_group)
@@ -367,40 +367,68 @@ the functions :func:`~dataparsers.group` and :func:`~dataparsers.mutually_exclus
     >>> @dataclass
     ... class Args:
     ...     my_first_group: ClassVar = group(title="Group1", description="First group description")
-    ...     foo: str = arg(group=my_first_group)
-    ...     bar: str = arg(group=my_first_group)
+    ...     my_1st_exclusive_group: ClassVar = mutually_exclusive_group(required=False)
+    ...     foo: str = arg(group=my_first_group, mutually_exclusive_group=my_1st_exclusive_group)
+    ...     bar: str = arg(group=my_first_group, mutually_exclusive_group=my_1st_exclusive_group)
     ...     ...
     ...     my_second_group: ClassVar = group(title="Group2", description="Second group description")
-    ...     my_exclusive_group: ClassVar = mutually_exclusive_group(required=True)
-    ...     sam: str = arg(group=my_second_group, mutually_exclusive_group=my_exclusive_group)
-    ...     ham: str = arg(group=my_second_group, mutually_exclusive_group=my_exclusive_group)
-    ... 
+    ...     my_2nd_exclusive_group: ClassVar = mutually_exclusive_group(required=True)
+    ...     sam: str = arg(group=my_second_group, mutually_exclusive_group=my_2nd_exclusive_group)
+    ...     ham: str = arg(group=my_second_group, mutually_exclusive_group=my_2nd_exclusive_group)
+    ...
+    >>>
     >>> make_parser(Args).print_help()
-    usage: [-h] (--sam SAM | --ham HAM) foo bar
-    
+    usage: [-h] [--foo FOO | --bar BAR] (--sam SAM | --ham HAM)
+
     options:
       -h, --help  show this help message and exit
-    
+
     Group1:
       First group description
-    
-      foo
-      bar
-    
+
+      --foo FOO
+      --bar BAR
+
     Group2:
       Second group description
-    
+
       --sam SAM
       --ham HAM
+
+OBS: The delimiter `( )` in the "usage" above indicates that the group is required, while the delimiter `[ ]` indicates
+the optional status.
 
 The :argument_link:`group<group>` and :argument_link:`mutually_exclusive_group<mutually-exclusive-group>` keyword arguments still accepts integers and strings, keeping the
 functionality compatible with the previous version parameters. When strings are passed to the :argument_link:`group<group>` keyword argument,
 it is associated to the group title.
 
-##  Parser specifications
+### Parser-level defaults
+
+Most of the time, the attributes of the object returned by :func:`~dataparsers.parse` will be fully determined by inspecting the
+command-line arguments. However, there is a original :meth:`~argparse.ArgumentParser.set_defaults` method that allows some additional attributes to
+be determined without any inspection of the command line to be added. This functionality can be reproduced with the
+:func:`~dataparsers.default` function::
+
+    >>> from dataparsers import parse, default
+    >>> @dataclass
+    ... class Args:
+    ...     foo: int
+    ...     bar: int = default(42)
+    ...     baz: str = default("badger")
+    ...
+    >>> parse(Args, ["736"])
+    Args(foo=736, bar=42, baz='badger')
+
+Parser-level defaults are the original recommended useful way to work with multiple parsers. See the :func:`~dataparsers.subparser`
+method for examples.
+
+One obvious difference of using this :func:`~dataparsers.default` function in place of the original :meth:`~argparse.ArgumentParser.set_defaults` method is that this
+function must be used for each separated argument.
+
+## Parser specifications
 
 To specify detailed options to the created :class:`~argparse.ArgumentParser` object, use the :func:`~dataparsers.dataparser` decorator::
-    
+
     >>> from dataparsers import dataparser, make_parser
     >>> @dataparser(prog='MyProgram', description='A foo that bars')
     ... class Args:
@@ -408,16 +436,21 @@ To specify detailed options to the created :class:`~argparse.ArgumentParser` obj
     ...
     >>> make_parser(Args).print_help()
     usage: MyProgram [-h]
-    
+
     A foo that bars
-    
+
     options:
       -h, --help  show this help message and exit
 
 In general, the :func:`~dataparsers.dataparser` decorator accepts all parameters that are used in the original :class:`~argparse.ArgumentParser`
-constructor, and some additional parameters. 
+constructor, and some additional parameters.
 
 ### Groups :argument_link:`description<description>` and :argument_link:`required<required>` status
+
+Note:
+    In v2.1, the introduction of 2 new functions (:func:`~dataparsers.group` and :func:`~dataparsers.mutually_exclusive_group`) and 2 new keyword
+    arguments for the :func:`~dataparsers.arg` function (:argument_link:`group<group>` and :argument_link:`mutually_exclusive_group<mutually-exclusive-group>`) made it easier to specify :argument_link:`description<description>`
+    and :argument_link:`required<required>` status of the groups at the class scope. These may be better than using the :func:`~dataparsers.dataparser` decorator.
 
 Two important additional parameters accepted by the :func:`~dataparsers.dataparser` decorator are the dictionaries :argument_link:`groups_descriptions<groups-descriptions>`
 and :argument_link:`required_mutually_exclusive_groups<required-mutually-exclusive-groups>`, whose keys should match some value of the arguments :argument_link:`group_title<group-title>` or
@@ -448,9 +481,6 @@ and :argument_link:`required_mutually_exclusive_groups<required-mutually-exclusi
 
       --sam
       --ham HAM
-
-OBS: The delimiter `( )` in the "usage" above indicates that the group is required, while the delimiter `[ ]` indicates
-the optional status.
 
 ### Default for booleans
 
@@ -501,15 +531,19 @@ preserve new line breaks and add blank lines between parameters descriptions::
     >>>
     >>> make_parser(Args).print_help()
     usage: [-h] [--foo FOO] [--bar BAR]
-    
+
     options:
       -h, --help  show this help message and exit
       --foo FOO   This description is printed as written here.
                   It preserves lines breaks.
-    
+
       --bar BAR   This description is also formatted by `write_help` and
                   it is separated from the previous by a blank line.
                   The parameter has default value of 25.5.
+
+## Subparsers
+
+TODO
 
 """
 
@@ -1988,7 +2022,7 @@ def dataparser(
             The global default value for arguments (default: `None`).
 
             Generally, argument defaults are specified either by passing a default to :meth:`~argparse.ArgumentParser.add_argument` or by calling the
-            `set_defaults()` methods with a specific set of name-value pairs. Sometimes however, it may be useful to
+            :meth:`~argparse.ArgumentParser.set_defaults` methods with a specific set of name-value pairs. Sometimes however, it may be useful to
             specify a single parser-wide default for arguments. This can be accomplished by passing the
             `argument_default=` keyword argument to :class:`~argparse.ArgumentParser`. For example, to globally suppress attribute
             creation on :meth:`~argparse.ArgumentParser.parse_args` calls, we supply `argument_default=SUPPRESS`::

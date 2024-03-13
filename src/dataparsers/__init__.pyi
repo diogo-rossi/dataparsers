@@ -339,7 +339,7 @@ Note:
     parameters to the `arg()` function. If there is a conflict (i.e., same mutually exclusive group and different group
     titles), the mutually exclusive group takes precedence.
 
-#### Argument groups using `ClassVar` (v2.1)
+### Argument groups using `ClassVar` (v2.1)
 
 Two new additional keyword arguments were introduced in v2.1 with functionality analogue to the previous parameters.
 
@@ -367,16 +367,18 @@ the functions `group()` and `mutually_exclusive_group()` accepts the keyword arg
     >>> @dataclass
     ... class Args:
     ...     my_first_group: ClassVar = group(title="Group1", description="First group description")
-    ...     foo: str = arg(group=my_first_group)
-    ...     bar: str = arg(group=my_first_group)
+    ...     my_1st_exclusive_group: ClassVar = mutually_exclusive_group(required=False)
+    ...     foo: str = arg(group=my_first_group, mutually_exclusive_group=my_1st_exclusive_group)
+    ...     bar: str = arg(group=my_first_group, mutually_exclusive_group=my_1st_exclusive_group)
     ...     ...
     ...     my_second_group: ClassVar = group(title="Group2", description="Second group description")
-    ...     my_exclusive_group: ClassVar = mutually_exclusive_group(required=True)
-    ...     sam: str = arg(group=my_second_group, mutually_exclusive_group=my_exclusive_group)
-    ...     ham: str = arg(group=my_second_group, mutually_exclusive_group=my_exclusive_group)
+    ...     my_2nd_exclusive_group: ClassVar = mutually_exclusive_group(required=True)
+    ...     sam: str = arg(group=my_second_group, mutually_exclusive_group=my_2nd_exclusive_group)
+    ...     ham: str = arg(group=my_second_group, mutually_exclusive_group=my_2nd_exclusive_group)
     ...
+    >>>
     >>> make_parser(Args).print_help()
-    usage: [-h] (--sam SAM | --ham HAM) foo bar
+    usage: [-h] [--foo FOO | --bar BAR] (--sam SAM | --ham HAM)
 
     options:
       -h, --help  show this help message and exit
@@ -384,8 +386,8 @@ the functions `group()` and `mutually_exclusive_group()` accepts the keyword arg
     Group1:
       First group description
 
-      foo
-      bar
+      --foo FOO
+      --bar BAR
 
     Group2:
       Second group description
@@ -393,9 +395,35 @@ the functions `group()` and `mutually_exclusive_group()` accepts the keyword arg
       --sam SAM
       --ham HAM
 
+OBS: The delimiter `( )` in the "usage" above indicates that the group is required, while the delimiter `[ ]` indicates
+the optional status.
+
 The `group` and `mutually_exclusive_group` keyword arguments still accepts integers and strings, keeping the
 functionality compatible with the previous version parameters. When strings are passed to the `group` keyword argument,
 it is associated to the group title.
+
+### Parser-level defaults
+
+Most of the time, the attributes of the object returned by `parse()` will be fully determined by inspecting the
+command-line arguments. However, there is a original `set_defaults()` method that allows some additional attributes to
+be determined without any inspection of the command line to be added. This functionality can be reproduced with the
+`default()` function::
+
+    >>> from dataparsers import parse, default
+    >>> @dataclass
+    ... class Args:
+    ...     foo: int
+    ...     bar: int = default(42)
+    ...     baz: str = default("badger")
+    ...
+    >>> parse(Args, ["736"])
+    Args(foo=736, bar=42, baz='badger')
+
+Parser-level defaults are the original recommended useful way to work with multiple parsers. See the `subparser()`
+method for examples.
+
+One obvious difference of using this `default()` function in place of the original `set_defaults()` method is that this
+function must be used for each separated argument.
 
 ## Parser specifications
 
@@ -418,6 +446,11 @@ In general, the `dataparser()` decorator accepts all parameters that are used in
 constructor, and some additional parameters.
 
 ### Groups `description` and `required` status
+
+Note:
+    In v2.1, the introduction of 2 new functions (`group()` and `mutually_exclusive_group()`) and 2 new keyword
+    arguments for the `arg()` function (`group` and `mutually_exclusive_group`) made it easier to specify `description`
+    and `required` status of the groups at the class scope. These may be better than using the `dataparser()` decorator.
 
 Two important additional parameters accepted by the `dataparser()` decorator are the dictionaries `groups_descriptions`
 and `required_mutually_exclusive_groups`, whose keys should match some value of the arguments `group_title` or
@@ -448,9 +481,6 @@ and `required_mutually_exclusive_groups`, whose keys should match some value of 
 
       --sam
       --ham HAM
-
-OBS: The delimiter `( )` in the "usage" above indicates that the group is required, while the delimiter `[ ]` indicates
-the optional status.
 
 ### Default for booleans
 
@@ -510,6 +540,10 @@ preserve new line breaks and add blank lines between parameters descriptions::
       --bar BAR   This description is also formatted by `write_help` and
                   it is separated from the previous by a blank line.
                   The parameter has default value of 25.5.
+
+## Subparsers
+
+TODO
 
 """
 

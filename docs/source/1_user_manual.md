@@ -1,4 +1,5 @@
 
+
 # User manual
 
 `dataparsers` is a simple module that wrappers around [`argparse`](https://docs.python.org/3/library/argparse.html#module-argparse) to get command line argument
@@ -235,7 +236,6 @@ options:
   --bar
 >>> parse(Args, [])
 Args(bar=False)
-
 ```
 
 #### Decoupling code from the command line interface
@@ -387,7 +387,7 @@ Mutually exclusive argument groups do not support the [`title`](./2_available_fu
 parameters to the {py:func}`~dataparsers.arg` function. If there is a conflict (i.e., same mutually exclusive group and different group
 titles), the mutually exclusive group takes precedence.
 ```
-#### Argument groups using [`ClassVar`](https://docs.python.org/3/library/typing.html#typing.ClassVar) (v2.1)
+### Argument groups using [`ClassVar`](https://docs.python.org/3/library/typing.html#typing.ClassVar) (v2.1)
 
 Two new additional keyword arguments were introduced in v2.1 with functionality analogue to the previous parameters.
 
@@ -418,16 +418,18 @@ the functions {py:func}`~dataparsers.group` and {py:func}`~dataparsers.mutually_
 >>> @dataclass
 ... class Args:
 ...     my_first_group: ClassVar = group(title="Group1", description="First group description")
-...     foo: str = arg(group=my_first_group)
-...     bar: str = arg(group=my_first_group)
+...     my_1st_exclusive_group: ClassVar = mutually_exclusive_group(required=False)
+...     foo: str = arg(group=my_first_group, mutually_exclusive_group=my_1st_exclusive_group)
+...     bar: str = arg(group=my_first_group, mutually_exclusive_group=my_1st_exclusive_group)
 ...     ...
 ...     my_second_group: ClassVar = group(title="Group2", description="Second group description")
-...     my_exclusive_group: ClassVar = mutually_exclusive_group(required=True)
-...     sam: str = arg(group=my_second_group, mutually_exclusive_group=my_exclusive_group)
-...     ham: str = arg(group=my_second_group, mutually_exclusive_group=my_exclusive_group)
+...     my_2nd_exclusive_group: ClassVar = mutually_exclusive_group(required=True)
+...     sam: str = arg(group=my_second_group, mutually_exclusive_group=my_2nd_exclusive_group)
+...     ham: str = arg(group=my_second_group, mutually_exclusive_group=my_2nd_exclusive_group)
 ...
+>>>
 >>> make_parser(Args).print_help()
-usage: [-h] (--sam SAM | --ham HAM) foo bar
+usage: [-h] [--foo FOO | --bar BAR] (--sam SAM | --ham HAM)
 
 options:
   -h, --help  show this help message and exit
@@ -435,8 +437,8 @@ options:
 Group1:
   First group description
 
-  foo
-  bar
+  --foo FOO
+  --bar BAR
 
 Group2:
   Second group description
@@ -445,14 +447,42 @@ Group2:
   --ham HAM
 ```
 
+OBS: The delimiter `( )` in the "usage" above indicates that the group is required, while the delimiter `[ ]` indicates
+the optional status.
+
 The [`group`](./2_available_functions.md#group) and [`mutually_exclusive_group`](./2_available_functions.md#mutually-exclusive-group) keyword arguments still accepts integers and strings, keeping the
 functionality compatible with the previous version parameters. When strings are passed to the [`group`](./2_available_functions.md#group) keyword argument,
 it is associated to the group title.
 
-##  Parser specifications
+### Parser-level defaults
+
+Most of the time, the attributes of the object returned by {py:func}`~dataparsers.parse` will be fully determined by inspecting the
+command-line arguments. However, there is a original [`set_defaults()`](https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.set_defaults) method that allows some additional attributes to
+be determined without any inspection of the command line to be added. This functionality can be reproduced with the
+{py:func}`~dataparsers.default` function:
+
+```python
+>>> from dataparsers import parse, default
+>>> @dataclass
+... class Args:
+...     foo: int
+...     bar: int = default(42)
+...     baz: str = default("badger")
+...
+>>> parse(Args, ["736"])
+Args(foo=736, bar=42, baz='badger')
+```
+
+Parser-level defaults are the original recommended useful way to work with multiple parsers. See the {py:func}`~dataparsers.subparser`
+method for examples.
+
+One obvious difference of using this {py:func}`~dataparsers.default` function in place of the original [`set_defaults()`](https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.set_defaults) method is that this
+function must be used for each separated argument.
+
+## Parser specifications
 
 To specify detailed options to the created [`ArgumentParser`](https://docs.python.org/3/library/argparse.html#argumentparser-objects) object, use the {py:func}`~dataparsers.dataparser` decorator:
-    
+
 ```python
 >>> from dataparsers import dataparser, make_parser
 >>> @dataparser(prog='MyProgram', description='A foo that bars')
@@ -469,10 +499,15 @@ options:
 ```
 
 In general, the {py:func}`~dataparsers.dataparser` decorator accepts all parameters that are used in the original [`ArgumentParser`](https://docs.python.org/3/library/argparse.html#argumentparser-objects)
-constructor, and some additional parameters. 
+constructor, and some additional parameters.
 
 ### Groups [`description`](./2_available_functions.md#description) and [`required`](./2_available_functions.md#required) status
 
+```{note}
+In v2.1, the introduction of 2 new functions ({py:func}`~dataparsers.group` and {py:func}`~dataparsers.mutually_exclusive_group`) and 2 new keyword
+arguments for the {py:func}`~dataparsers.arg` function ([`group`](./2_available_functions.md#group) and [`mutually_exclusive_group`](./2_available_functions.md#mutually-exclusive-group)) made it easier to specify [`description`](./2_available_functions.md#description)
+and [`required`](./2_available_functions.md#required) status of the groups at the class scope. These may be better than using the {py:func}`~dataparsers.dataparser` decorator.
+```
 Two important additional parameters accepted by the {py:func}`~dataparsers.dataparser` decorator are the dictionaries [`groups_descriptions`](./2_available_functions.md#groups-descriptions)
 and [`required_mutually_exclusive_groups`](./2_available_functions.md#required-mutually-exclusive-groups), whose keys should match some value of the arguments [`group_title`](./2_available_functions.md#group-title) or
 [`mutually_exclusive_group_id`](./2_available_functions.md#mutually-exclusive-group-id) passed to {py:func}`~dataparsers.arg` function (strings or integers) :
@@ -504,9 +539,6 @@ Group2:
   --sam
   --ham HAM
 ```
-
-OBS: The delimiter `( )` in the "usage" above indicates that the group is required, while the delimiter `[ ]` indicates
-the optional status.
 
 ### Default for booleans
 
@@ -570,4 +602,8 @@ options:
               it is separated from the previous by a blank line.
               The parameter has default value of 25.5.
 ```
+
+## Subparsers
+
+TODO
 

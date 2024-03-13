@@ -88,6 +88,10 @@ arguments:
 ```
 ---
 ```{eval-rst}
+.. autofunction:: dataparsers.default
+```
+---
+```{eval-rst}
 .. autofunction:: dataparsers.dataparser
 ```
 ---
@@ -97,6 +101,14 @@ arguments:
 ---
 ```{eval-rst}
 .. autofunction:: dataparsers.make_parser
+```
+---
+```{eval-rst}
+.. autofunction:: dataparsers.subparser
+```
+---
+```{eval-rst}
+.. autofunction:: dataparsers.subparsers
 ```
 ---
 ```{eval-rst}

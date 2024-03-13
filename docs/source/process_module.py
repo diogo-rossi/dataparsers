@@ -14,6 +14,7 @@ EXTERNAL_LINKS = {
     "`dataclasses`": "https://docs.python.org/3/library/dataclasses.html#module-dataclasses",
     "`dataclass`": "https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass",
     "`ClassVar`": "https://docs.python.org/3/library/typing.html#typing.ClassVar",
+    "`set_defaults()`": "https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.set_defaults",
     '"Aliases"': "#aliases",
     '"Default for booleans"': "#default-for-booleans",
 }
@@ -32,6 +33,8 @@ INTERNAL_LINKS = [
     "`write_help()`",
     "`group()`",
     "`mutually_exclusive_group()`",
+    "`default()`",
+    "`subparser()`",
 ]
 
 ARGUMENTS_LINKS = [
@@ -159,6 +162,10 @@ def process_module():
 ```
 ---
 ```{eval-rst}
+.. autofunction:: dataparsers.default
+```
+---
+```{eval-rst}
 .. autofunction:: dataparsers.dataparser
 ```
 ---
@@ -168,6 +175,14 @@ def process_module():
 ---
 ```{eval-rst}
 .. autofunction:: dataparsers.make_parser
+```
+---
+```{eval-rst}
+.. autofunction:: dataparsers.subparser
+```
+---
+```{eval-rst}
+.. autofunction:: dataparsers.subparsers
 ```
 ---
 ```{eval-rst}
