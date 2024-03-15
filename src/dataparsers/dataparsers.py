@@ -285,6 +285,13 @@ def parse(cls: type[Class], args: Sequence[str] | None = None, *, parser: Argume
     return cls(**vars(make_parser(cls, parser=parser).parse_args(args)))
 
 
+def parse_known(
+    cls: type[Class], args: Sequence[str] | None = None, *, parser: ArgumentParser | None = None
+) -> tuple[Class, list[str]]:
+    arguments, remaining_arguments = make_parser(cls, parser=parser).parse_known_args(args)
+    return cls(**vars(arguments)), remaining_arguments
+
+
 def write_help(
     text: str,
     width: int | None = None,

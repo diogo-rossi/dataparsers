@@ -1541,6 +1541,35 @@ def parse(cls: type[Class], args: Sequence[str] | None = None, *, parser: Argume
     """
     ...
 
+def parse_known(
+    cls: type[Class], args: Sequence[str] | None = None, *, parser: ArgumentParser | None = None
+) -> tuple[Class, list[str]]:
+    """Parse command line arguments according to the fields of `cls` and populate it. Sama as `parse()` except that it  it does
+    not produce an error when extra arguments are present. Instead, it returns a two item tuple containing the populated class
+    and the list of remaining argument strings.
+
+    Accepts classes decorated with `dataclass`.
+
+    Parameters
+    ----------
+        - `cls` (`type[Class]`):
+
+            A `dataclass` used as object to take the attributes to parse the command-line arguments.
+
+        - `args` (`Sequence[str] | None`, optional): Defaults to `None`.
+
+            List of strings to parse. The default is taken from `sys.argv`, like the original `parse_known_args()` method.
+
+        - `parser` (`ArgumentParser | None`, optional): Defaults to `None`.
+
+            Existing parser to add arguments to and parse from.
+
+    Returns
+    -------
+        `tuple[Class, list[str]]`: _description_
+    """
+    ...
+
 @overload
 def dataparser(cls: type[Class]) -> type[Class]: ...
 @overload
