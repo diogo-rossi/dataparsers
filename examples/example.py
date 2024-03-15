@@ -231,7 +231,7 @@ class Args:
     my_first_group: ClassVar = group()
     foo: str = arg(group=my_first_group)
     bar: str = arg(group=my_first_group)
-
+    ...
     my_second_group: ClassVar = group()
     sam: str = arg(group=my_second_group)
     ham: str = arg(group=my_second_group)
