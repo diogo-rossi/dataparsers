@@ -1544,7 +1544,7 @@ def parse(cls: type[Class], args: Sequence[str] | None = None, *, parser: Argume
 def parse_known(
     cls: type[Class], args: Sequence[str] | None = None, *, parser: ArgumentParser | None = None
 ) -> tuple[Class, list[str]]:
-    """Parse command line arguments according to the fields of `cls` and populate it. Sama as `parse()` except that it  it does
+    """Parse command line arguments according to the fields of `cls` and populate it. Same as `parse()` except that it  it does
     not produce an error when extra arguments are present. Instead, it returns a two item tuple containing the populated class
     and the list of remaining argument strings.
 
