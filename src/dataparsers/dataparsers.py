@@ -232,24 +232,26 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
                 handler = subparsers[subparser.name]
 
             if group is not None:
+                group_kwargs = {}
                 if type(group) is Field:
                     group_name = group.name
                     group_kwargs = group.metadata.get("argument_group_kwargs", {})
                 if type(group) is str or type(group) is int:
                     group_name = group
-                    group_kwargs = {"title": group} if type(group) is str else {}
+                if type(group) is str:
+                    group_kwargs = {"title": group}
                 if group_name not in groups:
                     groups[group_name] = handler.add_argument_group(**group_kwargs)
 
                 handler = groups[group_name]
 
             if mutually_exclusive_group is not None:
+                group_kwargs = {}
                 if type(mutually_exclusive_group) is Field:
                     group_name = mutually_exclusive_group.name
                     group_kwargs = mutually_exclusive_group.metadata.get("mutually_exclusive_group_kwargs", {})
                 if type(mutually_exclusive_group) is str or type(mutually_exclusive_group) is int:
                     group_name = mutually_exclusive_group
-                    group_kwargs = {}
                 if group_name not in mutually_exclusive_groups:
                     mutually_exclusive_groups[group_name] = handler.add_mutually_exclusive_group(**group_kwargs)
 
