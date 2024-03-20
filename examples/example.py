@@ -222,7 +222,7 @@ make_parser(Args).print_help()
 # %% Example 16: Argument groups as ClassVars
 
 from dataclasses import dataclass
-from dataparsers import arg, make_parser, group
+from dataparsers import arg, make_parser, group, parse
 from typing import ClassVar
 
 
