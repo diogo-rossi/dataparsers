@@ -15,6 +15,7 @@ EXTERNAL_LINKS = {
     "`dataclass`": "https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass",
     "`ClassVar`": "https://docs.python.org/3/library/typing.html#typing.ClassVar",
     "`set_defaults()`": "https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.set_defaults",
+    "`add_subparsers()`": "https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.add_subparsers",
     '"Aliases"': "#aliases",
     '"Default for booleans"': "#default-for-booleans",
 }
@@ -35,6 +36,7 @@ INTERNAL_LINKS = [
     "`mutually_exclusive_group()`",
     "`default()`",
     "`subparser()`",
+    "`subparsers()`",
 ]
 
 ARGUMENTS_LINKS = [
@@ -73,6 +75,7 @@ ARGUMENTS_LINKS = [
     "`allow_abbrev`",
     "`exit_on_error`",
     "`parser`",
+    "`subparser`",
 ]
 
 THIS_FILE = Path(__file__)

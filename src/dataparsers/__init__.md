@@ -555,7 +555,9 @@ preserve new line breaks and add blank lines between parameters descriptions::
 
 To define subparsers (or [sub commands](https://docs.python.org/3/library/argparse.html#sub-commands)) use `ClassVar`
 and initialize it with the function `subparser()`. This function accepts all parameters of the original `add_parser()`
-method. To add an argument to the created subparser (instead of the main parser), use the `subparser` keyword argument::
+method.
+
+To add an argument to the created subparser (instead of the main parser), use the `subparser` keyword argument::
 
     >>> from typing import ClassVar
     >>> from dataparsers import dataparser, arg, subparser, parse
@@ -579,7 +581,7 @@ method. To add an argument to the created subparser (instead of the main parser)
 
 It is not necessary to create the "subparsers group" when creating subparsers, it is automatically created. But, if you
 want to explicitly pass information to the "subparsers group", create a `str` field and initialize it with the function
-`subparsers()`. This function accepts all parameters of the original `add_subparsers()` method::
+`subparsers()`. This function accepts all parameters of the original `add_subparsers()` method (except for `dest`)::
 
     >>> @dataparser(prog="PROG")
     ... class Args:
@@ -620,8 +622,8 @@ want to explicitly pass information to the "subparsers group", create a `str` fi
       -h, --help     show this help message and exit
       --baz {X,Y,Z}  baz help
 
-Some keyword arguments highlighted in the original `add_subparsers()` method are `title` and `description`. When either
-is present, the subparser’s commands will appear in their own group in the help output::
+Some possible keyword arguments highlighted in the original `add_subparsers()` method are `title` and `description`.
+When either is present, the subparser's commands will appear in their own group in the help output::
 
     >>> @dataclass
     ... class Args:
@@ -648,9 +650,9 @@ is present, the subparser’s commands will appear in their own group in the hel
 
 An additional keyword argument of the function `subparser()` (beyond those of the the original `add_parser()` method) is
 the `defaults` dictionary, which reproduce the functionality of the original `set_defaults()` method (or the main parser
-level `default()` function) for the subparsers.
+level `default()` function) for the created subparsers.
 
-One caveat of using this functionality is that the function requires that the dictionary keys must be defined as a main
+One caveat of using this functionality is: the function requires that the dictionary keys must be defined as a main
 parser-level default field, with the `default()` function::
 
     >>> @dataclass
