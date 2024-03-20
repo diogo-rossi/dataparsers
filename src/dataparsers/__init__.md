@@ -557,7 +557,7 @@ To define subparsers (or [sub commands](https://docs.python.org/3/library/argpar
 and initialize it with the function `subparser()`. This function accepts all parameters of the original `add_parser()`
 method.
 
-To add an argument to the created subparser (instead of the main parser), use the `subparser` keyword argument::
+To add an argument to the created subparser (instead of the main parser), use the `subparser=...` keyword argument::
 
     >>> from typing import ClassVar
     >>> from dataparsers import dataparser, arg, subparser, parse
@@ -593,6 +593,10 @@ want to explicitly pass information to the "subparsers group", create a `str` fi
     ...     ...
     ...     b: ClassVar = subparser(help="b help")
     ...     baz: str | None = arg(make_flag=True, choices="XYZ", help="baz help", subparser=b)
+
+As in the original module, when a help message is requested from a subparser, only the help for that particular parser will be printed. The help
+message will not include parent parser or sibling parser messages. (A help message for each subparser command, however,
+can be given by supplying the `help=...` argument to `subparser()` as above)::
 
     >>> parse(Args, ["--help"])
     usage: PROG [-h] [--foo] {a,b} ...
@@ -671,12 +675,13 @@ sub-parsers (see below).
 
 ### Handling sub-commands
 
-Like in the original `argparse` module, there are 2 possible ways to parse to subparsers.
+Like in the original `argparse` module, there are 2 possible ways to parse to subparsers: Using parser-level defaults
+and Using subparser name.
 
-#### Using parser-level defaults
+#### 1. Using parser-level defaults
 
 Parser-level defaults are the original effective way of handling sub-commands, combining the use of the `subparser()`
-function with the `default` keyword argument dictionary, so that each subparser knows which Python function it should
+function with the `defaults` keyword argument dictionary, so that each subparser knows which Python function it should
 execute. For example::
 
     >>> from __future__ import annotations # necessary to annotate functions
@@ -688,7 +693,6 @@ execute. For example::
     >>> def foo(args: Args):   
     ...     print(args.x * args.y)
     ...
-    >>>
     >>> def bar(args: Args):
     ...     print("((%s))" % args.z)
     ...
@@ -719,7 +723,7 @@ This way, you can let `parse()` do the job of calling the appropriate function a
 According to the `argparse` documentation, associating functions with actions like this is typically the easiest way to
 handle the different actions for each of your subparsers.
 
-#### Using subparser name
+#### 2. Using subparser name
 
 If it is necessary to check the name of the subparser that was invoked, the "subparsers group" `str` field created with
 the `subparsers()` function will work::

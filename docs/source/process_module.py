@@ -76,6 +76,7 @@ ARGUMENTS_LINKS = [
     "`exit_on_error`",
     "`parser`",
     "`subparser`",
+    "`defaults`",
 ]
 
 THIS_FILE = Path(__file__)
