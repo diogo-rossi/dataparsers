@@ -553,11 +553,12 @@ preserve new line breaks and add blank lines between parameters descriptions::
 
 ## Subparsers (v2.1)
 
-To define subparsers (or [sub commands](https://docs.python.org/3/library/argparse.html#sub-commands)) use `ClassVar`
+To define subparsers (or [sub commands](https://docs.python.org/3/library/argparse.html#sub-commands)) use a `ClassVar`
 and initialize it with the function `subparser()`. This function accepts all parameters of the original `add_parser()`
-method.
+method, except for `name`: the name of the subparser will be the dataclass field name.
 
-To add an argument to the created subparser (instead of the main parser), use the `subparser=...` keyword argument::
+To add an argument to the created subparser (instead of the main parser), use the `subparser` keyword argument of the
+`arg()` function and assign to it the previously created field::
 
     >>> from typing import ClassVar
     >>> from dataparsers import dataparser, arg, subparser, parse
@@ -567,21 +568,34 @@ To add an argument to the created subparser (instead of the main parser), use th
     ...     foo: bool = arg(help="foo help")
     ...     ...
     ...     a: ClassVar = subparser(help="a help")
-    ...     bar: int | None = arg(help="bar help", subparser=a)
+    ...     bar: int = arg(help="bar help", subparser=a)
     ...     ...
     ...     b: ClassVar = subparser(help="b help")
-    ...     baz: str | None = arg(make_flag=True, choices="XYZ", help="baz help", subparser=b)
+    ...     baz: str = arg(make_flag=True, choices="XYZ", help="baz help", subparser=b)
     ...
     >>> parse(Args, ["a", "12"])
     Args(foo=False, bar=12, baz=None)
     >>> parse(Args, ["--foo", "b", "--baz", "Z"])
     Args(foo=True, bar=None, baz='Z')
 
+The `ClassVar` defined with the function `subparser()` remains as a read-only class variable at run time (which is an
+instance of type `SubParser`: a frozen `dataclass` with some fields)::
+
+    >>> args = parse(Args) 
+    >>> args.a
+    SubParser(defaults=None, kwargs=mappingproxy({'help': 'a help'}))
+    >>> args.a.defaults="test"
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in <module>
+      File "<string>", line 4, in __setattr__
+    dataclasses.FrozenInstanceError: cannot assign to field 'defaults'
+
 ### Subparsers group
 
 It is not necessary to create the "subparsers group" when creating subparsers, it is automatically created. But, if you
 want to explicitly pass information to the "subparsers group", create a `str` field and initialize it with the function
-`subparsers()`. This function accepts all parameters of the original `add_subparsers()` method (except for `dest`)::
+`subparsers()`. This function accepts all parameters of the original `add_subparsers()` method (except for `dest`, which
+will receive the dataclass field name)::
 
     >>> @dataparser(prog="PROG")
     ... class Args:
@@ -589,14 +603,14 @@ want to explicitly pass information to the "subparsers group", create a `str` fi
     ...     subparsers_group: str = subparsers(help="sub-command help")
     ...     ...
     ...     a: ClassVar = subparser(help="a help")
-    ...     bar: int | None = arg(help="bar help", subparser=a)
+    ...     bar: int = arg(help="bar help", subparser=a)
     ...     ...
     ...     b: ClassVar = subparser(help="b help")
-    ...     baz: str | None = arg(make_flag=True, choices="XYZ", help="baz help", subparser=b)
+    ...     baz: str = arg(make_flag=True, choices="XYZ", help="baz help", subparser=b)
 
 As in the original module, when a help message is requested from a subparser, only the help for that particular parser will be printed. The help
-message will not include parent parser or sibling parser messages. (A help message for each subparser command, however,
-can be given by supplying the `help=...` argument to `subparser()` as above)::
+message will not include parent parser or sibling parser messages. A help message for each subparser command, however,
+can be given by supplying the `help=...` argument to `subparser()` as above::
 
     >>> parse(Args, ["--help"])
     usage: PROG [-h] [--foo] {a,b} ...
@@ -626,8 +640,8 @@ can be given by supplying the `help=...` argument to `subparser()` as above)::
       -h, --help     show this help message and exit
       --baz {X,Y,Z}  baz help
 
-Some possible keyword arguments highlighted in the original `add_subparsers()` method are `title` and `description`.
-When either is present, the subparser's commands will appear in their own group in the help output::
+Some possible keyword arguments highlighted in the original `add_subparsers()` method are `title=...` and
+`description=...`. When either is present, the subparser's commands will appear in their own group in the help output::
 
     >>> @dataclass
     ... class Args:
@@ -653,8 +667,8 @@ When either is present, the subparser's commands will appear in their own group 
 ### Subparsers defaults
 
 An additional keyword argument of the function `subparser()` (beyond those of the the original `add_parser()` method) is
-the `defaults` dictionary, which reproduce the functionality of the original `set_defaults()` method (or the main parser
-level `default()` function) for the created subparsers.
+the `defaults` dictionary, which reproduce the functionality of the original `set_defaults()` method (or the main
+parser-level `default()` function) for the created subparsers.
 
 One caveat of using this functionality is: the function requires that the dictionary keys must be defined as a main
 parser-level default field, with the `default()` function::
@@ -670,13 +684,14 @@ parser-level default field, with the `default()` function::
     >>> parse(Args, ['baz'])
     Args(foo='badger')
 
-Parser-level defaults with subparsers defaults are the original `argparse`'s recommended way to handling multiple
-sub-parsers (see below).
+Parser-level defaults with subparsers defaults are the original `argparse`'s
+[recommended way to handling multiple sub-parsers](https://github.com/python/cpython/blob/main/Doc/library/argparse.rst#L1901-L1904)
+(see below).
 
 ### Handling sub-commands
 
-Like in the original `argparse` module, there are 2 possible ways to parse to subparsers: Using parser-level defaults
-and Using subparser name.
+Like in the original `argparse` module, there are 2 possible ways to parse to subparsers: (1) Using parser-level
+defaults and (2) using the subparser name.
 
 #### 1. Using parser-level defaults
 
@@ -720,12 +735,12 @@ execute. For example::
     ((XYZYX))
 
 This way, you can let `parse()` do the job of calling the appropriate function after argument parsing is complete.
-According to the `argparse` documentation, associating functions with actions like this is typically the easiest way to
-handle the different actions for each of your subparsers.
+According to the `argparse` documentation, [associating functions with actions like this is typically the easiest way to
+handle the different actions for each of your subparsers](https://github.com/python/cpython/blob/main/Doc/library/argparse.rst#L1939-L1941).
 
 #### 2. Using subparser name
 
-If it is necessary to check the name of the subparser that was invoked, the "subparsers group" `str` field created with
+If it is necessary to check the name of the subparser that was invoked, the `str` field "subparsers group" created with
 the `subparsers()` function will work::
 
     >>> from dataclasses import dataclass

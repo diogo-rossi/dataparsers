@@ -16,6 +16,7 @@ EXTERNAL_LINKS = {
     "`ClassVar`": "https://docs.python.org/3/library/typing.html#typing.ClassVar",
     "`set_defaults()`": "https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.set_defaults",
     "`add_subparsers()`": "https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.add_subparsers",
+    "`add_parser()`": "https://github.com/python/cpython/blob/fc4599800778f9b130d5e336deadbdeb5bd3e5ee/Lib/argparse.py#L1221",
     '"Aliases"': "#aliases",
     '"Default for booleans"': "#default-for-booleans",
 }
