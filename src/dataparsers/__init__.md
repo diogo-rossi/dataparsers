@@ -677,41 +677,41 @@ Parser-level defaults are the original effective way of handling sub-commands, c
 function with the `default` keyword argument dictionary, so that each subparser knows which Python function it should
 execute. For example::
 
-	>>> from __future__ import annotations # necessary to annotate functions
-	>>> from typing import ClassVar, Callable
-	>>> from dataclasses import dataclass    
-	>>> from dataparsers import arg, parse, subparser, default
-	>>>
-	>>> # sub-command functions
-	>>> def foo(args: Args):   
-	...     print(args.x * args.y)
-	...
-	>>>
-	>>> def bar(args: Args):
-	...     print("((%s))" % args.z)
-	...
-	>>> @dataclass
-	... class Args:
-	...     func: Callable = default()
-	...     ...
-	...     # parser for the "foo" command
-	...     foo: ClassVar = subparser(defaults=dict(func=foo))
-	...     x: int = arg("-x", default=1, make_flag=False, subparser=foo)
-	...     y: float = arg(subparser=foo)
-	...     ...
-	...     # parser for the "bar" command
-	...     bar: ClassVar = subparser(defaults=dict(func=bar))
-	...     z: str = arg(subparser=bar)
-	...
-	>>> # parse the args and call whatever function was selected
-	>>> args = parse(Args, "foo 1 -x 2".split())
-	>>> args.func(args)
-	2.0
-	>>>
-	>>> # parse the args and call whatever function was selected
-	>>> args = parse(Args, "bar XYZYX".split())
-	>>> args.func(args)
-	((XYZYX))
+    >>> from __future__ import annotations # necessary to annotate functions
+    >>> from typing import ClassVar, Callable
+    >>> from dataclasses import dataclass    
+    >>> from dataparsers import arg, parse, subparser, default
+    >>>
+    >>> # sub-command functions
+    >>> def foo(args: Args):   
+    ...     print(args.x * args.y)
+    ...
+    >>>
+    >>> def bar(args: Args):
+    ...     print("((%s))" % args.z)
+    ...
+    >>> @dataclass
+    ... class Args:
+    ...     func: Callable = default()
+    ...     ...
+    ...     # parser for the "foo" command
+    ...     foo: ClassVar = subparser(defaults=dict(func=foo))
+    ...     x: int = arg("-x", default=1, make_flag=False, subparser=foo)
+    ...     y: float = arg(subparser=foo)
+    ...     ...
+    ...     # parser for the "bar" command
+    ...     bar: ClassVar = subparser(defaults=dict(func=bar))
+    ...     z: str = arg(subparser=bar)
+    ...
+    >>> # parse the args and call whatever function was selected
+    >>> args = parse(Args, "foo 1 -x 2".split())
+    >>> args.func(args)
+    2.0
+    >>>
+    >>> # parse the args and call whatever function was selected
+    >>> args = parse(Args, "bar XYZYX".split())
+    >>> args.func(args)
+    ((XYZYX))
 
 This way, you can let `parse()` do the job of calling the appropriate function after argument parsing is complete.
 According to the `argparse` documentation, associating functions with actions like this is typically the easiest way to
@@ -722,19 +722,19 @@ handle the different actions for each of your subparsers.
 If it is necessary to check the name of the subparser that was invoked, the "subparsers group" `str` field created with
 the `subparsers()` function will work::
 
-	>>> from dataclasses import dataclass
-	>>> from dataparsers import arg, parse, subparser, subparsers
-	>>>
-	>>> @dataclass
-	... class Args:
-	...     ...
-	...     subparser_name: str = subparsers()
-	...     ...
-	...     s1: ClassVar = subparser()
-	...     x: str = arg("-x", make_flag=False, subparser=s1)
-	...     ...
-	...     s2: ClassVar = subparser()
-	...     y: str = arg(subparser=s2)
-	...
-	>>> parse(Args, ["s2", "frobble"])
-	Args(subparser_name='s2', x=None, y='frobble')
+    >>> from dataclasses import dataclass
+    >>> from dataparsers import arg, parse, subparser, subparsers
+    >>>
+    >>> @dataclass
+    ... class Args:
+    ...     ...
+    ...     subparser_name: str = subparsers()
+    ...     ...
+    ...     s1: ClassVar = subparser()
+    ...     x: str = arg("-x", make_flag=False, subparser=s1)
+    ...     ...
+    ...     s2: ClassVar = subparser()
+    ...     y: str = arg(subparser=s2)
+    ...
+    >>> parse(Args, ["s2", "frobble"])
+    Args(subparser_name='s2', x=None, y='frobble')
