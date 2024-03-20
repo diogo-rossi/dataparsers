@@ -273,3 +273,104 @@ class Args:
     baz: str = default("badger")
 
 parse(Args, ["736"])
+
+
+# %% Example 19: Subcommands https://docs.python.org/3/library/argparse.html#sub-commands
+
+from typing import ClassVar
+from dataparsers import dataparser, arg, subparser, parse
+
+
+@dataparser(prog="PROG")
+class Args:
+    foo: bool = arg(help="foo help")
+    ...
+    a: ClassVar = subparser(help="a help")
+    bar: int | None = arg(help="bar help", subparser=a)
+    ...
+    b: ClassVar = subparser(help="b help")
+    baz: str | None = arg(make_flag=True, choices="XYZ", help="baz help", subparser=b)
+
+
+parse(Args, ["a", "12"])
+parse(Args, ["--foo", "b", "--baz", "Z"])
+
+# %% Example 20: Subcommands https://docs.python.org/3/library/argparse.html#sub-commands
+
+from typing import ClassVar
+from dataparsers import dataparser, arg, subparser, parse, subparsers
+
+
+@dataparser(prog="PROG")
+class Args:
+    foo: bool = arg(help="foo help")
+    subparsers_group: str = subparsers(help="sub-command help")
+    ...
+    a: ClassVar = subparser(help="a help")
+    bar: int | None = arg(help="bar help", subparser=a)
+    ...
+    b: ClassVar = subparser(help="b help")
+    baz: str | None = arg(make_flag=True, choices="XYZ", help="baz help", subparser=b)
+
+
+parse(Args, ["--help"])
+# parse(Args, ["a", "--help"])
+# parse(Args, ["b", "--help"])
+
+# %% Example 21: Subcommands https://docs.python.org/3/library/argparse.html#sub-commands
+
+from typing import ClassVar
+from dataclasses import dataclass
+from dataparsers import dataparser, arg, subparser, parse, subparsers, make_parser
+
+
+@dataclass
+class Args:
+    subparsers_group: str = subparsers(
+        title="subcommands",
+        description="valid subcommands",
+        help="additional help",
+    )
+    foo: ClassVar = subparser()
+    bar: ClassVar = subparser()
+
+
+parse(Args, ["-h"])
+
+
+# %% Example 22: sub-parsers defaults
+
+from typing import ClassVar
+from dataclasses import dataclass
+from dataparsers import default, subparser, parse
+
+
+@dataclass
+class Args:
+    foo: str = default()
+    bar: ClassVar = subparser(defaults=dict(foo="spam"))
+    baz: ClassVar = subparser(defaults=dict(foo="badger"))
+
+
+parse(Args, ["bar"])
+parse(Args, ["baz"])
+
+
+# %% Example 23: Using subparser name https://docs.python.org/3/library/argparse.html#sub-commands
+
+
+from dataclasses import dataclass
+from dataparsers import arg, parse, subparser, subparsers
+
+@dataclass
+class Args:
+    ...
+    subparser_name: str = subparsers()
+    ...
+    s1: ClassVar = subparser()
+    x: str = arg("-x", make_flag=False, subparser=s1)
+    ...
+    s2: ClassVar = subparser()
+    y: str = arg(subparser=s2)
+
+parse(Args, ["s2", "frobble"])
