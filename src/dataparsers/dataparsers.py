@@ -1,5 +1,6 @@
 # %% ################################################# dataparsers region ######################################################
-import os, textwrap
+import os
+import textwrap
 from dataclasses import dataclass, field, fields, Field, is_dataclass
 from argparse import ArgumentParser, RawTextHelpFormatter
 from argparse import _MutuallyExclusiveGroup, _ArgumentGroup, _SubParsersAction  # only for typing annotation
