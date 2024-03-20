@@ -343,8 +343,8 @@ Note:
 
 Two new additional keyword arguments were introduced in v2.1 with functionality analogue to the previous parameters.
 
-The `group` and `mutually_exclusive_group` keyword arguments also accepts a predefined `ClassVar`, that can be defined
-using 2 new functions: `group()` and `mutually_exclusive_group()`::
+The `group` and `mutually_exclusive_group` keyword arguments also accepts a predefined `ClassVar`, which is populated
+using 2 new functions: `group()` or `mutually_exclusive_group()`::
 
     from dataclasses import dataclass
     from dataparsers import arg, make_parser, group
@@ -401,6 +401,16 @@ the optional status.
 The `group` and `mutually_exclusive_group` keyword arguments still accepts integers and strings, keeping the
 functionality compatible with the previous version parameters. When strings are passed to the `group` keyword argument,
 it is associated to the group title.
+
+The `ClassVar` defined with the functions `group()` and `mutually_exclusive_group()` aren't populated at run time::
+
+    >>> args = parse(Args, ['--sam', 'wise'])
+    >>> print(args)
+    Args(foo=None, bar=None, sam='wise', ham=None)
+    >>> args.my_first_group
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in <module>
+    AttributeError: 'Args' object has no attribute 'my_first_group'
 
 ### Parser-level defaults
 
