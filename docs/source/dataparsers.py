@@ -343,12 +343,12 @@ Note:
 
 Two new additional keyword arguments were introduced in v2.1 with functionality analogue to the previous parameters.
 
-The :argument_link:`group<group>` and :argument_link:`mutually_exclusive_group<mutually-exclusive-group>` keyword arguments also accepts a predefined :class:`~argparse.ClassVar`, that can be defined
-using 2 new functions: :func:`~dataparsers.group` and :func:`~dataparsers.mutually_exclusive_group`::
+The :argument_link:`group<group>` and :argument_link:`mutually_exclusive_group<mutually-exclusive-group>` keyword arguments also accepts a predefined :class:`~argparse.ClassVar`, that can be
+initialized using 2 new functions: :func:`~dataparsers.group` and :func:`~dataparsers.mutually_exclusive_group`::
 
-    from dataclasses import dataclass
-    from dataparsers import arg, make_parser, group
     from typing import ClassVar
+    from dataclasses import dataclass
+    from dataparsers import arg, group
 
     @dataclass
     class Args:
@@ -401,6 +401,16 @@ the optional status.
 The :argument_link:`group<group>` and :argument_link:`mutually_exclusive_group<mutually-exclusive-group>` keyword arguments still accepts integers and strings, keeping the
 functionality compatible with the previous version parameters. When strings are passed to the :argument_link:`group<group>` keyword argument,
 it is associated to the group title.
+
+The :class:`~argparse.ClassVar` defined with the functions :func:`~dataparsers.group` and :func:`~dataparsers.mutually_exclusive_group` aren't populated at run time::
+
+    >>> args = parse(Args, ['--sam', 'wise'])
+    >>> print(args)
+    Args(foo=None, bar=None, sam='wise', ham=None)
+    >>> args.my_first_group
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in <module>
+    AttributeError: 'Args' object has no attribute 'my_first_group'
 
 ### Parser-level defaults
 
@@ -541,9 +551,214 @@ preserve new line breaks and add blank lines between parameters descriptions::
                   it is separated from the previous by a blank line.
                   The parameter has default value of 25.5.
 
-## Subparsers
+## Subparsers (v2.1)
 
-TODO
+To define subparsers (or [sub commands](https://docs.python.org/3/library/argparse.html#sub-commands)) use a :class:`~argparse.ClassVar`
+and initialize it with the function :func:`~dataparsers.subparser`. This function accepts all parameters of the original :meth:`~argparse.ArgumentParser.add_parser`
+method, except for `name`: the name of the subparser will be the dataclass field name.
+
+To add an argument to the created subparser (instead of the main parser), use the :argument_link:`subparser<subparser>` keyword argument of the
+:func:`~dataparsers.arg` function and assign to it the previously created field::
+
+    >>> from typing import ClassVar
+    >>> from dataparsers import dataparser, arg, subparser, parse
+    >>>
+    >>> @dataparser(prog="PROG")
+    ... class Args:
+    ...     foo: bool = arg(help="foo help")
+    ...     ...
+    ...     a: ClassVar = subparser(help="a help")
+    ...     bar: int = arg(help="bar help", subparser=a)
+    ...     ...
+    ...     b: ClassVar = subparser(help="b help")
+    ...     baz: str = arg(make_flag=True, choices="XYZ", help="baz help", subparser=b)
+    ...
+    >>> parse(Args, ["a", "12"])
+    Args(foo=False, bar=12, baz=None)
+    >>> parse(Args, ["--foo", "b", "--baz", "Z"])
+    Args(foo=True, bar=None, baz='Z')
+
+The :class:`~argparse.ClassVar` defined with the function :func:`~dataparsers.subparser` remains as a read-only class variable at run time (which is an
+instance of type `SubParser`: a frozen :func:`~dataclasses.dataclass` with some fields)::
+
+    >>> args = parse(Args) 
+    >>> args.a
+    SubParser(defaults=None, kwargs=mappingproxy({'help': 'a help'}))
+    >>> args.a.defaults="test"
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in <module>
+      File "<string>", line 4, in __setattr__
+    dataclasses.FrozenInstanceError: cannot assign to field 'defaults'
+
+### Subparsers group
+
+It is not necessary to create the "subparsers group" when creating subparsers, it is automatically created. But, if you
+want to explicitly pass information to the "subparsers group", create a `str` field and initialize it with the function
+:func:`~dataparsers.subparsers`. This function accepts all parameters of the original :meth:`~argparse.ArgumentParser.add_subparsers` method (except for :argument_link:`dest<dest>`, which
+will receive the dataclass field name)::
+
+    >>> @dataparser(prog="PROG")
+    ... class Args:
+    ...     foo: bool = arg(help="foo help")
+    ...     subparsers_group: str = subparsers(help="sub-command help")
+    ...     ...
+    ...     a: ClassVar = subparser(help="a help")
+    ...     bar: int = arg(help="bar help", subparser=a)
+    ...     ...
+    ...     b: ClassVar = subparser(help="b help")
+    ...     baz: str = arg(make_flag=True, choices="XYZ", help="baz help", subparser=b)
+
+As in the original module, when a help message is requested from a subparser, only the help for that particular parser will be printed. The help
+message will not include parent parser or sibling parser messages. A help message for each subparser command, however,
+can be given by supplying the `help=...` argument to :func:`~dataparsers.subparser` as above::
+
+    >>> parse(Args, ["--help"])
+    usage: PROG [-h] [--foo] {a,b} ...
+
+    positional arguments:
+      {a,b}       sub-command help
+        a         a help
+        b         b help
+
+    options:
+      -h, --help  show this help message and exit
+      --foo       foo help
+
+    >>> parse(Args, ["a", "--help"])
+    usage: PROG a [-h] bar
+
+    positional arguments:
+      bar         bar help
+
+    options:
+      -h, --help  show this help message and exit
+
+    >>> parse(Args, ["b", "--help"])
+    usage: PROG b [-h] [--baz {X,Y,Z}]
+
+    options:
+      -h, --help     show this help message and exit
+      --baz {X,Y,Z}  baz help
+
+Some possible keyword arguments highlighted in the original :meth:`~argparse.ArgumentParser.add_subparsers` method are `title=...` and
+`description=...`. When either is present, the subparser's commands will appear in their own group in the help output::
+
+    >>> @dataclass
+    ... class Args:
+    ...     subparsers_group: str = subparsers(
+    ...         title="subcommands",
+    ...         description="valid subcommands",
+    ...         help="additional help",
+    ...     )
+    ...     foo: ClassVar = subparser()
+    ...     bar: ClassVar = subparser()
+    ...
+    >>> parse(Args, ["-h"])
+    usage: [-h] {foo,bar} ...
+
+    options:
+      -h, --help  show this help message and exit
+
+    subcommands:
+      valid subcommands
+
+      {foo,bar}   additional help
+
+### Subparsers defaults
+
+An additional keyword argument of the function :func:`~dataparsers.subparser` (beyond those of the the original :meth:`~argparse.ArgumentParser.add_parser` method) is
+the :argument_link:`defaults<defaults>` dictionary, which reproduce the functionality of the original :meth:`~argparse.ArgumentParser.set_defaults` method (or the main
+parser-level :func:`~dataparsers.default` function) for the created subparsers.
+
+One caveat of using this functionality is: the function requires that the dictionary keys must be defined as a main
+parser-level default field, with the :func:`~dataparsers.default` function::
+
+    >>> @dataclass
+    ... class Args:
+    ...     foo: str = default()
+    ...     bar: ClassVar = subparser(defaults=dict(foo="spam"))
+    ...     baz: ClassVar = subparser(defaults=dict(foo="badger"))
+    ...
+    >>> parse(Args, ['bar'])
+    Args(foo='spam')
+    >>> parse(Args, ['baz'])
+    Args(foo='badger')
+
+Parser-level defaults with subparsers defaults are the original :mod:`~argparse`'s
+[recommended way to handling multiple sub-parsers](https://github.com/python/cpython/blob/main/Doc/library/argparse.rst#L1901-L1904)
+(see below).
+
+### Handling sub-commands
+
+Like in the original :mod:`~argparse` module, there are 2 possible ways to parse to subparsers: (1) Using parser-level
+defaults and (2) using the subparser name.
+
+#### 1. Using parser-level defaults
+
+Parser-level defaults are the original effective way of handling sub-commands, combining the use of the :func:`~dataparsers.subparser`
+function with the :argument_link:`defaults<defaults>` keyword argument dictionary, so that each subparser knows which Python function it should
+execute. For example::
+
+    >>> from __future__ import annotations # necessary to annotate functions
+    >>> from typing import ClassVar, Callable
+    >>> from dataclasses import dataclass    
+    >>> from dataparsers import arg, parse, subparser, default
+    >>>
+    >>> # sub-command functions
+    >>> def foo(args: Args):   
+    ...     print(args.x * args.y)
+    ...
+    >>> def bar(args: Args):
+    ...     print("((%s))" % args.z)
+    ...
+    >>> @dataclass
+    ... class Args:
+    ...     func: Callable = default()
+    ...     ...
+    ...     # parser for the "foo" command
+    ...     foo: ClassVar = subparser(defaults=dict(func=foo))
+    ...     x: int = arg("-x", default=1, make_flag=False, subparser=foo)
+    ...     y: float = arg(subparser=foo)
+    ...     ...
+    ...     # parser for the "bar" command
+    ...     bar: ClassVar = subparser(defaults=dict(func=bar))
+    ...     z: str = arg(subparser=bar)
+    ...
+    >>> # parse the args and call whatever function was selected
+    >>> args = parse(Args, "foo 1 -x 2".split())
+    >>> args.func(args)
+    2.0
+    >>>
+    >>> # parse the args and call whatever function was selected
+    >>> args = parse(Args, "bar XYZYX".split())
+    >>> args.func(args)
+    ((XYZYX))
+
+This way, you can let :func:`~dataparsers.parse` do the job of calling the appropriate function after argument parsing is complete.
+According to the :mod:`~argparse` documentation, [associating functions with actions like this is typically the easiest way to
+handle the different actions for each of your subparsers](https://github.com/python/cpython/blob/main/Doc/library/argparse.rst#L1939-L1941).
+
+#### 2. Using subparser name
+
+If it is necessary to check the name of the subparser that was invoked, the `str` field "subparsers group" created with
+the :func:`~dataparsers.subparsers` function will work::
+
+    >>> from dataclasses import dataclass
+    >>> from dataparsers import arg, parse, subparser, subparsers
+    >>>
+    >>> @dataclass
+    ... class Args:
+    ...     ...
+    ...     subparser_name: str = subparsers()
+    ...     ...
+    ...     s1: ClassVar = subparser()
+    ...     x: str = arg("-x", make_flag=False, subparser=s1)
+    ...     ...
+    ...     s2: ClassVar = subparser()
+    ...     y: str = arg(subparser=s2)
+    ...
+    >>> parse(Args, ["s2", "frobble"])
+    Args(subparser_name='s2', x=None, y='frobble')
 
 """
 
@@ -1388,7 +1603,7 @@ def subparsers(
     required: bool = False,
     help: str | None = None,
     metavar: str | None = None,
-) -> Any:
+) -> str:
     """_summary_ #TODO
 
     _extended_summary_
@@ -1499,8 +1714,8 @@ def subparser(
 
             _description_
 
-    Additional parameters from the original `add_parser()` method
-    --------------------------------------------------------------
+    Additional parameters from the original :meth:`~argparse.ArgumentParser.add_parser` method
+    -------------------------------------------------------------------------------------------
         - `aliases` (`Sequence[str]`, optional):
 
             An additional argument which allows multiple strings to refer to the same subparser. This example, like
@@ -1518,7 +1733,7 @@ def subparser(
 
         - `help` (`str`, optional):
 
-            A help message for each subparser command can be given by supplying this argument o `add_parser()` as
+            A help message for each subparser command can be given by supplying this argument o :meth:`~argparse.ArgumentParser.add_parser` as
             below::
 
                 >>> # create the top-level parser
@@ -1625,6 +1840,38 @@ def parse(cls: type[Class], args: Sequence[str] | None = None, *, parser: Argume
     Returns
     -------
         `Class`: The populated :func:`~dataclasses.dataclass` with argument values.
+    """
+    ...
+
+def parse_known(
+    cls: type[Class], args: Sequence[str] | None = None, *, parser: ArgumentParser | None = None
+) -> tuple[Class, list[str]]:
+    """Parse command line arguments according to the fields of `cls` and populate it. Same as :func:`~dataparsers.parse` except that it  it does
+    not produce an error when extra arguments are present. Instead, it returns a two item tuple containing the populated class
+    and the list of remaining argument strings.
+
+    Accepts classes decorated with :func:`~dataclasses.dataclass`.
+
+    Parameters
+    ----------
+        - `cls` (`type[Class]`):
+
+            A :func:`~dataclasses.dataclass` used as object to take the attributes to parse the command-line arguments.
+
+        - `args` (`Sequence[str] | None`, optional): Defaults to `None`.
+
+            List of strings to parse. The default is taken from `sys.argv`, like the original `parse_known_args()` method.
+
+
+        .. _parser:
+
+        - `parser` (`ArgumentParser | None`, optional): Defaults to `None`.
+
+            Existing parser to add arguments to and parse from.
+
+    Returns
+    -------
+        `tuple[Class, list[str]]`: _description_
     """
     ...
 
