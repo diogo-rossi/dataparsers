@@ -552,10 +552,186 @@ preserve new line breaks and add blank lines between parameters descriptions::
 
 To define subparsers (or [sub commands](https://docs.python.org/3/library/argparse.html#sub-commands)) use `ClassVar`
 and initialize it with the function `subparser()`. This function accepts all parameters of the original `add_parser()`
-method. To add an argument to the created subparser (instead of the main parser), use the `subparser` keyword argument.
+method. To add an argument to the created subparser (instead of the main parser), use the `subparser` keyword argument::
 
-    XXX
+    >>> from typing import ClassVar
+    >>> from dataparsers import dataparser, arg, subparser, parse
+    >>>
+    >>> @dataparser(prog="PROG")
+    ... class Args:
+    ...     foo: bool = arg(help="foo help")
+    ...     ...
+    ...     a: ClassVar = subparser(help="a help")
+    ...     bar: int | None = arg(help="bar help", subparser=a)
+    ...     ...
+    ...     b: ClassVar = subparser(help="b help")
+    ...     baz: str | None = arg(make_flag=True, choices="XYZ", help="baz help", subparser=b)
+    ...
+    >>> parse(Args, ["a", "12"])
+    Args(foo=False, bar=12, baz=None)
+    >>> parse(Args, ["--foo", "b", "--baz", "Z"])
+    Args(foo=True, bar=None, baz='Z')
 
-It is not necessary to create a subparsers group, as it is automatically created. But, if you want to explicitly pass
-information to the subparsers group, create a `str` field and initialize it with the function `subparsers()`. This
-function accepts all parameters of the original `add_subparsers()` method.
+### Subparsers group
+
+It is not necessary to create the "subparsers group" when creating subparsers, it is automatically created. But, if you
+want to explicitly pass information to the "subparsers group", create a `str` field and initialize it with the function
+`subparsers()`. This function accepts all parameters of the original `add_subparsers()` method::
+
+    >>> @dataparser(prog="PROG")
+    ... class Args:
+    ...     foo: bool = arg(help="foo help")
+    ...     subparsers_group: str = subparsers(help="sub-command help")
+    ...     ...
+    ...     a: ClassVar = subparser(help="a help")
+    ...     bar: int | None = arg(help="bar help", subparser=a)
+    ...     ...
+    ...     b: ClassVar = subparser(help="b help")
+    ...     baz: str | None = arg(make_flag=True, choices="XYZ", help="baz help", subparser=b)
+
+    >>> parse(Args, ["--help"])
+    usage: PROG [-h] [--foo] {a,b} ...
+
+    positional arguments:
+      {a,b}       sub-command help
+        a         a help
+        b         b help
+
+    options:
+      -h, --help  show this help message and exit
+      --foo       foo help
+
+    >>> parse(Args, ["a", "--help"])
+    usage: PROG a [-h] bar
+
+    positional arguments:
+      bar         bar help
+
+    options:
+      -h, --help  show this help message and exit
+
+    >>> parse(Args, ["b", "--help"])
+    usage: PROG b [-h] [--baz {X,Y,Z}]
+
+    options:
+      -h, --help     show this help message and exit
+      --baz {X,Y,Z}  baz help
+
+Some keyword arguments highlighted in the original `add_subparsers()` method are `title` and `description`. When either
+is present, the subparser’s commands will appear in their own group in the help output::
+
+    >>> @dataclass
+    ... class Args:
+    ...     subparsers_group: str = subparsers(
+    ...         title="subcommands",
+    ...         description="valid subcommands",
+    ...         help="additional help",
+    ...     )
+    ...     foo: ClassVar = subparser()
+    ...     bar: ClassVar = subparser()
+    ...
+    >>> parse(Args, ["-h"])
+    usage: [-h] {foo,bar} ...
+
+    options:
+      -h, --help  show this help message and exit
+
+    subcommands:
+      valid subcommands
+
+      {foo,bar}   additional help
+
+### Subparsers defaults
+
+An additional keyword argument of the function `subparser()` (beyond those of the the original `add_parser()` method) is
+the `defaults` dictionary, which reproduce the functionality of the original `set_defaults()` method (or the main parser
+level `default()` function) for the subparsers.
+
+One caveat of using this functionality is that the function requires that the dictionary keys must be defined as a main
+parser-level default field, with the `default()` function::
+
+    >>> @dataclass
+    ... class Args:
+    ...     foo: str = default()
+    ...     bar: ClassVar = subparser(defaults=dict(foo="spam"))
+    ...     baz: ClassVar = subparser(defaults=dict(foo="badger"))
+    ...
+    >>> parse(Args, ['bar'])
+    Args(foo='spam')
+    >>> parse(Args, ['baz'])
+    Args(foo='badger')
+
+Parser-level defaults with subparsers defaults are the original `argparse`'s recommended way to handling multiple
+sub-parsers (see below).
+
+### Handling sub-commands
+
+Like in the original `argparse` module, there are 2 possible ways to parse to subparsers.
+
+#### Using parser-level defaults
+
+Parser-level defaults are the original effective way of handling sub-commands, combining the use of the `subparser()`
+function with the `default` keyword argument dictionary, so that each subparser knows which Python function it should
+execute. For example::
+
+	>>> from __future__ import annotations # necessary to annotate functions
+	>>> from typing import ClassVar, Callable
+	>>> from dataclasses import dataclass    
+	>>> from dataparsers import arg, parse, subparser, default
+	>>>
+	>>> # sub-command functions
+	>>> def foo(args: Args):   
+	...     print(args.x * args.y)
+	...
+	>>>
+	>>> def bar(args: Args):
+	...     print("((%s))" % args.z)
+	...
+	>>> @dataclass
+	... class Args:
+	...     func: Callable = default()
+	...     ...
+	...     # parser for the "foo" command
+	...     foo: ClassVar = subparser(defaults=dict(func=foo))
+	...     x: int = arg("-x", default=1, make_flag=False, subparser=foo)
+	...     y: float = arg(subparser=foo)
+	...     ...
+	...     # parser for the "bar" command
+	...     bar: ClassVar = subparser(defaults=dict(func=bar))
+	...     z: str = arg(subparser=bar)
+	...
+	>>> # parse the args and call whatever function was selected
+	>>> args = parse(Args, "foo 1 -x 2".split())
+	>>> args.func(args)
+	2.0
+	>>>
+	>>> # parse the args and call whatever function was selected
+	>>> args = parse(Args, "bar XYZYX".split())
+	>>> args.func(args)
+	((XYZYX))
+
+This way, you can let `parse()` do the job of calling the appropriate function after argument parsing is complete.
+According to the `argparse` documentation, associating functions with actions like this is typically the easiest way to
+handle the different actions for each of your subparsers.
+
+#### Using subparser name
+
+If it is necessary to check the name of the subparser that was invoked, the "subparsers group" `str` field created with
+the `subparsers()` function will work::
+
+	>>> from dataclasses import dataclass
+	>>> from dataparsers import arg, parse, subparser, subparsers
+	>>>
+	>>> @dataclass
+	... class Args:
+	...     ...
+	...     subparser_name: str = subparsers()
+	...     ...
+	...     s1: ClassVar = subparser()
+	...     x: str = arg("-x", make_flag=False, subparser=s1)
+	...     ...
+	...     s2: ClassVar = subparser()
+	...     y: str = arg(subparser=s2)
+	...
+	>>> parse(Args, ["s2", "frobble"])
+	Args(subparser_name='s2', x=None, y='frobble')
