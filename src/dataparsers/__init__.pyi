@@ -1337,7 +1337,7 @@ def subparsers(
     required: bool = False,
     help: str | None = None,
     metavar: str | None = None,
-) -> Any:
+) -> str:
     """_summary_ #TODO
 
     _extended_summary_
