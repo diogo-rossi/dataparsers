@@ -211,3 +211,6 @@ def process_module():
 
     with open(MODULE_FILEPATH, "w") as file:
         file.write(tables)
+
+if __name__ == '__main__':
+    process_module()

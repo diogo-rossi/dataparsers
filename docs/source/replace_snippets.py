@@ -33,7 +33,7 @@ def identify_code_snippets(filepath: Path) -> list[str]:
     return snippets
 
 
-def separate_snippets_by_type(snippets) -> dict[str, list[str]]:
+def separate_snippets_by_type(snippets: list[str]) -> dict[str, list[str]]:
     """Separate code snippets by types: "Python" and "Shell" """
     result = {"python": [], "sh": []}
     for snippet in snippets:
