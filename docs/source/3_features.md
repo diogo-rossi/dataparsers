@@ -27,8 +27,10 @@ give few examples.
 Use this project if you want particular added features, such as:
 
 - Support for argument groups and mutually exclusive argument groups
+- Define all interface in one single place
 - More control over the interface display
 - More control over the argument flag `--` creation
+- More similarity with `argparse` module
 - More simplicity
 
 The simplicity is mentioned because it is just a simple module
@@ -36,7 +38,7 @@ The simplicity is mentioned because it is just a simple module
 that doesn't have any additional dependency (it is pure Python) which can be
 downloaded directly and placed in your CLI scripts folder to import from.
 
-In deed, the module consists of a 200 lines
+In deed, the module consists of a 315 lines
 [IPython code cell region](https://docs.spyder-ide.org/current/panes/editor.html#code-cells)
 (i.e., starts and ends with a `#%%` line comment block), that can also be placed
 on top of your "single file" CLI script to directly distribute. The used names
@@ -59,7 +61,6 @@ Unlike the `datargs` package, `dataparsers` doesn't support:
 - The library `attrs` (only works with pure python `dataclasses`)
 - `Enum`s classes
 - Complex types (Sequences, Optionals, and Literals)
-- Sub Commands (subparsers)
 
 If you want any of these features, use the
 [package `datargs`](https://pypi.org/project/datargs/). If you need the added
