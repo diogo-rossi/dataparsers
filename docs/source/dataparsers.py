@@ -809,7 +809,7 @@ def arg(
     parameters may be supplied, namely :argument_link:`group_title<group-title>`, :argument_link:`mutually_exclusive_group_id<mutually-exclusive-group-id>` and :argument_link:`make_flag<make-flag>`. The parameter
     :argument_link:`name_or_flags<name-or-flags>`, taken from the original :meth:`~argparse.ArgumentParser.add_argument` method, behaves a little different.
 
-    Parameters #TODO: add new parameters
+    Parameters
     ----------
 
         .. _name-or-flags:
@@ -827,9 +827,64 @@ def arg(
             name even when :argument_link:`name_or_flags<name-or-flags>` is not given. See the :argument_link:`make_flag<make-flag>` argument for details.
 
 
+        .. _group:
+
+        - `group` (`Field[Any] | str | int | None`, optional): Defaults to `None`.
+
+            A previously defined :class:`~argparse.ClassVar` field name using the function :func:`~dataparsers.group`, or the :argument_link:`title<title>` (or a simple id integer) of
+            the argument group in which the argument may be added.
+
+            This is the best way to use the functionality of the method :meth:`~argparse.ArgumentParser.add_argument_group` of the standard
+            `argparse.ArgumentParser` class::
+
+                @dataclass
+                class Args:
+                    my_first_group: ClassVar = group()
+                    foo: str = arg(group=my_first_group)
+                    bar: str = arg(group=my_first_group)
+
+                    my_second_group: ClassVar = group()
+                    sam: str = arg(group=my_second_group)
+                    ham: str = arg(group=my_second_group)
+
+            By default, `argparse.ArgumentParser` groups command-line arguments into "positional arguments" and
+            "options" when displaying help messages. When there is a better conceptual grouping of arguments than this
+            default one, appropriate groups can be created using the :meth:`~argparse.ArgumentParser.add_argument_group` method, that accepts :argument_link:`title<title>`
+            and :argument_link:`description<description>` parameters, which can be used to customize the help display.
+
+            To define the :argument_link:`title<title>` and :argument_link:`description<description>` of the argument group, see the :func:`~dataparsers.group` function used to define the
+            :class:`~argparse.ClassVar`. When a string is passed to the :argument_link:`group<group>` keyword argument, it is associated to the group :argument_link:`title<title>`.
+
+
+        .. _mutually-exclusive-group:
+
+        - `mutually_exclusive_group` (`Field[Any] | str | int | None`, optional): Defaults to `None`.
+
+            A previously defined :class:`~argparse.ClassVar` field name using the function :func:`~dataparsers.mutually_exclusive_group`, or a string or a simple
+            id integer identifying the mutually exclusive group in which the argument may be included.
+
+            This parameter will make sure that only one of the arguments included in the mutually exclusive group ID is
+            present on the command line.
+
+            This is the best way to use the functionality of the method :meth:`~argparse.ArgumentParser.add_mutually_exclusive_group` of the standard
+            `argparse.ArgumentParser` class.
+
+            The original :meth:`~argparse.ArgumentParser.add_mutually_exclusive_group` method also accepts a :argument_link:`required<required>` parameter, to indicate that
+            at least one of the mutually exclusive arguments is required. To define the :argument_link:`required<required>` parameter of the
+            mutually exclusive argument group, see the :func:`~dataparsers.mutually_exclusive_group` function used to define the :class:`~argparse.ClassVar`.
+
+            Note:
+                Mutually exclusive are always optionals. If no flag is given, it will be created automatically from the
+                :func:`~dataclasses.dataclass` field name, regardless of the value of :argument_link:`make_flag<make-flag>`.
+
+
         .. _group-title:
 
         - `group_title` (`str | int | None`, optional): Defaults to `None`.
+
+            Note:
+                This argument is kept to maintain compatibility with version prior to v2.1, and may be removed in the future. A
+                better way to define argument groups is using the :argument_link:`group<group>` keyword argument.
 
             The :argument_link:`title<title>` (or a simple id integer) of the argument group in which the argument may be added.
 
@@ -865,6 +920,11 @@ def arg(
         .. _mutually-exclusive-group-id:
 
         - `mutually_exclusive_group_id` (`str | int | None`, optional): Defaults to `None`.
+
+            Note:
+                This argument is kept to maintain compatibility with version prior to v2.1, and may be removed in the future. A
+                better way to define mutually exclusive argument groups is using the :argument_link:`mutually_exclusive_group<mutually-exclusive-group>` keyword
+                argument.
 
             The `name` (or a simple integer) that is used as an ID of the a mutually exclusive group in which the
             argument may be included.
@@ -1546,9 +1606,11 @@ def arg(
     ...
 
 def group(title: str | None = None, description: str | None = None) -> Any:
-    """_summary_ #TODO
+    """Helper function to create :func:`~dataclasses.dataclass` class variables (:class:`~argparse.ClassVar`) storing specification about argument groups, used
+    later in the method :meth:`~argparse.ArgumentParser.add_argument_group`.
 
-    _extended_summary_
+    This function accepts the parameters of the original :meth:`~argparse.ArgumentParser.add_argument_group` method, i.e., :argument_link:`title<title>` and :argument_link:`description<description>`, and
+    must used to define a :class:`~argparse.ClassVar` in the class scope.
 
     Parameters
     ----------
@@ -1573,9 +1635,11 @@ def group(title: str | None = None, description: str | None = None) -> Any:
     ...
 
 def mutually_exclusive_group(*, required: bool = False) -> Any:
-    """_summary_ #TODO
+    """Helper function to create :func:`~dataclasses.dataclass` class variables (:class:`~argparse.ClassVar`) storing specification about mutually exclusive
+    argument groups, used later in the method :meth:`~argparse.ArgumentParser.add_mutually_exclusive_group`.
 
-    _extended_summary_
+    This function accepts the parameters of the original :meth:`~argparse.ArgumentParser.add_mutually_exclusive_group` method, i.e., :argument_link:`required<required>`, and must
+    used to define a :class:`~argparse.ClassVar` in the class scope.
 
     Parameters
     ----------
@@ -1588,7 +1652,7 @@ def mutually_exclusive_group(*, required: bool = False) -> Any:
 
     Returns
     -------
-        `Field`: A :func:`~dataclasses.dataclass` field with `metadata` dictionary filled with mutually exclusive group parameters.
+        `Field`: A :func:`~dataclasses.dataclass` field with `metadata` dictionary filled with mutually exclusive argument group parameters.
     """
     ...
 
@@ -1604,9 +1668,8 @@ def subparsers(
     help: str | None = None,
     metavar: str | None = None,
 ) -> str:
-    """_summary_ #TODO
-
-    _extended_summary_
+    """Helper function to create a :func:`~dataclasses.dataclass` field storing specification about a subparser group, used later in the method
+    :meth:`~argparse.ArgumentParser.add_subparsers`. This function accepts all parameters of the original :meth:`~argparse.ArgumentParser.add_subparsers` method (except for :argument_link:`dest<dest>`).
 
     Parameters
     ----------
@@ -1676,7 +1739,7 @@ def subparsers(
 
     Returns
     -------
-        `Field`: A :func:`~dataclasses.dataclass` field with `metadata` dictionary filled with subparser group parameters.
+        `Field[str]`: A :func:`~dataclasses.dataclass` field with `metadata` dictionary filled with subparser group parameters.
     """
     ...
 
@@ -1704,15 +1767,24 @@ def subparser(
     allow_abbrev: bool = True,
     exit_on_error: bool = True,
 ) -> Any:
-    """_summary_ #TODO
+    """Helper function to create :func:`~dataclasses.dataclass` class variables (:class:`~argparse.ClassVar`) storing specification about a subparser, used
+    later in the method :meth:`~argparse.ArgumentParser.add_parser`.
 
-    _extended_summary_
+    This function accepts all the parameters of the original :meth:`~argparse.ArgumentParser.add_parser` method and an additional parameter named :argument_link:`defaults<defaults>`,
+    which receives a dictionary with the subparser-level defaults attributes that are determined without any inspection of the
+    command line.
 
     Parameters
     ----------
-        - `subparsers_group` (`Field[Any] | None`, optional): Defaults to `None`. # TODO remove
 
-            _description_
+        .. _defaults:
+
+        - `defaults` (`dict[str, Any] | None = None`, optional): Defaults to `None`.
+
+            A dictionary that allows some additional attributes of the subparser to be determined without any inspection of the
+            command line.
+            
+            The dictionary keys must be defined previously with the :func:`~dataparsers.default` function.
 
     Additional parameters from the original :meth:`~argparse.ArgumentParser.add_parser` method
     -------------------------------------------------------------------------------------------
@@ -1762,18 +1834,23 @@ def subparser(
 
     Parameters from the original :class:`~argparse.ArgumentParser` constructor
     ---------------------------------------------------------------------------
-
+        See the :func:`~dataparsers.dataparser` decorator parameters.
 
     Returns
     -------
-        `Any`: _description_
+        `Field`: A :func:`~dataclasses.dataclass` field with a default values assigned as a instance of a read-only `SubParser` class storing
+        information about the subparser.
     """
     ...
 
 def default(default: T | None = None) -> T:
-    """_summary_
+    """Helper function to create a :func:`~dataclasses.dataclass` field storing a parser-level default, used later in the method :meth:`~argparse.ArgumentParser.set_defaults`.
 
-    _extended_summary_
+    It allows some additional attributes to be stored without any inspection of the command line to be added.
+    
+    Note:
+        This function must be used prior to pass a `dict` value to the :argument_link:`defaults<defaults>` keyword argument in the function
+        :func:`~dataparsers.subparser`.
 
     Parameters
     ----------
@@ -1782,11 +1859,11 @@ def default(default: T | None = None) -> T:
 
         - `default` (`T | None`, optional): Defaults to `None`.
 
-            _description_
+            The stored default value of the attribute.
 
     Returns
     -------
-        `T`: _description_
+        `Field`: A :func:`~dataclasses.dataclass` field with the default attribute value stored in it.
     """
     ...
 
@@ -1871,7 +1948,7 @@ def parse_known(
 
     Returns
     -------
-        `tuple[Class, list[str]]`: _description_
+        `tuple[Class, list[str]]`: A two item tuple containing the populated class and the list of remaining argument strings.
     """
     ...
 
