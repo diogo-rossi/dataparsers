@@ -1,19 +1,20 @@
 # Available functions
 
-For a quick reference, below there is a summary for all parameters of the
-function {py:func}`~dataparsers.arg` and the {py:func}`~dataparsers.dataparser` decorator, which have more than 5
-arguments:
+For a quick reference, below there is a summary for all parameters of the function {py:func}`~dataparsers.arg` and the {py:func}`~dataparsers.dataparser`
+decorator, which have more than 5 arguments:
 
 <details>
 <summary>Additional parameters for the <code>arg()</code> function:</summary>
 <br>
 
-|             Name              |                       Quick description                        |
-| :---------------------------: | :------------------------------------------------------------: |
-|        [`name_or_flags`](./2_available_functions.md#name-or-flags)        |          A list of option strings, starting with `-`.          |
-|         [`group_title`](./2_available_functions.md#group-title)         |    The title (or a simple id integer) of the argument group    |
-| [`mutually_exclusive_group_id`](./2_available_functions.md#mutually-exclusive-group-id) | The name (or a simple integer) of the mutually exclusive group |
-|          [`make_flag`](./2_available_functions.md#make-flag)          |        Wether to force the automatic creation of a flag        |
+|             Name              |                                     Quick description                                      |
+| :---------------------------: | :----------------------------------------------------------------------------------------: |
+|        [`name_or_flags`](./2_available_functions.md#name-or-flags)        |                        A list of option strings, starting with `-`.                        |
+|            [`group`](./2_available_functions.md#group)            |          A previously defined `ClassVar` field name using the function {py:func}`~dataparsers.group`           |
+|  [`mutually_exclusive_group`](./2_available_functions.md#mutually-exclusive-group)   | A previously defined `ClassVar` field name using the function {py:func}`~dataparsers.mutually_exclusive_group` | 
+|         [`group_title`](./2_available_functions.md#group-title)         |                  The title (or a simple id integer) of the argument group                  |
+| [`mutually_exclusive_group_id`](./2_available_functions.md#mutually-exclusive-group-id) |               The name (or a simple integer) of the mutually exclusive group               |
+|          [`make_flag`](./2_available_functions.md#make-flag)          |                      Wether to force the automatic creation of a flag                      |
 
 </details>
 <br>
@@ -68,6 +69,30 @@ arguments:
 |       [`add_help`](./2_available_functions.md#add-help)        |          Add a `-h/--help` option to the parser           |
 |     [`allow_abbrev`](./2_available_functions.md#allow-abbrev)      |           Allows long options to be abbreviated           |
 |     [`exit_on_error`](./2_available_functions.md#exit-on-error)     | Determines whether or not ArgumentParser exits with error |
+
+</details>
+<br>
+<details>
+<summary>Additional parameters for the <code>subparser()</code> function:</summary>
+<br>
+
+|    Name    |                     Quick description                      |
+| :--------: | :--------------------------------------------------------: |
+| [`defaults`](./2_available_functions.md#defaults) | A dictionary with subparser level default attribute values |
+
+</details>
+<br>
+<details>
+<summary>Parameters of the original <code>add_parser()</code> method used in the <code>subparser()</code> function:</summary>
+<br>
+
+|   Name    |                                  Quick description                                  |
+| :-------: | :---------------------------------------------------------------------------------: |
+| `aliases` | An additional argument which allows multiple strings to refer to the same subparser |
+|  [`help`](./2_available_functions.md#help)   |                      A help message for the subparser command                       |
+
+Note: `add_parser()` accepts all kwargs of `ArgumentParser` constructor. It also accepts its own [`help`](./2_available_functions.md#help) and `aliases`
+kwargs.
 
 </details>
 
