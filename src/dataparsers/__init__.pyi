@@ -1893,8 +1893,8 @@ def parse_known(
 
         - `metavar` (`str | None`, optional): Defaults to `None`.
 
-            A name to represent extra remaining arguments that could be present in command line, in the usage message. By
-            default `None` and no name is shown.
+            A name to represent extra remaining arguments that could be present in command line, in the usage message.
+            By default `None` and no name is printed.
 
     Returns
     -------
