@@ -294,6 +294,11 @@ Args(path='myfile.txt')
 Two important additional keyword arguments can be passed to the {py:func}`~dataparsers.arg` function to specify "argument groups":
 [`group_title`](./2_available_functions.md#group-title) and [`mutually_exclusive_group_id`](./2_available_functions.md#mutually-exclusive-group-id).
 
+```{note}
+In v2.1, the introduction of 2 new keyword arguments for the {py:func}`~dataparsers.arg` function ([`group`](./2_available_functions.md#group) and
+[`mutually_exclusive_group`](./2_available_functions.md#mutually-exclusive-group)) made it easier to specify groups and mutually exclusive groups at the class scope. See
+["Argument groups using ](#argument-groups-using-classvar-v2-1)[`ClassVar`](https://docs.python.org/3/library/typing.html#typing.ClassVar)".
+```
 #### Conceptual grouping
 
 The [`group_title`](./2_available_functions.md#group-title) defines the title (or the ID) of the argument group in which the argument may be included. The titled
@@ -470,7 +475,7 @@ The [`group`](./2_available_functions.md#group) and [`mutually_exclusive_group`]
 functionality compatible with the previous version parameters. When strings are passed to the [`group`](./2_available_functions.md#group) keyword argument,
 it is associated to the group title.
 
-The [`ClassVar`](https://docs.python.org/3/library/typing.html#typing.ClassVar) defined with the functions {py:func}`~dataparsers.group` and {py:func}`~dataparsers.mutually_exclusive_group` aren't populated at run time:
+The [`ClassVar`](https://docs.python.org/3/library/typing.html#typing.ClassVar) defined with the functions {py:func}`~dataparsers.group` and {py:func}`~dataparsers.mutually_exclusive_group` are not populated at run time:
 
 ```python
 >>> args = parse(Args, ['--sam', 'wise'])
@@ -535,6 +540,7 @@ constructor, and some additional parameters.
 In v2.1, the introduction of 2 new functions ({py:func}`~dataparsers.group` and {py:func}`~dataparsers.mutually_exclusive_group`) and 2 new keyword
 arguments for the {py:func}`~dataparsers.arg` function ([`group`](./2_available_functions.md#group) and [`mutually_exclusive_group`](./2_available_functions.md#mutually-exclusive-group)) made it easier to specify [`description`](./2_available_functions.md#description)
 and [`required`](./2_available_functions.md#required) status of the groups at the class scope. These may be better than using the {py:func}`~dataparsers.dataparser` decorator.
+See ["Argument groups using ](#argument-groups-using-classvar-v2-1)[`ClassVar`](https://docs.python.org/3/library/typing.html#typing.ClassVar)".
 ```
 Two important additional parameters accepted by the {py:func}`~dataparsers.dataparser` decorator are the dictionaries [`groups_descriptions`](./2_available_functions.md#groups-descriptions)
 and [`required_mutually_exclusive_groups`](./2_available_functions.md#required-mutually-exclusive-groups), whose keys should match some value of the arguments [`group_title`](./2_available_functions.md#group-title) or

@@ -252,6 +252,11 @@ code::
 Two important additional keyword arguments can be passed to the :func:`~dataparsers.arg` function to specify "argument groups":
 :argument_link:`group_title<group-title>` and :argument_link:`mutually_exclusive_group_id<mutually-exclusive-group-id>`.
 
+Note:
+    In v2.1, the introduction of 2 new keyword arguments for the :func:`~dataparsers.arg` function (:argument_link:`group<group>` and
+    :argument_link:`mutually_exclusive_group<mutually-exclusive-group>`) made it easier to specify groups and mutually exclusive groups at the class scope. See
+    "Argument groups using :data:`~typing.ClassVar`".
+
 #### Conceptual grouping
 
 The :argument_link:`group_title<group-title>` defines the title (or the ID) of the argument group in which the argument may be included. The titled
@@ -416,7 +421,7 @@ The :argument_link:`group<group>` and :argument_link:`mutually_exclusive_group<m
 functionality compatible with the previous version parameters. When strings are passed to the :argument_link:`group<group>` keyword argument,
 it is associated to the group title.
 
-The :data:`~typing.ClassVar` defined with the functions :func:`~dataparsers.group` and :func:`~dataparsers.mutually_exclusive_group` aren't populated at run time::
+The :data:`~typing.ClassVar` defined with the functions :func:`~dataparsers.group` and :func:`~dataparsers.mutually_exclusive_group` are not populated at run time::
 
     >>> args = parse(Args, ['--sam', 'wise'])
     >>> print(args)
@@ -475,6 +480,7 @@ Note:
     In v2.1, the introduction of 2 new functions (:func:`~dataparsers.group` and :func:`~dataparsers.mutually_exclusive_group`) and 2 new keyword
     arguments for the :func:`~dataparsers.arg` function (:argument_link:`group<group>` and :argument_link:`mutually_exclusive_group<mutually-exclusive-group>`) made it easier to specify :argument_link:`description<description>`
     and :argument_link:`required<required>` status of the groups at the class scope. These may be better than using the :func:`~dataparsers.dataparser` decorator.
+    See "Argument groups using :data:`~typing.ClassVar`".
 
 Two important additional parameters accepted by the :func:`~dataparsers.dataparser` decorator are the dictionaries :argument_link:`groups_descriptions<groups-descriptions>`
 and :argument_link:`required_mutually_exclusive_groups<required-mutually-exclusive-groups>`, whose keys should match some value of the arguments :argument_link:`group_title<group-title>` or
@@ -912,6 +918,38 @@ def arg(
             Note:
                 Mutually exclusive are always optionals. If no flag is given, it will be created automatically from the
                 :func:`~dataclasses.dataclass` field name, regardless of the value of :argument_link:`make_flag<make-flag>`.
+
+
+        .. _subparser:
+
+        - `subparser` (`Field[Any] | None`, optional): Defaults to `None`.
+        
+            A previously defined :data:`~typing.ClassVar` field name using the function :func:`~dataparsers.subparser`, denoting the name of the subparser to
+            which the argument will be added. If `None` (the default) the argument will be added to the main parser.
+            
+            This is quick way to use the functionality of the method :meth:`~argparse.ArgumentParser.add_parser` of the action object returned by the
+            :meth:`~argparse.ArgumentParser.add_subparsers` method::
+            
+                >>> from typing import ClassVar
+                >>> from dataparsers import dataparser, arg, subparser, parse
+                >>>
+                >>> @dataparser(prog="PROG")
+                ... class Args:
+                ...     foo: bool = arg(help="foo help")
+                ...     ...
+                ...     a: ClassVar = subparser(help="a help")
+                ...     bar: int = arg(help="bar help", subparser=a)
+                ...     ...
+                ...     b: ClassVar = subparser(help="b help")
+                ...     baz: str = arg(make_flag=True, choices="XYZ", help="baz help", subparser=b)
+                ...
+                >>> parse(Args, ["a", "12"])
+                Args(foo=False, bar=12, baz=None)
+                >>> parse(Args, ["--foo", "b", "--baz", "Z"])
+                Args(foo=True, bar=None, baz='Z')
+            
+            The original :meth:`~argparse.ArgumentParser.add_parser` method also accepts all :class:`~argparse.ArgumentParser` constructor arguments. To define these
+            arguments see the :func:`~dataparsers.subparser` function used to define the :data:`~typing.ClassVar`.
 
 
         .. _group-title:
@@ -1811,7 +1849,7 @@ def subparser(
     exit_on_error: bool = True,
 ) -> Any:
     """Helper function to create :func:`~dataclasses.dataclass` class variables (:data:`~typing.ClassVar`) storing specification about a subparser, used
-    later in the method :meth:`~argparse.ArgumentParser.add_parser`.
+    later in the method :meth:`~argparse.ArgumentParser.add_parser` to add sub commands.
 
     This function accepts all the parameters of the original :meth:`~argparse.ArgumentParser.add_parser` method and an additional parameter named :argument_link:`defaults<defaults>`,
     which receives a dictionary with the subparser-level defaults attributes that are determined without any inspection of the
@@ -1831,6 +1869,9 @@ def subparser(
 
     Extra parameters of the original :meth:`~argparse.ArgumentParser.add_parser` method
     ------------------------------------------------------------------------------------
+
+        .. _aliases:
+
         - `aliases` (`Sequence[str]`, optional):
 
             An additional argument which allows multiple strings to refer to the same subparser. This example, like

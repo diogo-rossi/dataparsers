@@ -1,7 +1,7 @@
 # Available functions
 
-For a quick reference, below there is a summary for all parameters of the function {py:func}`~dataparsers.arg` and the {py:func}`~dataparsers.dataparser`
-decorator, which have more than 5 arguments:
+For a quick reference, below there is a summary for all parameters of the function {py:func}`~dataparsers.arg`, the {py:func}`~dataparsers.dataparser`
+decorator and the function {py:func}`~dataparsers.subparser`:
 
 <details>
 <summary>Additional parameters for the <code>arg()</code> function:</summary>
@@ -88,10 +88,10 @@ decorator, which have more than 5 arguments:
 
 |   Name    |                                  Quick description                                  |
 | :-------: | :---------------------------------------------------------------------------------: |
-| `aliases` | An additional argument which allows multiple strings to refer to the same subparser |
+| [`aliases`](./2_available_functions.md#aliases) | An additional argument which allows multiple strings to refer to the same subparser |
 |  [`help`](./2_available_functions.md#help)   |                      A help message for the subparser command                       |
 
-Note: `add_parser()` accepts all kwargs of `ArgumentParser` constructor. It also accepts its own [`help`](./2_available_functions.md#help) and `aliases`
+Note: `add_parser()` accepts all kwargs of `ArgumentParser` constructor. It also accepts its own [`help`](./2_available_functions.md#help) and [`aliases`](./2_available_functions.md#aliases)
 kwargs.
 
 </details>
