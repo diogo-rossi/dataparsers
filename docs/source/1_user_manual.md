@@ -403,7 +403,7 @@ Mutually exclusive argument groups do not support the [`title`](./2_available_fu
 parameters to the {py:func}`~dataparsers.arg` function. If there is a conflict (i.e., same mutually exclusive group and different group
 titles), the mutually exclusive group takes precedence.
 ```
-### Argument groups using [`ClassVar`](https://docs.python.org/3/library/typing.html#typing.ClassVar) (v2.1)
+### Argument groups using [`ClassVar`](https://docs.python.org/3/library/typing.html#typing.ClassVar) (v2.1+)
 
 Two new additional keyword arguments were introduced in v2.1 with functionality analogue to the previous parameters.
 
@@ -631,7 +631,7 @@ options:
               The parameter has default value of 25.5.
 ```
 
-## Subparsers (v2.1)
+## Subparsers (v2.1+)
 
 To define subparsers (or [sub commands](https://docs.python.org/3/library/argparse.html#sub-commands)) use a [`ClassVar`](https://docs.python.org/3/library/typing.html#typing.ClassVar)
 and initialize it with the function {py:func}`~dataparsers.subparser`. This function accepts all parameters of the original [`add_parser()`](https://github.com/python/cpython/blob/fc4599800778f9b130d5e336deadbdeb5bd3e5ee/Lib/argparse.py#L1221)
