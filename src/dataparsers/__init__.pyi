@@ -42,7 +42,7 @@ And the resulting type of `args` is `Args` (recognized by type checkers and auto
     Printing `args`:
     Args(foo='test', bar=12)
 
-## Interactive parse and modify existing parsers
+## Interactive parse, modify parsers and partial parsing
 
 It is possible to pass arguments in code, in the same way as the original `parse_args()` method::
 
@@ -69,6 +69,20 @@ Both functions `parse()` and `make_parser()` accepts a `parser=...` keyword argu
     options:
       -h, --help  show this help message and exit
       --bar BAR
+
+It is also possible to parse only a few of the command-line arguments, passing the remaining arguments on to another
+script or program, using the `parse_known()` function for this. It works much like `parse()` except that it does not
+produce an error when extra arguments are present. Instead, it returns a two item tuple containing the populated class
+and the list of remaining argument strings::
+
+    >>> @dataclass
+    ... class Args:
+    ...     foo: bool
+    ...     bar: str
+    ...
+    >>> parse_known(Args, ['--foo', '--badger', 'BAR', 'spam'])
+    (Args(foo=True, bar='BAR'), ['--badger', 'spam'])
+
 
 ## Argument specification
 
@@ -555,7 +569,7 @@ preserve new line breaks and add blank lines between parameters descriptions::
 
 To define subparsers (or [sub commands](https://docs.python.org/3/library/argparse.html#sub-commands)) use a `ClassVar`
 and initialize it with the function `subparser()`. This function accepts all parameters of the original `add_parser()`
-method, except for `name`: the name of the subparser will be the dataclass field name.
+method, except for `name`: the name of the subparser will receive the `dataclass` field name.
 
 To add an argument to the created subparser (instead of the main parser), use the `subparser` keyword argument of the
 `arg()` function and assign to it the previously created field::
@@ -595,7 +609,7 @@ instance of type `SubParser`: a frozen `dataclass` with some fields)::
 It is not necessary to create the "subparsers group" when creating subparsers: the group is automatically created.
 However, if you want to explicitly pass information to the "subparsers group", then create a `str` field and initialize
 it with the function `subparsers()`. This function accepts all parameters of the original `add_subparsers()` method
-(except for `dest`, which automatically receives the dataclass field name)::
+(except for `dest`, which automatically receives the `dataclass` field name)::
 
     >>> @dataparser(prog="PROG")
     ... class Args:
@@ -670,8 +684,8 @@ One additional keyword argument of the function `subparser()` (i.e., beyond thos
 method) is the `defaults` dictionary, which reproduce the functionality of the original `set_defaults()` method (or the
 "main parser-level" `default()` function) for the created subparsers.
 
-One caveat of using this functionality is that the function requires  the dictionary keys to be defined as a main
-parser-level default field, with the `default()` function::
+One caveat of using this functionality is that the function requires  the dictionary keys to be defined previously as a
+main parser-level default field, with the `default()` function::
 
     >>> @dataclass
     ... class Args:
@@ -699,7 +713,7 @@ Parser-level defaults are the original effective way of handling sub-commands, c
 function with the `defaults` keyword argument dictionary, so that each subparser knows which Python function it should
 execute. For example::
 
-    >>> from __future__ import annotations # necessary to annotate functions
+    >>> from __future__ import annotations # necessary to annotate sub-command functions
     >>> from typing import ClassVar, Callable
     >>> from dataclasses import dataclass    
     >>> from dataparsers import arg, parse, subparser, default
@@ -828,8 +842,8 @@ def arg(
             A previously defined `ClassVar` field name using the function `group()`, or the `title` (or a simple id integer) of
             the argument group in which the argument may be added.
 
-            This is the best way to use the functionality of the method `add_argument_group()` of the standard
-            `argparse.ArgumentParser` class::
+            This is the best way to use the functionality of the method `add_argument_group()` of the standard `ArgumentParser`
+            class::
 
                 @dataclass
                 class Args:
@@ -841,10 +855,10 @@ def arg(
                     sam: str = arg(group=my_second_group)
                     ham: str = arg(group=my_second_group)
 
-            By default, `argparse.ArgumentParser` groups command-line arguments into "positional arguments" and
-            "options" when displaying help messages. When there is a better conceptual grouping of arguments than this
-            default one, appropriate groups can be created using the `add_argument_group()` method, that accepts `title`
-            and `description` parameters, which can be used to customize the help display.
+            By default, `ArgumentParser` groups command-line arguments into "positional arguments" and "options" when displaying
+            help messages. When there is a better conceptual grouping of arguments than this default one, appropriate groups can
+            be created using the `add_argument_group()` method, that accepts `title` and `description` parameters, which can be
+            used to customize the help display.
 
             To define the `title` and `description` of the argument group, see the `group()` function used to define the
             `ClassVar`. When a string is passed to the `group` keyword argument, it is associated to the group `title`.
@@ -855,10 +869,32 @@ def arg(
             id integer identifying the mutually exclusive group in which the argument may be included.
 
             This parameter will make sure that only one of the arguments included in the mutually exclusive group ID is
-            present on the command line.
+            present on the command line::
+            
+                >>> from dataclasses import dataclass
+                >>> from dataparsers import arg, mutually_exclusive_group, make_parser, parse
+                >>> from typing import ClassVar
+                >>>
+                >>> @dataclass
+                ... class Args:
+                ...     my_group: ClassVar = mutually_exclusive_group()
+                ...     foo: str = arg(mutually_exclusive_group=my_group)
+                ...     bar: str = arg(mutually_exclusive_group=my_group)
+                ...
+                >>> make_parser(Args).print_help()
+                usage: [-h] [--foo FOO | --bar BAR]
+                
+                options:
+                  -h, --help  show this help message and exit
+                  --foo FOO
+                  --bar BAR
+                >>>
+                >>> parse(Args, ["--foo", "test", "--bar", "newtest"])
+                usage: [-h] [--foo FOO | --bar BAR]
+                : error: argument --bar: not allowed with argument --foo
 
             This is the best way to use the functionality of the method `add_mutually_exclusive_group()` of the standard
-            `argparse.ArgumentParser` class.
+            `ArgumentParser` class.
 
             The original `add_mutually_exclusive_group()` method also accepts a `required` parameter, to indicate that
             at least one of the mutually exclusive arguments is required. To define the `required` parameter of the
@@ -876,13 +912,13 @@ def arg(
 
             The `title` (or a simple id integer) of the argument group in which the argument may be added.
 
-            This is quick way to use the functionality of the method `add_argument_group()` of the standard
-            `argparse.ArgumentParser` class.
+            This is quick way to use the functionality of the method `add_argument_group()` of the standard `ArgumentParser`
+            class.
 
-            By default, `argparse.ArgumentParser` groups command-line arguments into "positional arguments" and
-            "options" when displaying help messages. When there is a better conceptual grouping of arguments than this
-            default one, appropriate groups can be created using the `add_argument_group()` method, that accepts `title`
-            and `description` parameters, which can be used to customize the help display.
+            By default, `ArgumentParser` groups command-line arguments into "positional arguments" and "options" when displaying
+            help messages. When there is a better conceptual grouping of arguments than this default one, appropriate groups can
+            be created using the `add_argument_group()` method, that accepts `title` and `description` parameters, which can be
+            used to customize the help display.
 
             The `group_title` parameter identifies the `title` of the argument group to include the argument::
 
@@ -918,15 +954,15 @@ def arg(
             present on the command line::
 
                 >>> @dataclass
-                ... class Args10:
+                ... class Args:
                 ...     foo: bool = arg(action="store_true", mutually_exclusive_group_id="my_group")
                 ...     bar: bool = arg(action="store_false", mutually_exclusive_group_id="my_group")
                 ...
-                >>> parse(Args10, ["--foo"])
-                Args10(foo=True, bar=True)
-                >>> parse(Args10, ["--bar"])
-                Args10(foo=False, bar=False)
-                >>> parse(Args10, ["--foo", "--bar"])
+                >>> parse(Args, ["--foo"])
+                Args(foo=True, bar=True)
+                >>> parse(Args, ["--bar"])
+                Args(foo=False, bar=False)
+                >>> parse(Args, ["--foo", "--bar"])
                 usage: [-h] [--foo | --bar]
                 : error: argument --bar: not allowed with argument --foo
 
@@ -1562,7 +1598,7 @@ def group(title: str | None = None, description: str | None = None) -> Any:
     later in the method `add_argument_group()`.
 
     This function accepts the parameters of the original `add_argument_group()` method, i.e., `title` and `description`, and
-    must used to define a `ClassVar` in the class scope.
+    must be used to define a `ClassVar` in the class scope.
 
     Parameters
     ----------
@@ -1576,7 +1612,8 @@ def group(title: str | None = None, description: str | None = None) -> Any:
 
     Returns
     -------
-        `Field`: A `dataclass` field with `metadata` dictionary filled with argument group parameters.
+        `Field`: A `dataclass` field with `metadata` dictionary filled with argument group parameters, which must be assigned to
+        a `ClassVar` field.
     """
     ...
 
@@ -1584,7 +1621,7 @@ def mutually_exclusive_group(*, required: bool = False) -> Any:
     """Helper function to create `dataclass` class variables (`ClassVar`) storing specification about mutually exclusive
     argument groups, used later in the method `add_mutually_exclusive_group()`.
 
-    This function accepts the parameters of the original `add_mutually_exclusive_group()` method, i.e., `required`, and must
+    This function accepts the parameters of the original `add_mutually_exclusive_group()` method, i.e., `required`, and must be
     used to define a `ClassVar` in the class scope.
 
     Parameters
@@ -1595,7 +1632,8 @@ def mutually_exclusive_group(*, required: bool = False) -> Any:
 
     Returns
     -------
-        `Field`: A `dataclass` field with `metadata` dictionary filled with mutually exclusive argument group parameters.
+        `Field`: A `dataclass` field with `metadata` dictionary filled with mutually exclusive argument group parameters, which
+        must be assigned to a `ClassVar` field.
     """
     ...
 
@@ -1640,6 +1678,11 @@ def subparsers(
             The basic type of action to be taken when this argument is encountered at the command line.
 
         - `dest` (`str | None`, optional): Defaults to `None`.
+
+            Note:
+                The parameter `dest` is described here just for documentation. It will raise an error if it is passed to the
+                `subparsers()` function, because it is not necessary: the `dest` keyword argument of the `add_subparsers()`
+                method is taken from the dataclass field name.
 
             Name of the attribute under which sub-command name will be stored. By default `None` and no value is stored.
 
@@ -1699,11 +1742,11 @@ def subparser(
 
             A dictionary that allows some additional attributes of the subparser to be determined without any inspection of the
             command line.
-            
+
             The dictionary keys must be defined previously with the `default()` function.
 
-    Additional parameters from the original `add_parser()` method
-    -------------------------------------------------------------
+    Extra parameters of the original `add_parser()` method
+    ------------------------------------------------------
         - `aliases` (`Sequence[str]`, optional):
 
             An additional argument which allows multiple strings to refer to the same subparser. This example, like
@@ -1752,7 +1795,7 @@ def subparser(
     Returns
     -------
         `Field`: A `dataclass` field with a default values assigned as a instance of a read-only `SubParser` class storing
-        information about the subparser.
+        information about the subparser, which must be assigned to a `ClassVar` field.
     """
     ...
 
@@ -1760,7 +1803,7 @@ def default(default: T | None = None) -> T:
     """Helper function to create a `dataclass` field storing a parser-level default, used later in the method `set_defaults()`.
 
     It allows some additional attributes to be stored without any inspection of the command line to be added.
-    
+
     Note:
         This function must be used prior to pass a `dict` value to the `defaults` keyword argument in the function
         `subparser()`.
@@ -1827,9 +1870,10 @@ def parse(cls: type[Class], args: Sequence[str] | None = None, *, parser: Argume
 def parse_known(
     cls: type[Class], args: Sequence[str] | None = None, *, parser: ArgumentParser | None = None
 ) -> tuple[Class, list[str]]:
-    """Parse command line arguments according to the fields of `cls` and populate it. Same as `parse()` except that it  it does
-    not produce an error when extra arguments are present. Instead, it returns a two item tuple containing the populated class
-    and the list of remaining argument strings.
+    """Parse command line arguments according to the fields of `cls` and populate it.
+
+    Same as `parse()` except that it  it does not produce an error when extra arguments are present. Instead, it returns a two
+    item tuple containing the populated class and the list of remaining argument strings.
 
     Accepts classes decorated with `dataclass`.
 

@@ -42,7 +42,7 @@ And the resulting type of `args` is `Args` (recognized by type checkers and auto
     Printing `args`:
     Args(foo='test', bar=12)
 
-## Interactive parse and modify existing parsers
+## Interactive parse, modify parsers and partial parsing
 
 It is possible to pass arguments in code, in the same way as the original `parse_args()` method::
 
@@ -69,6 +69,20 @@ Both functions `parse()` and `make_parser()` accepts a `parser=...` keyword argu
     options:
       -h, --help  show this help message and exit
       --bar BAR
+
+It is also possible to parse only a few of the command-line arguments, passing the remaining arguments on to another
+script or program, using the `parse_known()` function for this. It works much like `parse()` except that it does not
+produce an error when extra arguments are present. Instead, it returns a two item tuple containing the populated class
+and the list of remaining argument strings::
+
+    >>> @dataclass
+    ... class Args:
+    ...     foo: bool
+    ...     bar: str
+    ...
+    >>> parse_known(Args, ['--foo', '--badger', 'BAR', 'spam'])
+    (Args(foo=True, bar='BAR'), ['--badger', 'spam'])
+
 
 ## Argument specification
 
@@ -555,7 +569,7 @@ preserve new line breaks and add blank lines between parameters descriptions::
 
 To define subparsers (or [sub commands](https://docs.python.org/3/library/argparse.html#sub-commands)) use a `ClassVar`
 and initialize it with the function `subparser()`. This function accepts all parameters of the original `add_parser()`
-method, except for `name`: the name of the subparser will be the dataclass field name.
+method, except for `name`: the name of the subparser will receive the `dataclass` field name.
 
 To add an argument to the created subparser (instead of the main parser), use the `subparser` keyword argument of the
 `arg()` function and assign to it the previously created field::
@@ -595,7 +609,7 @@ instance of type `SubParser`: a frozen `dataclass` with some fields)::
 It is not necessary to create the "subparsers group" when creating subparsers: the group is automatically created.
 However, if you want to explicitly pass information to the "subparsers group", then create a `str` field and initialize
 it with the function `subparsers()`. This function accepts all parameters of the original `add_subparsers()` method
-(except for `dest`, which automatically receives the dataclass field name)::
+(except for `dest`, which automatically receives the `dataclass` field name)::
 
     >>> @dataparser(prog="PROG")
     ... class Args:
@@ -670,8 +684,8 @@ One additional keyword argument of the function `subparser()` (i.e., beyond thos
 method) is the `defaults` dictionary, which reproduce the functionality of the original `set_defaults()` method (or the
 "main parser-level" `default()` function) for the created subparsers.
 
-One caveat of using this functionality is that the function requires  the dictionary keys to be defined as a main
-parser-level default field, with the `default()` function::
+One caveat of using this functionality is that the function requires  the dictionary keys to be defined previously as a
+main parser-level default field, with the `default()` function::
 
     >>> @dataclass
     ... class Args:
@@ -699,7 +713,7 @@ Parser-level defaults are the original effective way of handling sub-commands, c
 function with the `defaults` keyword argument dictionary, so that each subparser knows which Python function it should
 execute. For example::
 
-    >>> from __future__ import annotations # necessary to annotate functions
+    >>> from __future__ import annotations # necessary to annotate sub-command functions
     >>> from typing import ClassVar, Callable
     >>> from dataclasses import dataclass    
     >>> from dataparsers import arg, parse, subparser, default

@@ -7,14 +7,14 @@ decorator, which have more than 5 arguments:
 <summary>Additional parameters for the <code>arg()</code> function:</summary>
 <br>
 
-|             Name              |                                     Quick description                                      |
-| :---------------------------: | :----------------------------------------------------------------------------------------: |
-|        `name_or_flags`        |                        A list of option strings, starting with `-`.                        |
-|            `group`            |          A previously defined `ClassVar` field name using the function `group()`           |
-|  `mutually_exclusive_group`   | A previously defined `ClassVar` field name using the function `mutually_exclusive_group()` | 
-|         `group_title`         |                  The title (or a simple id integer) of the argument group                  |
-| `mutually_exclusive_group_id` |               The name (or a simple integer) of the mutually exclusive group               |
-|          `make_flag`          |                      Wether to force the automatic creation of a flag                      |
+|             Name              |                              Quick description                              |
+| :---------------------------: | :-------------------------------------------------------------------------: |
+|        `name_or_flags`        |                A list of option strings, starting with `-`.                 |
+|            `group`            |          A previously defined `ClassVar` using function `group()`           |
+|  `mutually_exclusive_group`   | A previously defined `ClassVar` using function `mutually_exclusive_group()` |
+|         `group_title`         |          The title (or a simple id integer) of the argument group           |
+| `mutually_exclusive_group_id` |       The name (or a simple integer) of the mutually exclusive group        |
+|          `make_flag`          |              Wether to force the automatic creation of a flag               |
 
 </details>
 <br>

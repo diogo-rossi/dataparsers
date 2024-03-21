@@ -17,6 +17,7 @@ EXTERNAL_LINKS = {
     "`set_defaults()`": "https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.set_defaults",
     "`add_subparsers()`": "https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.add_subparsers",
     "`add_parser()`": "https://github.com/python/cpython/blob/fc4599800778f9b130d5e336deadbdeb5bd3e5ee/Lib/argparse.py#L1221",
+    "`parse_known_args()`": "https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.parse_known_args",
     '"Aliases"': "#aliases",
     '"Default for booleans"': "#default-for-booleans",
     '"main parser-level"': "#parser-level-defaults",
@@ -32,6 +33,7 @@ EMPHASIS = [
 INTERNAL_LINKS = [
     "`arg()`",
     "`parse()`",
+    "`parse_known()`",
     "`dataparser()`",
     "`make_parser()`",
     "`write_help()`",
@@ -223,5 +225,6 @@ def process_module():
     with open(MODULE_FILEPATH, "w") as file:
         file.write(tables)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     process_module()

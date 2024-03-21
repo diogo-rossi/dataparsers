@@ -29,6 +29,8 @@ def remove_overloads(filepath: Path):
 def make_rst_link(link: str):
     """Make a hyperlink to the external Python documentation using the reST syntax"""
     link = link.replace("`", "")
+    if "ClassVar" in link:  # link to `typing`
+        return f":data:`~typing.{link}`"
     if link in ["argparse", "dataclasses"]:  # link to the modules `argparse` or `dataclasses`
         return f":mod:`~{link}`"
     if link.replace("()", "") in ["dataclass"]:  # link to the function/decorator dataclass()`
