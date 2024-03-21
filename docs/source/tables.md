@@ -1,7 +1,7 @@
 # Available functions
 
-For a quick reference, below there is a summary for all parameters of the function `arg()` and the `dataparser()`
-decorator, which have more than 5 arguments:
+For a quick reference, below there is a summary for all parameters of the function `arg()`, the `dataparser()`
+decorator and the function `subparser()`:
 
 <details>
 <summary>Additional parameters for the <code>arg()</code> function:</summary>
