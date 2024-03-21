@@ -374,3 +374,38 @@ class Args:
     y: str = arg(subparser=s2)
 
 parse(Args, ["s2", "frobble"])
+
+
+# %% Example 24: Partial parsing https://docs.python.org/3/library/argparse.html#partial-parsing
+
+
+from dataclasses import dataclass
+from dataparsers import arg, parse, parse_known, subparser, subparsers
+
+
+@dataclass
+class Args:
+    foo: bool
+    bar: str
+
+
+parse_known(Args, ["--foo", "--badger", "BAR", "spam"])
+
+
+# %% Example 25: Mutually exclusive argument group as ClassVars
+
+from dataclasses import dataclass
+from dataparsers import arg, mutually_exclusive_group, make_parser, parse
+from typing import ClassVar
+
+
+@dataclass
+class Args:
+    my_group: ClassVar = mutually_exclusive_group()
+    foo: str = arg(mutually_exclusive_group=my_group)
+    bar: str = arg(mutually_exclusive_group=my_group)
+
+
+make_parser(Args).print_help()
+
+parse(Args, ["--foo", "test", "--bar", "newtest"])
