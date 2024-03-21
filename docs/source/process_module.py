@@ -19,12 +19,14 @@ EXTERNAL_LINKS = {
     "`add_parser()`": "https://github.com/python/cpython/blob/fc4599800778f9b130d5e336deadbdeb5bd3e5ee/Lib/argparse.py#L1221",
     '"Aliases"': "#aliases",
     '"Default for booleans"': "#default-for-booleans",
+    '"main parser-level"': "#parser-level-defaults",
 }
 
 EMPHASIS = [
     "must be a series of flags",
     "must be passed only with flags",
     "This may be the most common case",
+    "The dictionary keys must be defined previously",
 ]
 
 INTERNAL_LINKS = [

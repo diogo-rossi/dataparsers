@@ -592,10 +592,10 @@ instance of type `SubParser`: a frozen `dataclass` with some fields)::
 
 ### Subparsers group
 
-It is not necessary to create the "subparsers group" when creating subparsers, it is automatically created. But, if you
-want to explicitly pass information to the "subparsers group", create a `str` field and initialize it with the function
-`subparsers()`. This function accepts all parameters of the original `add_subparsers()` method (except for `dest`, which
-will receive the dataclass field name)::
+It is not necessary to create the "subparsers group" when creating subparsers: the group is automatically created.
+However, if you want to explicitly pass information to the "subparsers group", then create a `str` field and initialize
+it with the function `subparsers()`. This function accepts all parameters of the original `add_subparsers()` method
+(except for `dest`, which automatically receives the dataclass field name)::
 
     >>> @dataparser(prog="PROG")
     ... class Args:
@@ -608,9 +608,9 @@ will receive the dataclass field name)::
     ...     b: ClassVar = subparser(help="b help")
     ...     baz: str = arg(make_flag=True, choices="XYZ", help="baz help", subparser=b)
 
-As in the original module, when a help message is requested from a subparser, only the help for that particular parser will be printed. The help
-message will not include parent parser or sibling parser messages. A help message for each subparser command, however,
-can be given by supplying the `help=...` argument to `subparser()` as above::
+As in the original module, when a help message is requested from a subparser, only the help for that particular parser
+will be printed. The help message will not include parent parser or sibling parser messages. A help message for each
+subparser command, however, can be given by supplying the `help=...` argument to `subparser()` as above::
 
     >>> parse(Args, ["--help"])
     usage: PROG [-h] [--foo] {a,b} ...
@@ -666,11 +666,11 @@ Some possible keyword arguments highlighted in the original `add_subparsers()` m
 
 ### Subparsers defaults
 
-An additional keyword argument of the function `subparser()` (beyond those of the the original `add_parser()` method) is
-the `defaults` dictionary, which reproduce the functionality of the original `set_defaults()` method (or the main
-parser-level `default()` function) for the created subparsers.
+One additional keyword argument of the function `subparser()` (i.e., beyond those of the the original `add_parser()`
+method) is the `defaults` dictionary, which reproduce the functionality of the original `set_defaults()` method (or the
+"main parser-level" `default()` function) for the created subparsers.
 
-One caveat of using this functionality is: the function requires that the dictionary keys must be defined as a main
+One caveat of using this functionality is that the function requires  the dictionary keys to be defined as a main
 parser-level default field, with the `default()` function::
 
     >>> @dataclass

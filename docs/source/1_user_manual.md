@@ -660,10 +660,10 @@ dataclasses.FrozenInstanceError: cannot assign to field 'defaults'
 
 ### Subparsers group
 
-It is not necessary to create the "subparsers group" when creating subparsers, it is automatically created. But, if you
-want to explicitly pass information to the "subparsers group", create a `str` field and initialize it with the function
-{py:func}`~dataparsers.subparsers`. This function accepts all parameters of the original [`add_subparsers()`](https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.add_subparsers) method (except for [`dest`](./2_available_functions.md#dest), which
-will receive the dataclass field name):
+It is not necessary to create the "subparsers group" when creating subparsers: the group is automatically created.
+However, if you want to explicitly pass information to the "subparsers group", then create a `str` field and initialize
+it with the function {py:func}`~dataparsers.subparsers`. This function accepts all parameters of the original [`add_subparsers()`](https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.add_subparsers) method
+(except for [`dest`](./2_available_functions.md#dest), which automatically receives the dataclass field name):
 
 ```python
 >>> @dataparser(prog="PROG")
@@ -678,9 +678,9 @@ will receive the dataclass field name):
 ...     baz: str = arg(make_flag=True, choices="XYZ", help="baz help", subparser=b)
 ```
 
-As in the original module, when a help message is requested from a subparser, only the help for that particular parser will be printed. The help
-message will not include parent parser or sibling parser messages. A help message for each subparser command, however,
-can be given by supplying the `help=...` argument to {py:func}`~dataparsers.subparser` as above:
+As in the original module, when a help message is requested from a subparser, only the help for that particular parser
+will be printed. The help message will not include parent parser or sibling parser messages. A help message for each
+subparser command, however, can be given by supplying the `help=...` argument to {py:func}`~dataparsers.subparser` as above:
 
 ```python
 >>> parse(Args, ["--help"])
@@ -740,11 +740,11 @@ subcommands:
 
 ### Subparsers defaults
 
-An additional keyword argument of the function {py:func}`~dataparsers.subparser` (beyond those of the the original [`add_parser()`](https://github.com/python/cpython/blob/fc4599800778f9b130d5e336deadbdeb5bd3e5ee/Lib/argparse.py#L1221) method) is
-the [`defaults`](./2_available_functions.md#defaults) dictionary, which reproduce the functionality of the original [`set_defaults()`](https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.set_defaults) method (or the main
-parser-level {py:func}`~dataparsers.default` function) for the created subparsers.
+One additional keyword argument of the function {py:func}`~dataparsers.subparser` (i.e., beyond those of the the original [`add_parser()`](https://github.com/python/cpython/blob/fc4599800778f9b130d5e336deadbdeb5bd3e5ee/Lib/argparse.py#L1221)
+method) is the [`defaults`](./2_available_functions.md#defaults) dictionary, which reproduce the functionality of the original [`set_defaults()`](https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.set_defaults) method (or the
+["main parser-level"](#parser-level-defaults) {py:func}`~dataparsers.default` function) for the created subparsers.
 
-One caveat of using this functionality is: the function requires that the dictionary keys must be defined as a main
+One caveat of using this functionality is that the function requires  the dictionary keys to be defined as a main
 parser-level default field, with the {py:func}`~dataparsers.default` function:
 
 ```python
