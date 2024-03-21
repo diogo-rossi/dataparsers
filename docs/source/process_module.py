@@ -179,6 +179,10 @@ def process_module():
 ```
 ---
 ```{eval-rst}
+.. autofunction:: dataparsers.parse_known
+```
+---
+```{eval-rst}
 .. autofunction:: dataparsers.make_parser
 ```
 ---
