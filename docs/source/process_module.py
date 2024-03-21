@@ -21,6 +21,7 @@ EXTERNAL_LINKS = {
     '"Aliases"': "#aliases",
     '"Default for booleans"': "#default-for-booleans",
     '"main parser-level"': "#parser-level-defaults",
+    '"Argument groups using ': "#argument-groups-using-classvar-v2-1",
 }
 
 EMPHASIS = [
@@ -82,6 +83,7 @@ ARGUMENTS_LINKS = [
     "`parser`",
     "`subparser`",
     "`defaults`",
+    "`aliases`",
 ]
 
 THIS_FILE = Path(__file__)
