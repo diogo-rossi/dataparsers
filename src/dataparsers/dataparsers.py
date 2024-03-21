@@ -291,9 +291,12 @@ def parse(cls: type[Class], args: Sequence[str] | None = None, *, parser: Argume
 
 
 def parse_known(
-    cls: type[Class], args: Sequence[str] | None = None, *, parser: ArgumentParser | None = None
+    cls: type[Class], args: Sequence[str] | None = None, *, parser: ArgumentParser | None = None, metavar: str | None = None
 ) -> tuple[Class, list[str]]:
-    arguments, remaining_arguments = make_parser(cls, parser=parser).parse_known_args(args)
+    local_parser = make_parser(cls, parser=parser)
+    if metavar is not None:
+        local_parser.usage = f"{local_parser.format_usage().strip()} [{metavar}]\n"
+    arguments, remaining_arguments = local_parser.parse_known_args(args)
     return cls(**vars(arguments)), remaining_arguments
 
 

@@ -870,7 +870,7 @@ def arg(
 
             This parameter will make sure that only one of the arguments included in the mutually exclusive group ID is
             present on the command line::
-            
+
                 >>> from dataclasses import dataclass
                 >>> from dataparsers import arg, mutually_exclusive_group, make_parser, parse
                 >>> from typing import ClassVar
@@ -883,7 +883,7 @@ def arg(
                 ...
                 >>> make_parser(Args).print_help()
                 usage: [-h] [--foo FOO | --bar BAR]
-                
+
                 options:
                   -h, --help  show this help message and exit
                   --foo FOO
@@ -1868,7 +1868,7 @@ def parse(cls: type[Class], args: Sequence[str] | None = None, *, parser: Argume
     ...
 
 def parse_known(
-    cls: type[Class], args: Sequence[str] | None = None, *, parser: ArgumentParser | None = None
+    cls: type[Class], args: Sequence[str] | None = None, *, parser: ArgumentParser | None = None, metavar: str | None = None
 ) -> tuple[Class, list[str]]:
     """Parse command line arguments according to the fields of `cls` and populate it.
 
@@ -1890,6 +1890,11 @@ def parse_known(
         - `parser` (`ArgumentParser | None`, optional): Defaults to `None`.
 
             Existing parser to add arguments to and parse from.
+
+        - `metavar` (`str | None`, optional): Defaults to `None`.
+
+            A name to represent extra remaining arguments that could be present in command line, in the usage message. By
+            default `None` and no name is shown.
 
     Returns
     -------
