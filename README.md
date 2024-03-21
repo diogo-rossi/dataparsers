@@ -134,7 +134,7 @@ In deed, the module consists of a 315 lines
 on top of your "single file" CLI script to directly distribute. The used names
 are just the few
 [provided functions](https://dataparsers.readthedocs.io/en/latest/2_available_functions.html),
-the _stdlib_ imports and `Class` (a `TypeVar`).
+the _stdlib_ imports, `Class` (a `TypeVar`) and `SubParser` (a frozen `dataclass`).
 
 Additionally, this project also provides a
 [stub file (`.pyi`)](https://github.com/Diogo-Rossi/dataparsers/blob/main/src/dataparsers/__init__.pyi)
