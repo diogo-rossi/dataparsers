@@ -295,7 +295,7 @@ def parse_known(
 ) -> tuple[Class, list[str]]:
     local_parser = make_parser(cls, parser=parser)
     if metavar is not None:
-        local_parser.usage = f"{local_parser.format_usage().strip()} [{metavar}]\n"
+        local_parser.usage = f"{local_parser.format_usage().strip().replace('usage: ','')} [{metavar}]\n"
     arguments, remaining_arguments = local_parser.parse_known_args(args)
     return cls(**vars(arguments)), remaining_arguments
 
