@@ -1,5 +1,13 @@
 # %%
 from __future__ import annotations  # necessary to annotate functions
+
+import sys
+from pathlib import Path
+
+SRC_DIR = Path(__file__).parent.parent.resolve() / "src"
+sys.path.insert(0, str(SRC_DIR))
+
+
 from typing import ClassVar, Callable
 from dataclasses import dataclass
 from dataparsers import arg, parse, subparser, default, subparsers
@@ -35,5 +43,3 @@ args.func(args)
 # parse the args and call whatever function was selected
 args = parse(Args, "bar XYZYX".split())
 args.func(args)
-
-
