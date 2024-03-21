@@ -1,19 +1,20 @@
 # Available functions
 
-For a quick reference, below there is a summary for all parameters of the
-function `arg()` and the `dataparser()` decorator, which have more than 5
-arguments:
+For a quick reference, below there is a summary for all parameters of the function `arg()` and the `dataparser()`
+decorator, which have more than 5 arguments:
 
 <details>
 <summary>Additional parameters for the <code>arg()</code> function:</summary>
 <br>
 
-|             Name              |                       Quick description                        |
-| :---------------------------: | :------------------------------------------------------------: |
-|        `name_or_flags`        |          A list of option strings, starting with `-`.          |
-|         `group_title`         |    The title (or a simple id integer) of the argument group    |
-| `mutually_exclusive_group_id` | The name (or a simple integer) of the mutually exclusive group |
-|          `make_flag`          |        Wether to force the automatic creation of a flag        |
+|             Name              |                                     Quick description                                      |
+| :---------------------------: | :----------------------------------------------------------------------------------------: |
+|        `name_or_flags`        |                        A list of option strings, starting with `-`.                        |
+|            `group`            |          A previously defined `ClassVar` field name using the function `group()`           |
+|  `mutually_exclusive_group`   | A previously defined `ClassVar` field name using the function `mutually_exclusive_group()` | 
+|         `group_title`         |                  The title (or a simple id integer) of the argument group                  |
+| `mutually_exclusive_group_id` |               The name (or a simple integer) of the mutually exclusive group               |
+|          `make_flag`          |                      Wether to force the automatic creation of a flag                      |
 
 </details>
 <br>
@@ -68,6 +69,30 @@ arguments:
 |       `add_help`        |          Add a `-h/--help` option to the parser           |
 |     `allow_abbrev`      |           Allows long options to be abbreviated           |
 |     `exit_on_error`     | Determines whether or not ArgumentParser exits with error |
+
+</details>
+<br>
+<details>
+<summary>Additional parameters for the <code>subparser()</code> function:</summary>
+<br>
+
+|    Name    |                     Quick description                      |
+| :--------: | :--------------------------------------------------------: |
+| `defaults` | A dictionary with subparser level default attribute values |
+
+</details>
+<br>
+<details>
+<summary>Parameters of the original <code>add_parser()</code> method used in the <code>subparser()</code> function:</summary>
+<br>
+
+|   Name    |                                  Quick description                                  |
+| :-------: | :---------------------------------------------------------------------------------: |
+| `aliases` | An additional argument which allows multiple strings to refer to the same subparser |
+|  `help`   |                      A help message for the subparser command                       |
+
+Note: `add_parser()` accepts all kwargs of `ArgumentParser` constructor. It also accepts its own `help` and `aliases`
+kwargs.
 
 </details>
 
