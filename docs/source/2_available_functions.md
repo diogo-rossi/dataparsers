@@ -7,14 +7,14 @@ decorator, which have more than 5 arguments:
 <summary>Additional parameters for the <code>arg()</code> function:</summary>
 <br>
 
-|             Name              |                                     Quick description                                      |
-| :---------------------------: | :----------------------------------------------------------------------------------------: |
-|        [`name_or_flags`](./2_available_functions.md#name-or-flags)        |                        A list of option strings, starting with `-`.                        |
-|            [`group`](./2_available_functions.md#group)            |          A previously defined `ClassVar` field name using the function {py:func}`~dataparsers.group`           |
-|  [`mutually_exclusive_group`](./2_available_functions.md#mutually-exclusive-group)   | A previously defined `ClassVar` field name using the function {py:func}`~dataparsers.mutually_exclusive_group` | 
-|         [`group_title`](./2_available_functions.md#group-title)         |                  The title (or a simple id integer) of the argument group                  |
-| [`mutually_exclusive_group_id`](./2_available_functions.md#mutually-exclusive-group-id) |               The name (or a simple integer) of the mutually exclusive group               |
-|          [`make_flag`](./2_available_functions.md#make-flag)          |                      Wether to force the automatic creation of a flag                      |
+|             Name              |                              Quick description                              |
+| :---------------------------: | :-------------------------------------------------------------------------: |
+|        [`name_or_flags`](./2_available_functions.md#name-or-flags)        |                A list of option strings, starting with `-`.                 |
+|            [`group`](./2_available_functions.md#group)            |          A previously defined `ClassVar` using function {py:func}`~dataparsers.group`           |
+|  [`mutually_exclusive_group`](./2_available_functions.md#mutually-exclusive-group)   | A previously defined `ClassVar` using function {py:func}`~dataparsers.mutually_exclusive_group` |
+|         [`group_title`](./2_available_functions.md#group-title)         |          The title (or a simple id integer) of the argument group           |
+| [`mutually_exclusive_group_id`](./2_available_functions.md#mutually-exclusive-group-id) |       The name (or a simple integer) of the mutually exclusive group        |
+|          [`make_flag`](./2_available_functions.md#make-flag)          |              Wether to force the automatic creation of a flag               |
 
 </details>
 <br>
