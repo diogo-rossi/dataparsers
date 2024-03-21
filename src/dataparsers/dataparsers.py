@@ -73,6 +73,8 @@ def mutually_exclusive_group(**kwargs) -> Any:
 
 
 def subparsers(**kwargs) -> Any:
+    if "dest" in kwargs:
+        raise ValueError("The argument `dest` is not necessary")
     return field(default=None, metadata={"is_subparsers_group": True, "subparsers_group_kwargs": kwargs})
 
 
