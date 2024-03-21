@@ -13,14 +13,10 @@ pip install dataparsers
 
 ```{toctree}
 :caption: Table of contents
-:maxdepth: 2
+:maxdepth: 1
 
 1_user_manual
 2_available_functions
-```
-
-```{toctree}
-:maxdepth: 1
 3_features
 ```
 
