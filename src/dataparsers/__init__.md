@@ -252,6 +252,11 @@ code::
 Two important additional keyword arguments can be passed to the `arg()` function to specify "argument groups":
 `group_title` and `mutually_exclusive_group_id`.
 
+Note:
+    In v2.1, the introduction of 2 new keyword arguments for the `arg()` function (`group` and
+    `mutually_exclusive_group`) made it easier to specify groups and mutually exclusive groups at the class scope. See
+    "Argument groups using `ClassVar`".
+
 #### Conceptual grouping
 
 The `group_title` defines the title (or the ID) of the argument group in which the argument may be included. The titled
@@ -416,7 +421,7 @@ The `group` and `mutually_exclusive_group` keyword arguments still accepts integ
 functionality compatible with the previous version parameters. When strings are passed to the `group` keyword argument,
 it is associated to the group title.
 
-The `ClassVar` defined with the functions `group()` and `mutually_exclusive_group()` aren't populated at run time::
+The `ClassVar` defined with the functions `group()` and `mutually_exclusive_group()` are not populated at run time::
 
     >>> args = parse(Args, ['--sam', 'wise'])
     >>> print(args)
@@ -475,6 +480,7 @@ Note:
     In v2.1, the introduction of 2 new functions (`group()` and `mutually_exclusive_group()`) and 2 new keyword
     arguments for the `arg()` function (`group` and `mutually_exclusive_group`) made it easier to specify `description`
     and `required` status of the groups at the class scope. These may be better than using the `dataparser()` decorator.
+    See "Argument groups using `ClassVar`".
 
 Two important additional parameters accepted by the `dataparser()` decorator are the dictionaries `groups_descriptions`
 and `required_mutually_exclusive_groups`, whose keys should match some value of the arguments `group_title` or

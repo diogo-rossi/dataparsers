@@ -252,6 +252,11 @@ code::
 Two important additional keyword arguments can be passed to the `arg()` function to specify "argument groups":
 `group_title` and `mutually_exclusive_group_id`.
 
+Note:
+    In v2.1, the introduction of 2 new keyword arguments for the `arg()` function (`group` and
+    `mutually_exclusive_group`) made it easier to specify groups and mutually exclusive groups at the class scope. See
+    "Argument groups using `ClassVar`".
+
 #### Conceptual grouping
 
 The `group_title` defines the title (or the ID) of the argument group in which the argument may be included. The titled
@@ -416,7 +421,7 @@ The `group` and `mutually_exclusive_group` keyword arguments still accepts integ
 functionality compatible with the previous version parameters. When strings are passed to the `group` keyword argument,
 it is associated to the group title.
 
-The `ClassVar` defined with the functions `group()` and `mutually_exclusive_group()` aren't populated at run time::
+The `ClassVar` defined with the functions `group()` and `mutually_exclusive_group()` are not populated at run time::
 
     >>> args = parse(Args, ['--sam', 'wise'])
     >>> print(args)
@@ -475,6 +480,7 @@ Note:
     In v2.1, the introduction of 2 new functions (`group()` and `mutually_exclusive_group()`) and 2 new keyword
     arguments for the `arg()` function (`group` and `mutually_exclusive_group`) made it easier to specify `description`
     and `required` status of the groups at the class scope. These may be better than using the `dataparser()` decorator.
+    See "Argument groups using `ClassVar`".
 
 Two important additional parameters accepted by the `dataparser()` decorator are the dictionaries `groups_descriptions`
 and `required_mutually_exclusive_groups`, whose keys should match some value of the arguments `group_title` or
@@ -903,6 +909,35 @@ def arg(
             Note:
                 Mutually exclusive are always optionals. If no flag is given, it will be created automatically from the
                 `dataclass` field name, regardless of the value of `make_flag`.
+
+        - `subparser` (`Field[Any] | None`, optional): Defaults to `None`.
+        
+            A previously defined `ClassVar` field name using the function `subparser()`, denoting the name of the subparser to
+            which the argument will be added. If `None` (the default) the argument will be added to the main parser.
+            
+            This is quick way to use the functionality of the method `add_parser()` of the action object returned by the
+            `add_subparsers()` method::
+            
+                >>> from typing import ClassVar
+                >>> from dataparsers import dataparser, arg, subparser, parse
+                >>>
+                >>> @dataparser(prog="PROG")
+                ... class Args:
+                ...     foo: bool = arg(help="foo help")
+                ...     ...
+                ...     a: ClassVar = subparser(help="a help")
+                ...     bar: int = arg(help="bar help", subparser=a)
+                ...     ...
+                ...     b: ClassVar = subparser(help="b help")
+                ...     baz: str = arg(make_flag=True, choices="XYZ", help="baz help", subparser=b)
+                ...
+                >>> parse(Args, ["a", "12"])
+                Args(foo=False, bar=12, baz=None)
+                >>> parse(Args, ["--foo", "b", "--baz", "Z"])
+                Args(foo=True, bar=None, baz='Z')
+            
+            The original `add_parser()` method also accepts all `ArgumentParser` constructor arguments. To define these
+            arguments see the `subparser()` function used to define the `ClassVar`.
 
         - `group_title` (`str | int | None`, optional): Defaults to `None`.
 
@@ -1730,7 +1765,7 @@ def subparser(
     exit_on_error: bool = True,
 ) -> Any:
     """Helper function to create `dataclass` class variables (`ClassVar`) storing specification about a subparser, used
-    later in the method `add_parser()`.
+    later in the method `add_parser()` to add sub commands.
 
     This function accepts all the parameters of the original `add_parser()` method and an additional parameter named `defaults`,
     which receives a dictionary with the subparser-level defaults attributes that are determined without any inspection of the
