@@ -54,7 +54,21 @@ function::
 
     >>> parser = make_parser(Args)
 
-Both functions `parse()` and `make_parser()` accepts a `parser=...` keyword argument to modify an existing parser::
+It is also possible to parse only a few of the command-line arguments, passing the remaining arguments on to another
+script or program, using the `parse_known()` function for this. It works much like `parse()` except that it does not
+produce an error when extra arguments are present. Instead, it returns a two item tuple containing the populated class
+and the list of remaining argument strings::
+
+    >>> @dataclass
+    ... class Args:
+    ...     foo: bool
+    ...     bar: str
+    ...
+    >>> parse_known(Args, ['--foo', '--badger', 'BAR', 'spam'])
+    (Args(foo=True, bar='BAR'), ['--badger', 'spam'])
+
+All functions `parse()`,  `make_parser()` and `parse_known()` accepts a `parser=...` keyword argument to modify an
+existing parser::
 
     >>> from argparse import ArgumentParser
     >>> prev_parser = ArgumentParser(description="Existing parser")
@@ -69,20 +83,6 @@ Both functions `parse()` and `make_parser()` accepts a `parser=...` keyword argu
     options:
       -h, --help  show this help message and exit
       --bar BAR
-
-It is also possible to parse only a few of the command-line arguments, passing the remaining arguments on to another
-script or program, using the `parse_known()` function for this. It works much like `parse()` except that it does not
-produce an error when extra arguments are present. Instead, it returns a two item tuple containing the populated class
-and the list of remaining argument strings::
-
-    >>> @dataclass
-    ... class Args:
-    ...     foo: bool
-    ...     bar: str
-    ...
-    >>> parse_known(Args, ['--foo', '--badger', 'BAR', 'spam'])
-    (Args(foo=True, bar='BAR'), ['--badger', 'spam'])
-
 
 ## Argument specification
 
@@ -116,11 +116,11 @@ exceptions) and some additional parameters. The `default` keyword argument used 
 passed with flags like `--bar`) except in some specific situations.
 
 One parameter of `add_argument()` that are not possible to pass to `arg()` is the `dest` keyword argument. That's
-because the name of the class attribute is determined by the `dataclass` field name. So, it is unnecessary to pass the
-`dest` parameter, since it doesn't makes sense in this situation.
+because the name of the class attribute is determined by the `dataclass` field name. So, it is not allowed to pass the
+`dest` parameter.
 
-The parameter `type` is another `add_argument()` parameter that are inferred from the `dataclass` field when not
-present.
+The parameter `type` is one of the `add_argument()` parameters that is inferred from the `dataclass` field properties
+when not present.
 
 ### Aliases
 
@@ -201,9 +201,9 @@ Then, only the single `-` flags will be sent to the interface::
 #### Booleans
 
 Booleans attributes are always considered as flag arguments, using the `"store_true"` or `"store_false"` values for the
-`action` parameter of the original `add_argument()` method. If the boolean `dataclass` field is created with no default
-value, the flag is still automatically created and the default value for the parameter will be `False` (it's defaults
-can be modified by the keyword argument `default_bool` of the `dataparser()` decorator - see "Default for booleans")::
+`action` parameter of the original `add_argument()` method. If the boolean field is created with no default value, the
+flag is still automatically created and the default value of the parameter is set to `False` (this default value can be
+modified by the keyword argument `default_bool` of the `dataparser()` decorator - see "Default for booleans")::
 
     >>> @dataclass
     ... class Args:
@@ -434,9 +434,9 @@ The `ClassVar` defined with the functions `group()` and `mutually_exclusive_grou
 ### Parser-level defaults
 
 Most of the time, the attributes of the object returned by `parse()` will be fully determined by inspecting the
-command-line arguments. However, there is a original `set_defaults()` method that allows some additional attributes to
-be determined without any inspection of the command line to be added. This functionality can be reproduced with the
-`default()` function::
+command-line arguments. However, there is the original `argparse`'s `set_defaults()` method that allows some additional
+attributes to be determined without any inspection of the command line to be added. This functionality can be reproduced
+with the `default()` function::
 
     >>> from dataparsers import parse, default
     >>> @dataclass
@@ -448,11 +448,12 @@ be determined without any inspection of the command line to be added. This funct
     >>> parse(Args, ["736"])
     Args(foo=736, bar=42, baz='badger')
 
-Parser-level defaults are the original recommended useful way to work with multiple parsers. See the `subparser()`
-method for examples.
+Parser-level defaults are the original
+[recommended useful way to work with multiple sub-parsers](https://github.com/python/cpython/blob/main/Doc/library/argparse.rst#L1901-L1904).
+See the `subparser()` method in section "Subparsers" for examples.
 
 One obvious difference of using this `default()` function in place of the original `set_defaults()` method is that this
-function must be used for each separated argument.
+function must be used for each argument separated.
 
 ## Parser specifications
 

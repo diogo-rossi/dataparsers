@@ -66,7 +66,23 @@ function:
 >>> parser = make_parser(Args)
 ```
 
-Both functions {py:func}`~dataparsers.parse` and {py:func}`~dataparsers.make_parser` accepts a `parser=...` keyword argument to modify an existing parser:
+It is also possible to parse only a few of the command-line arguments, passing the remaining arguments on to another
+script or program, using the {py:func}`~dataparsers.parse_known` function for this. It works much like {py:func}`~dataparsers.parse` except that it does not
+produce an error when extra arguments are present. Instead, it returns a two item tuple containing the populated class
+and the list of remaining argument strings:
+
+```python
+>>> @dataclass
+... class Args:
+...     foo: bool
+...     bar: str
+...
+>>> parse_known(Args, ['--foo', '--badger', 'BAR', 'spam'])
+(Args(foo=True, bar='BAR'), ['--badger', 'spam'])
+```
+
+All functions {py:func}`~dataparsers.parse`,  {py:func}`~dataparsers.make_parser` and {py:func}`~dataparsers.parse_known` accepts a `parser=...` keyword argument to modify an
+existing parser:
 
 ```python
 >>> from argparse import ArgumentParser
@@ -82,22 +98,6 @@ positional arguments:
 options:
   -h, --help  show this help message and exit
   --bar BAR
-```
-
-It is also possible to parse only a few of the command-line arguments, passing the remaining arguments on to another
-script or program, using the {py:func}`~dataparsers.parse_known` function for this. It works much like {py:func}`~dataparsers.parse` except that it does not
-produce an error when extra arguments are present. Instead, it returns a two item tuple containing the populated class
-and the list of remaining argument strings:
-
-```python
->>> @dataclass
-... class Args:
-...     foo: bool
-...     bar: str
-...
->>> parse_known(Args, ['--foo', '--badger', 'BAR', 'spam'])
-(Args(foo=True, bar='BAR'), ['--badger', 'spam'])
-
 ```
 
 ## Argument specification
@@ -136,11 +136,11 @@ exceptions) and some additional parameters. The [`default`](./2_available_functi
 passed with flags like `--bar`) except in some specific situations.
 
 One parameter of [`add_argument()`](https://docs.python.org/3/library/argparse.html#the-add-argument-method) that are not possible to pass to {py:func}`~dataparsers.arg` is the [`dest`](./2_available_functions.md#dest) keyword argument. That's
-because the name of the class attribute is determined by the [`dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass) field name. So, it is unnecessary to pass the
-[`dest`](./2_available_functions.md#dest) parameter, since it doesn't makes sense in this situation.
+because the name of the class attribute is determined by the [`dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass) field name. So, it is not allowed to pass the
+[`dest`](./2_available_functions.md#dest) parameter.
 
-The parameter [`type`](./2_available_functions.md#type) is another [`add_argument()`](https://docs.python.org/3/library/argparse.html#the-add-argument-method) parameter that are inferred from the [`dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass) field when not
-present.
+The parameter [`type`](./2_available_functions.md#type) is one of the [`add_argument()`](https://docs.python.org/3/library/argparse.html#the-add-argument-method) parameters that is inferred from the [`dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass) field properties
+when not present.
 
 ### Aliases
 
@@ -235,9 +235,9 @@ options:
 #### Booleans
 
 Booleans attributes are always considered as flag arguments, using the `"store_true"` or `"store_false"` values for the
-[`action`](./2_available_functions.md#action) parameter of the original [`add_argument()`](https://docs.python.org/3/library/argparse.html#the-add-argument-method) method. If the boolean [`dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass) field is created with no default
-value, the flag is still automatically created and the default value for the parameter will be `False` (it's defaults
-can be modified by the keyword argument [`default_bool`](./2_available_functions.md#default-bool) of the {py:func}`~dataparsers.dataparser` decorator - see ["Default for booleans"](#default-for-booleans)):
+[`action`](./2_available_functions.md#action) parameter of the original [`add_argument()`](https://docs.python.org/3/library/argparse.html#the-add-argument-method) method. If the boolean field is created with no default value, the
+flag is still automatically created and the default value of the parameter is set to `False` (this default value can be
+modified by the keyword argument [`default_bool`](./2_available_functions.md#default-bool) of the {py:func}`~dataparsers.dataparser` decorator - see ["Default for booleans"](#default-for-booleans)):
 
 ```python
 >>> @dataclass
@@ -490,9 +490,9 @@ AttributeError: 'Args' object has no attribute 'my_first_group'
 ### Parser-level defaults
 
 Most of the time, the attributes of the object returned by {py:func}`~dataparsers.parse` will be fully determined by inspecting the
-command-line arguments. However, there is a original [`set_defaults()`](https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.set_defaults) method that allows some additional attributes to
-be determined without any inspection of the command line to be added. This functionality can be reproduced with the
-{py:func}`~dataparsers.default` function:
+command-line arguments. However, there is the original [`argparse`](https://docs.python.org/3/library/argparse.html#module-argparse)'s [`set_defaults()`](https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.set_defaults) method that allows some additional
+attributes to be determined without any inspection of the command line to be added. This functionality can be reproduced
+with the {py:func}`~dataparsers.default` function:
 
 ```python
 >>> from dataparsers import parse, default
@@ -506,11 +506,12 @@ be determined without any inspection of the command line to be added. This funct
 Args(foo=736, bar=42, baz='badger')
 ```
 
-Parser-level defaults are the original recommended useful way to work with multiple parsers. See the {py:func}`~dataparsers.subparser`
-method for examples.
+Parser-level defaults are the original
+[recommended useful way to work with multiple sub-parsers](https://github.com/python/cpython/blob/main/Doc/library/argparse.rst#L1901-L1904).
+See the {py:func}`~dataparsers.subparser` method in section ["Subparsers"](#subparsers-v2-1) for examples.
 
 One obvious difference of using this {py:func}`~dataparsers.default` function in place of the original [`set_defaults()`](https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.set_defaults) method is that this
-function must be used for each separated argument.
+function must be used for each argument separated.
 
 ## Parser specifications
 

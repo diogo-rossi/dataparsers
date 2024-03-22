@@ -22,6 +22,7 @@ EXTERNAL_LINKS = {
     '"Default for booleans"': "#default-for-booleans",
     '"main parser-level"': "#parser-level-defaults",
     '"Argument groups using ': "#argument-groups-using-classvar-v2-1",
+    '"Subparsers"': "#subparsers-v2-1",
 }
 
 EMPHASIS = [
