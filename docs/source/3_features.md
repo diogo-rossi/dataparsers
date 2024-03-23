@@ -35,7 +35,7 @@ Use this project if you want particular added features, such as:
 
 The simplicity is mentioned because it is just a simple module
 [`dataparsers.py`](https://github.com/Diogo-Rossi/dataparsers/blob/main/src/dataparsers/dataparsers.py)
-that doesn't have any additional dependency (it is pure Python) which can be
+that doesn't have any additional dependencies (it is pure Python) which can be
 downloaded directly and placed in your CLI scripts folder to import from.
 
 In deed, the module consists of a 320 lines
