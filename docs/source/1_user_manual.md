@@ -667,6 +667,40 @@ Args(foo=False, bar=12, baz=None)
 Args(foo=True, bar=None, baz='Z')
 ```
 
+As in the original module, when a help message is requested from a subparser, only the help for that particular parser
+will be printed. The help message will not include parent parser or sibling parser messages. A help message for each
+subparser command, however, can be given by supplying the `help=...` argument to {py:func}`~dataparsers.subparser` as above:
+
+```python
+>>> parse(Args, ["--help"])
+usage: PROG [-h] [--foo] {a,b} ...
+
+positional arguments:
+  {a,b}
+    a         a help
+    b         b help
+
+options:
+  -h, --help  show this help message and exit
+  --foo       foo help
+
+>>> parse(Args, ["a", "--help"])
+usage: PROG a [-h] bar
+
+positional arguments:
+  bar         bar help
+
+options:
+  -h, --help  show this help message and exit
+
+>>> parse(Args, ["b", "--help"])
+usage: PROG b [-h] [--baz {X,Y,Z}]
+
+options:
+  -h, --help     show this help message and exit
+  --baz {X,Y,Z}  baz help
+```
+
 The [`ClassVar`](https://docs.python.org/3/library/typing.html#typing.ClassVar) defined with the function {py:func}`~dataparsers.subparser` remains as a read-only class variable at run time (which is an
 instance of type `SubParser`: a frozen [`dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass) with some fields):
 
@@ -699,40 +733,6 @@ it with the function {py:func}`~dataparsers.subparsers`. This function accepts a
 ...     ...
 ...     b: ClassVar = subparser(help="b help")
 ...     baz: str = arg(make_flag=True, choices="XYZ", help="baz help", subparser=b)
-```
-
-As in the original module, when a help message is requested from a subparser, only the help for that particular parser
-will be printed. The help message will not include parent parser or sibling parser messages. A help message for each
-subparser command, however, can be given by supplying the `help=...` argument to {py:func}`~dataparsers.subparser` as above:
-
-```python
->>> parse(Args, ["--help"])
-usage: PROG [-h] [--foo] {a,b} ...
-
-positional arguments:
-  {a,b}       sub-command help
-    a         a help
-    b         b help
-
-options:
-  -h, --help  show this help message and exit
-  --foo       foo help
-
->>> parse(Args, ["a", "--help"])
-usage: PROG a [-h] bar
-
-positional arguments:
-  bar         bar help
-
-options:
-  -h, --help  show this help message and exit
-
->>> parse(Args, ["b", "--help"])
-usage: PROG b [-h] [--baz {X,Y,Z}]
-
-options:
-  -h, --help     show this help message and exit
-  --baz {X,Y,Z}  baz help
 ```
 
 Some possible keyword arguments highlighted in the original [`add_subparsers()`](https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.add_subparsers) method are `title=...` and
