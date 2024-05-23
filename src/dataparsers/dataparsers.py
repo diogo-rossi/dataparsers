@@ -104,6 +104,7 @@ def dataparser(
     required_mutually_exclusive_groups: dict[str | int, bool] | None = None,
     default_bool: bool = False,
     help_formatter: Callable[[str], str] | None = None,
+    help_args: Sequence[str] = ("-h", "--help"),
     **kwargs,
 ) -> Callable[[type[Class]], type[Class]]: ...
 
@@ -115,6 +116,7 @@ def dataparser(
     required_mutually_exclusive_groups: dict[str | int, bool] | None = None,
     default_bool: bool = False,
     help_formatter: Callable[[str], str] | None = None,
+    help_args: str | Sequence[str] = ("-h", "--help"),
     **kwargs,
 ) -> type[Class] | Callable[[type[Class]], type[Class]]:
     if cls is not None:
@@ -127,12 +129,14 @@ def dataparser(
     if required_mutually_exclusive_groups is None:
         required_mutually_exclusive_groups = {}
 
+    help_args = (help_args,) if isinstance(help_args, str) else help_args
+
     def wrap(cls: type[Class]) -> type[Class]:
         cls = dataclass(cls) if not is_dataclass(cls) else cls
         setattr(
             cls,
             "__dataparsers_params__",
-            (kwargs, groups_descriptions, required_mutually_exclusive_groups, default_bool, help_formatter),
+            (kwargs, groups_descriptions, required_mutually_exclusive_groups, default_bool, help_formatter, help_args),
         )
         return cls
 
@@ -140,14 +144,18 @@ def dataparser(
 
 
 def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentParser:
-    kwargs, groups_descriptions, required_groups_status, default_bool, help_formatter = getattr(
-        cls, "__dataparsers_params__", ({}, {}, {}, False, None)
+    kwargs, groups_descriptions, required_groups_status, default_bool, help_formatter, help_args = getattr(
+        cls, "__dataparsers_params__", ({}, {}, {}, False, None, ("-h", "--help"))
     )
 
     if parser is None:
         if help_formatter is not None and "formatter_class" not in kwargs:
             kwargs["formatter_class"] = RawTextHelpFormatter
+        if help_args != ("-h", "--help"):
+            kwargs["add_help"] = False
         parser = ArgumentParser(**kwargs)
+        if help_args != ("-h", "--help"):
+            parser.add_argument(*help_args, help="Show this help message and exit", action="store_true")
 
     help_formatter = help_formatter or str
     groups: dict[str | int, _ArgumentGroup] = {}
@@ -288,7 +296,14 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
 
 
 def parse(cls: type[Class], args: Sequence[str] | None = None, *, parser: ArgumentParser | None = None) -> Class:
-    return cls(**vars(make_parser(cls, parser=parser).parse_args(args)))
+    parser = make_parser(cls, parser=parser)
+    help_args = getattr(cls, "__dataparsers_params__", (("-h", "--help"),))[-1]
+    if any([h.startswith(s) for h in help_args for s in sys.argv[1:]]):
+        parser.print_help()
+        sys.exit()
+    kwargs = vars(parser.parse_args(args))
+    [kwargs.pop(k.replace("-", ""), None) for k in help_args]
+    return cls(**kwargs)
 
 
 def parse_known(
@@ -297,8 +312,14 @@ def parse_known(
     local_parser = make_parser(cls, parser=parser)
     if metavar is not None:
         local_parser.usage = f"{local_parser.format_usage().strip().replace('usage: ','')} [{metavar}]\n"
+    help_args = getattr(cls, "__dataparsers_params__", (("-h", "--help"),))[-1]
+    if any([h.startswith(s) for h in help_args for s in sys.argv[1:]]):
+        local_parser.print_help()
+        sys.exit()
     arguments, remaining_arguments = local_parser.parse_known_args(args)
-    return cls(**vars(arguments)), remaining_arguments
+    kwargs = vars(arguments)
+    [kwargs.pop(k.replace("-", ""), None) for k in help_args]
+    return cls(**kwargs), remaining_arguments
 
 
 def write_help(
