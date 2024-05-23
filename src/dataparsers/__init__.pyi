@@ -785,11 +785,14 @@ the `subparsers()` function will work::
 
 from argparse import Action, ArgumentParser, FileType, HelpFormatter
 from dataclasses import Field, dataclass
-from typing import Any, Callable, Iterable, Literal, Sequence, TypeVar, overload
+from typing import Any, Callable, Iterable, Literal, Protocol, Sequence, TypeVar, overload
 
 T = TypeVar("T", covariant=True)
 
 Class = TypeVar("Class", covariant=True)
+
+class HelpFormatterClass(Protocol):
+    def __call__(self, *, prog: str) -> HelpFormatter: ...
 
 def arg(
     *name_or_flags: str,
@@ -1953,7 +1956,7 @@ def dataparser(
     description: str | None = None,
     epilog: str | None = None,
     parents: Sequence[ArgumentParser] = [],
-    formatter_class: HelpFormatter = ...,
+    formatter_class: HelpFormatterClass = ...,
     prefix_chars: str = "-",
     fromfile_prefix_chars: str | None = None,
     argument_default: Any = None,
