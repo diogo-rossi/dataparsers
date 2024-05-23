@@ -309,14 +309,14 @@ def parse(cls: type[Class], args: Sequence[str] | None = None, *, parser: Argume
 def parse_known(
     cls: type[Class], args: Sequence[str] | None = None, *, parser: ArgumentParser | None = None, metavar: str | None = None
 ) -> tuple[Class, list[str]]:
-    local_parser = make_parser(cls, parser=parser)
-    if metavar is not None:
-        local_parser.usage = f"{local_parser.format_usage().strip().replace('usage: ','')} [{metavar}]\n"
+    parser = make_parser(cls, parser=parser)
     help_args = getattr(cls, "__dataparsers_params__", (("-h", "--help"),))[-1]
     if any([h.startswith(s) for h in help_args for s in sys.argv[1:]]):
-        local_parser.print_help()
+        if metavar is not None:
+            parser.add_argument_group().add_argument(metavar, default="", nargs="?", help="Extra remaining unknown arguments")
+        parser.print_help()
         sys.exit()
-    arguments, remaining_arguments = local_parser.parse_known_args(args)
+    arguments, remaining_arguments = parser.parse_known_args(args)
     kwargs = vars(arguments)
     [kwargs.pop(k.replace("-", ""), None) for k in help_args]
     return cls(**kwargs), remaining_arguments
