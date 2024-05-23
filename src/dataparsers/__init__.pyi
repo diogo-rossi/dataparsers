@@ -915,13 +915,13 @@ def arg(
                 `dataclass` field name, regardless of the value of `make_flag`.
 
         - `subparser` (`Field[Any] | None`, optional): Defaults to `None`.
-        
+
             A previously defined `ClassVar` field name using the function `subparser()`, denoting the name of the subparser to
             which the argument will be added. If `None` (the default) the argument will be added to the main parser.
-            
+
             This is quick way to use the functionality of the method `add_parser()` of the action object returned by the
             `add_subparsers()` method::
-            
+
                 >>> from typing import ClassVar
                 >>> from dataparsers import dataparser, arg, subparser, parse
                 >>>
@@ -939,7 +939,7 @@ def arg(
                 Args(foo=False, bar=12, baz=None)
                 >>> parse(Args, ["--foo", "b", "--baz", "Z"])
                 Args(foo=True, bar=None, baz='Z')
-            
+
             The original `add_parser()` method also accepts all `ArgumentParser` constructor arguments. To define these
             arguments see the `subparser()` function used to define the `ClassVar`.
 
