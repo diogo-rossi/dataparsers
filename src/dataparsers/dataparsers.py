@@ -1,4 +1,5 @@
 # %% ################################################# dataparsers region ######################################################
+import gettext
 import os
 import sys
 import textwrap
@@ -10,6 +11,8 @@ from types import MappingProxyType, UnionType
 from typing import Any, Callable, ClassVar, Sequence, TypeVar, Union, cast, get_args, get_origin, get_type_hints, overload
 
 Class = TypeVar("Class", covariant=True)
+
+_ = gettext.gettext
 
 
 def arg(
@@ -155,7 +158,8 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
             kwargs["add_help"] = False
         parser = ArgumentParser(**kwargs)
         if help_args != ("-h", "--help"):
-            parser.add_argument(*help_args, help="Show this help message and exit", action="store_true")
+            help_formatter = help_formatter or str
+            parser.add_argument(*help_args, help=help_formatter(_("Show this help message and exit")), action="store_true")
 
     help_formatter = help_formatter or str
     groups: dict[str | int, _ArgumentGroup] = {}
@@ -313,7 +317,9 @@ def parse_known(
     help_args = getattr(cls, "__dataparsers_params__", (("-h", "--help"),))[-1]
     if any([h.startswith(s) for h in help_args for s in sys.argv[1:]]):
         if metavar is not None:
-            parser.add_argument_group().add_argument(metavar, default="", nargs="?", help="Extra remaining unknown arguments")
+            parser.add_argument_group().add_argument(
+                metavar, default="", nargs="?", help=_("Extra remaining unknown arguments.")
+            )
         parser.print_help()
         sys.exit()
     arguments, remaining_arguments = parser.parse_known_args(args)
