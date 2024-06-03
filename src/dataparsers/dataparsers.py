@@ -1,6 +1,6 @@
 # %% ################################################# dataparsers region ######################################################
 import gettext
-import os
+import shutil
 import sys
 import textwrap
 from argparse import _ArgumentGroup  # only for typing annotation
@@ -335,7 +335,7 @@ def write_help(
     dedent: bool = True,
     final_newlines: bool = True,
 ) -> str:
-    width = width or os.get_terminal_size().columns
+    width = width or shutil.get_terminal_size().columns
     lines = []
     for line in text.splitlines():
         line = textwrap.dedent(line) if dedent else line
