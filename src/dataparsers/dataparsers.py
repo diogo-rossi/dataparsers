@@ -119,7 +119,7 @@ def dataparser(
     required_mutually_exclusive_groups: dict[str | int, bool] | None = None,
     default_bool: bool = False,
     help_formatter: Callable[[str], str] | None = None,
-    help_args: str | Sequence[str] = ("-h", "--help"),
+    help_args: str | Sequence[str] | None = None,
     **kwargs,
 ) -> type[Class] | Callable[[type[Class]], type[Class]]:
     if cls is not None:
@@ -154,10 +154,10 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
     if parser is None:
         if help_formatter is not None and "formatter_class" not in kwargs:
             kwargs["formatter_class"] = RawTextHelpFormatter
-        if help_args != ("-h", "--help"):
+        if help_args is not None:
             kwargs["add_help"] = False
         parser = ArgumentParser(**kwargs)
-        if help_args != ("-h", "--help"):
+        if help_args is not None:
             help_formatter = help_formatter or str
             parser.add_argument(*help_args, help=help_formatter(_("Show this help message and exit")), action="store_true")
 
@@ -301,7 +301,9 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
 
 def parse(cls: type[Class], args: Sequence[str] | None = None, *, parser: ArgumentParser | None = None) -> Class:
     parser = make_parser(cls, parser=parser)
-    help_args = getattr(cls, "__dataparsers_params__", (("-h", "--help"),))[-1]
+    help_args = getattr(cls, "__dataparsers_params__", (None,))[-1]
+    if help_args is None:
+        help_args = ("-h", "--help")
     if any([h.startswith(s) for h in help_args for s in sys.argv[1:]]):
         parser.print_help()
         sys.exit()
@@ -314,7 +316,9 @@ def parse_known(
     cls: type[Class], args: Sequence[str] | None = None, *, parser: ArgumentParser | None = None, metavar: str | None = None
 ) -> tuple[Class, list[str]]:
     parser = make_parser(cls, parser=parser)
-    help_args = getattr(cls, "__dataparsers_params__", (("-h", "--help"),))[-1]
+    help_args = getattr(cls, "__dataparsers_params__", (None,))[-1]
+    if help_args is None:
+        help_args = ("-h", "--help")
     if any([h.startswith(s) for h in help_args for s in sys.argv[1:]]):
         if metavar is not None:
             parser.add_argument_group().add_argument(
