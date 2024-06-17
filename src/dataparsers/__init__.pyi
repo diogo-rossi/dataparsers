@@ -835,7 +835,7 @@ def arg(
 
     Parameters
     ----------
-    - `name_or_flags` (`str`):
+    - `name_or_flags` (`str`)
         A list of option strings, e.g. `-f`, `--foo`, i.e., starting with `-`.
 
         The first arguments passed to `arg()` must be a series of flags, or empty (not pass). It is not possible
@@ -846,7 +846,7 @@ def arg(
         In some particular cases, flag name starting with `--` may be automatically created from the dataclass field
         name even when `name_or_flags` is not given. See the `make_flag` argument for details.
 
-    - `group` (`Field[Any] | str | int | None`, optional): Defaults to `None`.
+    - `group` (`Field[Any] | str | int | None`, optional), defaults to `None`.
         A previously defined `ClassVar` field name using the function `group()`, or the `title` (or a simple id integer) of
         the argument group in which the argument may be added.
 
@@ -871,7 +871,7 @@ def arg(
         To define the `title` and `description` of the argument group, see the `group()` function used to define the
         `ClassVar`. When a string is passed to the `group` keyword argument, it is associated to the group `title`.
 
-    - `mutually_exclusive_group` (`Field[Any] | str | int | None`, optional): Defaults to `None`.
+    - `mutually_exclusive_group` (`Field[Any] | str | int | None`, optional), defaults to `None`.
         A previously defined `ClassVar` field name using the function `mutually_exclusive_group()`, or a string or a simple
         id integer identifying the mutually exclusive group in which the argument may be included.
 
@@ -911,7 +911,7 @@ def arg(
             Mutually exclusive are always optionals. If no flag is given, it will be created automatically from the
             `dataclass` field name, regardless of the value of `make_flag`.
 
-    - `subparser` (`Field[Any] | None`, optional): Defaults to `None`.
+    - `subparser` (`Field[Any] | None`, optional), defaults to `None`.
         A previously defined `ClassVar` field name using the function `subparser()`, denoting the name of the subparser to
         which the argument will be added. If `None` (the default) the argument will be added to the main parser.
 
@@ -939,7 +939,7 @@ def arg(
         The original `add_parser()` method also accepts all `ArgumentParser` constructor arguments. To define these
         arguments see the `subparser()` function used to define the `ClassVar`.
 
-    - `group_title` (`str | int | None`, optional): Defaults to `None`.
+    - `group_title` (`str | int | None`, optional), defaults to `None`.
         **Note**:
             This argument is kept to maintain compatibility with version prior to v2.1, and may be removed in the future. A
             better way to define argument groups is using the `group` keyword argument.
@@ -974,7 +974,7 @@ def arg(
 
         To define the `description` of the argument group, see the `dataparser()` decorator.
 
-    - `mutually_exclusive_group_id` (`str | int | None`, optional): Defaults to `None`.
+    - `mutually_exclusive_group_id` (`str | int | None`, optional), defaults to `None`.
         **Note**:
             This argument is kept to maintain compatibility with version prior to v2.1, and may be removed in the future. A
             better way to define mutually exclusive argument groups is using the `mutually_exclusive_group` keyword
@@ -1010,7 +1010,7 @@ def arg(
             Mutually exclusive are always optionals. If no flag is given, it will be created automatically from the
             `dataclass` field name, regardless of the value of `make_flag`.
 
-    - `make_flag` (`bool | None`, optional): Defaults to `None`.
+    - `make_flag` (`bool | None`, optional), defaults to `None`.
         Wether to force the automatic creation of a flag starting with `--` from the field name.
 
         In general, the `default` keyword argument automatically makes the argument optional (i.e., creates a `--`
@@ -1020,7 +1020,7 @@ def arg(
         I  general, flag name starting with `--` may be automatically created from the dataclass field name even
         when `name_or_flags` is not given:
 
-            + If `default` value is given (with `nargs` not equal to `?` or `*`)::
+            - If `default` value is given (with `nargs` not equal to `?` or `*`)::
 
                 >>> @dataclass
                 ... class Arg:
@@ -1039,7 +1039,7 @@ def arg(
                     -h, --help  show this help message and exit
                     --foo FOO
 
-            + If only single flags are given (i.e., starting with `-` but none with `--`)::
+            - If only single flags are given (i.e., starting with `-` but none with `--`)::
 
                 >>> @dataclass
                 ... class Arg:
@@ -1070,7 +1070,7 @@ def arg(
         arguments should be handled. The supplied actions are
 
             - `"store"`:
-            This just stores the argument's value. This is the default action. For example::
+              This just stores the argument's value. This is the default action. For example::
 
                 >>> parser = argparse.ArgumentParser()
                 >>> parser.add_argument('--foo')
@@ -1078,9 +1078,9 @@ def arg(
                 Namespace(foo='1')
 
             - `"store_const"`:
-            This stores the value specified by the const keyword argument; note that the const keyword argument
-            defaults to `None`. The `store_const` action is most commonly used with optional arguments that
-            specify some sort of flag. For example::
+              This stores the value specified by the const keyword argument; note that the const keyword argument
+              defaults to `None`. The `store_const` action is most commonly used with optional arguments that
+              specify some sort of flag. For example::
 
                 >>> parser = argparse.ArgumentParser()
                 >>> parser.add_argument('--foo', action='store_const', const=42)
@@ -1088,9 +1088,9 @@ def arg(
                 Namespace(foo=42)
 
             - `"store_true"` and `"store_false"`:
-            These are special cases of `"store_const"` used for storing the
-            values `True` and `False` respectively. In addition, they create default values of `False` and True
-            respectively. For example::
+              These are special cases of `"store_const"` used for storing the
+              values `True` and `False` respectively. In addition, they create default values of `False` and True
+              respectively. For example::
 
                 >>> parser = argparse.ArgumentParser()
                 >>> parser.add_argument('--foo', action='store_true')
@@ -1100,10 +1100,10 @@ def arg(
                 Namespace(foo=True, bar=False, baz=True)
 
             - `"append"`:
-            This stores a list, and appends each argument value to the list. It is useful to allow an option to
-            be specified multiple times. If the default value is non-empty, the default elements will be present
-            in the parsed value for the option, with any values from the command line appended after those default
-            values. Example usage::
+              This stores a list, and appends each argument value to the list. It is useful to allow an option to
+              be specified multiple times. If the default value is non-empty, the default elements will be present
+              in the parsed value for the option, with any values from the command line appended after those default
+              values. Example usage::
 
                 >>> parser = argparse.ArgumentParser()
                 >>> parser.add_argument('--foo', action='append')
@@ -1111,9 +1111,9 @@ def arg(
                 Namespace(foo=['1', '2'])
 
             - `"append_const"`:
-            This stores a list, and appends the value specified by the `const` keyword argument to the list;
-            note that the `const` keyword argument defaults to `None`. The `"append_const"` action is typically
-            useful when multiple arguments need to store constants to the same list. For example::
+              This stores a list, and appends the value specified by the `const` keyword argument to the list;
+              note that the `const` keyword argument defaults to `None`. The `"append_const"` action is typically
+              useful when multiple arguments need to store constants to the same list. For example::
 
                 >>> parser = argparse.ArgumentParser()
                 >>> parser.add_argument('--str', dest='types', action='append_const', const=str)
@@ -1122,8 +1122,8 @@ def arg(
                 Namespace(types=[<class 'str'>, <class 'int'>])
 
             - `"count"`:
-            This counts the number of times a keyword argument occurs. For example, this is useful for
-            increasing verbosity levels::
+              This counts the number of times a keyword argument occurs. For example, this is useful for
+              increasing verbosity levels::
 
                 >>> parser = argparse.ArgumentParser()
                 >>> parser.add_argument('--verbose', '-v', action='count', default=0)
@@ -1133,13 +1133,13 @@ def arg(
                 Note, the default will be `None` unless explicitly set to 0.
 
             - `"help"`:
-            This prints a complete help message for all the options in the current parser and then exits. By
-            default a help action is automatically added to the parser. See `ArgumentParser` for details of how
-            the output is created.
+              This prints a complete help message for all the options in the current parser and then exits. By
+              default a help action is automatically added to the parser. See `ArgumentParser` for details of how
+              the output is created.
 
             - `"version"`:
-            This expects a `version=` keyword argument in the `add_argument()` call, and prints version
-            information and exits when invoked::
+              This expects a `version=` keyword argument in the `add_argument()` call, and prints version
+              information and exits when invoked::
 
                 >>> import argparse
                 >>> parser = argparse.ArgumentParser(prog='PROG')
@@ -1165,7 +1165,7 @@ def arg(
                 >>> parser.parse_args(['--no-foo'])
                 Namespace(foo=False)
 
-              The recommended way to create a custom action is to extend Action, overriding the __call__ method and
+              The recommended way to create a custom action is to extend Action, overriding the `__call__` method and
               optionally the `__init__` and `format_usage` methods. An example of a custom action::
 
                 >>> class FooAction(argparse.Action):
@@ -1186,7 +1186,7 @@ def arg(
                 >>> args
                 Namespace(bar='1', foo='2')
 
-                For more details, see `Action`.
+              For more details, see `Action`.
 
     - `nargs` (`int | Literal["?", "*", "+"]`, optional): Defaults to `None`.
         The number of command-line arguments that should be consumed.
@@ -2411,28 +2411,26 @@ def write_help(
 
     Parameters
     ----------
-        - `text` (`str`):
+    - `text` (`str`)
+        The help text.
 
-            The help text.
+    - `width` (`int`, optional), Defaults to `None`.
+        The width of the help text to wrap (if `None`, use terminal `COLUMNS`).
 
-        - `width` (`int`, optional): Defaults to `None`.
+    - `space` (`int`, optional), Defaults to `24`.
+        The indentation space used in in CLI helps.
+        
+        The indentation space used in in CLI helps.
 
-            The width of the help text to wrap (if `None`, use terminal `COLUMNS`).
+    - `dedent` (`bool`, optional), Defaults to `True`.
+        Whether to remove blank spaces at start and end of lines.
 
-        - `space` (`int`, optional): Defaults to `24`.
-
-            The indentation space used in in CLI helps.
-
-        - `dedent` (`bool`, optional): Defaults to `True`.
-
-            Whether to remove blank spaces at start and end of lines.
-
-        - `final_newlines` (`bool`, optional): Defaults to `True`.
-
-            Whether to add a final empty line.
+    - `final_newlines` (`bool`, optional), Defaults to `True`.
+        Whether to add a final empty line.
 
     Returns
     -------
-        `str`: The help text formatted (wrapped and preserving new lines)
+    `str`:
+        The help text formatted (wrapped and preserving new lines)
     """
     ...
