@@ -1912,7 +1912,6 @@ def dataparser(
     required_mutually_exclusive_groups: dict[str | int, bool] | None = None,
     default_bool: bool = False,
     help_formatter: Callable[[str], str] | None = None,
-    help_args: str | Sequence[str] = ("-h", "--help"),
     prog: str | None = None,
     usage: str | None = None,
     description: str | None = None,

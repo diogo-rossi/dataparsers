@@ -107,7 +107,6 @@ def dataparser(
     required_mutually_exclusive_groups: dict[str | int, bool] | None = None,
     default_bool: bool = False,
     help_formatter: Callable[[str], str] | None = None,
-    help_args: Sequence[str] = ("-h", "--help"),
     **kwargs,
 ) -> Callable[[type[Class]], type[Class]]: ...
 
@@ -119,7 +118,6 @@ def dataparser(
     required_mutually_exclusive_groups: dict[str | int, bool] | None = None,
     default_bool: bool = False,
     help_formatter: Callable[[str], str] | None = None,
-    help_args: str | Sequence[str] | None = None,
     **kwargs,
 ) -> type[Class] | Callable[[type[Class]], type[Class]]:
     if cls is not None:
@@ -132,14 +130,12 @@ def dataparser(
     if required_mutually_exclusive_groups is None:
         required_mutually_exclusive_groups = {}
 
-    help_args = (help_args,) if isinstance(help_args, str) else help_args
-
     def wrap(cls: type[Class]) -> type[Class]:
         cls = dataclass(cls) if not is_dataclass(cls) else cls
         setattr(
             cls,
             "__dataparsers_params__",
-            (kwargs, groups_descriptions, required_mutually_exclusive_groups, default_bool, help_formatter, help_args),
+            (kwargs, groups_descriptions, required_mutually_exclusive_groups, default_bool, help_formatter),
         )
         return cls
 
