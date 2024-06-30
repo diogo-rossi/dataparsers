@@ -296,16 +296,7 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
 
 
 def parse(cls: type[Class], args: Sequence[str] | None = None, *, parser: ArgumentParser | None = None) -> Class:
-    parser = make_parser(cls, parser=parser)
-    help_args = getattr(cls, "__dataparsers_params__", (None,))[-1]
-    if help_args is None:
-        help_args = ("-h", "--help")
-    if any([h.startswith(s) for h in help_args for s in sys.argv[1:]]):
-        parser.print_help()
-        sys.exit()
-    kwargs = vars(parser.parse_args(args))
-    [kwargs.pop(k.replace("-", ""), None) for k in help_args]
-    return cls(**kwargs)
+    return cls(**vars(make_parser(cls, parser=parser).parse_args(args)))
 
 
 def parse_known(
