@@ -252,7 +252,7 @@ code::
 Two important additional keyword arguments can be passed to the `arg()` function to specify "argument groups":
 `group_title` and `mutually_exclusive_group_id`.
 
-**Note**:
+Note:
     In v2.1, the introduction of 2 new keyword arguments for the `arg()` function (`group` and
     `mutually_exclusive_group`) made it easier to specify groups and mutually exclusive groups at the class scope. See
     "Argument groups using `ClassVar`".
@@ -315,7 +315,7 @@ command line::
     usage: [-h] [--foo FOO | --bar BAR]
     : error: argument --bar: not allowed with argument --foo
 
-**Note**:
+Note:
     Mutually exclusive arguments are always optionals. If no flag is given, they will be created automatically from the
     `dataclass` field names, regardless of the value of `make_flag`.
 
@@ -351,7 +351,7 @@ prevents the integer to be printed in the displayed help message::
       sam
       ham
 
-**Note**:
+Note:
     Mutually exclusive argument groups do not support the `title` and `description` arguments of the
     `add_argument_group()` method. However, a mutually exclusive group can be added to an argument group that has a
     `title` and `description`. This is achieved by passing both `group_title` and `mutually_exclusive_group_id`
@@ -477,7 +477,7 @@ constructor, and some additional parameters.
 
 ### Groups `description` and `required` status
 
-**Note**:
+Note:
     In v2.1, the introduction of 2 new functions (`group()` and `mutually_exclusive_group()`) and 2 new keyword
     arguments for the `arg()` function (`group` and `mutually_exclusive_group`) made it easier to specify `description`
     and `required` status of the groups at the class scope. These may be better than using the `dataparser()` decorator.
