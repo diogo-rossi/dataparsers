@@ -143,19 +143,14 @@ def dataparser(
 
 
 def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentParser:
-    kwargs, groups_descriptions, required_groups_status, default_bool, help_formatter, help_args = getattr(
-        cls, "__dataparsers_params__", ({}, {}, {}, False, None, ("-h", "--help"))
+    kwargs, groups_descriptions, required_groups_status, default_bool, help_formatter = getattr(
+        cls, "__dataparsers_params__", ({}, {}, {}, False, None)
     )
 
     if parser is None:
         if help_formatter is not None and "formatter_class" not in kwargs:
             kwargs["formatter_class"] = RawTextHelpFormatter
-        if help_args is not None:
-            kwargs["add_help"] = False
         parser = ArgumentParser(**kwargs)
-        if help_args is not None:
-            help_formatter = help_formatter or str
-            parser.add_argument(*help_args, help=help_formatter(_("Show this help message and exit")), action="store_true")
 
     help_formatter = help_formatter or str
     groups: dict[str | int, _ArgumentGroup] = {}
