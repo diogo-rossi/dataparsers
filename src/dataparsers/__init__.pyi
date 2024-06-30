@@ -1136,6 +1136,8 @@ def arg(
             default a help action is automatically added to the parser. See `ArgumentParser` for details of how
             the output is created.
 
+            Note: this may be used to change the default help action, also passing `add_help=False` to the parser constructor.
+
         - `"version"`:
             This expects a `version=` keyword argument in the `add_argument()` call, and prints version
             information and exits when invoked::
