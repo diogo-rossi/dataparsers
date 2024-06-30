@@ -252,7 +252,7 @@ code::
 Two important additional keyword arguments can be passed to the `arg()` function to specify "argument groups":
 `group_title` and `mutually_exclusive_group_id`.
 
-Note:
+**Note**:
     In v2.1, the introduction of 2 new keyword arguments for the `arg()` function (`group` and
     `mutually_exclusive_group`) made it easier to specify groups and mutually exclusive groups at the class scope. See
     "Argument groups using `ClassVar`".
@@ -315,7 +315,7 @@ command line::
     usage: [-h] [--foo FOO | --bar BAR]
     : error: argument --bar: not allowed with argument --foo
 
-Note:
+**Note**:
     Mutually exclusive arguments are always optionals. If no flag is given, they will be created automatically from the
     `dataclass` field names, regardless of the value of `make_flag`.
 
@@ -351,7 +351,7 @@ prevents the integer to be printed in the displayed help message::
       sam
       ham
 
-Note:
+**Note**:
     Mutually exclusive argument groups do not support the `title` and `description` arguments of the
     `add_argument_group()` method. However, a mutually exclusive group can be added to an argument group that has a
     `title` and `description`. This is achieved by passing both `group_title` and `mutually_exclusive_group_id`
@@ -477,7 +477,7 @@ constructor, and some additional parameters.
 
 ### Groups `description` and `required` status
 
-Note:
+**Note**:
     In v2.1, the introduction of 2 new functions (`group()` and `mutually_exclusive_group()`) and 2 new keyword
     arguments for the `arg()` function (`group` and `mutually_exclusive_group`) made it easier to specify `description`
     and `required` status of the groups at the class scope. These may be better than using the `dataparser()` decorator.
@@ -907,7 +907,7 @@ def arg(
         at least one of the mutually exclusive arguments is required. To define the `required` parameter of the
         mutually exclusive argument group, see the `mutually_exclusive_group()` function used to define the `ClassVar`.
 
-        Note:
+        **Note**:
             Mutually exclusive are always optionals. If no flag is given, it will be created automatically from the
             `dataclass` field name, regardless of the value of `make_flag`.
 
@@ -1006,7 +1006,7 @@ def arg(
         at least one of the mutually exclusive arguments is required. To define the `required` parameter of the
         mutually exclusive argument group, see the `dataparser()` decorator.
 
-        Note:
+        **Note**:
             Mutually exclusive are always optionals. If no flag is given, it will be created automatically from the
             `dataclass` field name, regardless of the value of `make_flag`.
 
@@ -1020,43 +1020,43 @@ def arg(
         I  general, flag name starting with `--` may be automatically created from the dataclass field name even
         when `name_or_flags` is not given:
 
-            - If `default` value is given (with `nargs` not equal to `?` or `*`)::
+        - If `default` value is given (with `nargs` not equal to `?` or `*`)::
 
-                >>> @dataclass
-                ... class Arg:
-                ...     foo: str = arg(default=42)
-                ...     bar: int = arg()
-                ...
-                >>>
-                >>> parser = make_parse(Arg)
-                >>> parser.print_help()
-                usage: [-h] [--foo FOO] bar
+            >>> @dataclass
+            ... class Arg:
+            ...     foo: str = arg(default=42)
+            ...     bar: int = arg()
+            ...
+            >>>
+            >>> parser = make_parse(Arg)
+            >>> parser.print_help()
+            usage: [-h] [--foo FOO] bar
 
-                positional arguments:
-                    bar
+            positional arguments:
+                bar
 
-                options:
-                    -h, --help  show this help message and exit
-                    --foo FOO
+            options:
+                -h, --help  show this help message and exit
+                --foo FOO
 
-            - If only single flags are given (i.e., starting with `-` but none with `--`)::
+        - If only single flags are given (i.e., starting with `-` but none with `--`)::
 
-                >>> @dataclass
-                ... class Arg:
-                ...     foo: str = arg("-f")
-                ...     bar: str = arg("-b")
-                ...
-                >>>
-                >>> parser = make_parse(Arg)
-                >>> parser.print_help()
-                usage: [-h] [-f FOO] [-b BAR]
+            >>> @dataclass
+            ... class Arg:
+            ...     foo: str = arg("-f")
+            ...     bar: str = arg("-b")
+            ...
+            >>>
+            >>> parser = make_parse(Arg)
+            >>> parser.print_help()
+            usage: [-h] [-f FOO] [-b BAR]
 
-                options:
-                    -h, --help         show this help message and exit
-                    -f FOO, --foo FOO
-                    -b BAR, --bar BAR
+            options:
+                -h, --help         show this help message and exit
+                -f FOO, --foo FOO
+                -b BAR, --bar BAR
 
-            To prevent the automatic creation of the flag in these cases, pass `make_flag=False`.
+        To prevent the automatic creation of the flag in these cases, pass `make_flag=False`.
 
     Parameters from the original `add_argument()` method
     ----------------------------------------------------
@@ -1136,7 +1136,8 @@ def arg(
             default a help action is automatically added to the parser. See `ArgumentParser` for details of how
             the output is created.
 
-            Note: this may be used to change the default help action, also passing `add_help=False` to the parser constructor.
+            **Note**:
+                This may be used to change the default help action, also passing `add_help=False` to the parser constructor.
 
         - `"version"`:
             This expects a `version=` keyword argument in the `add_argument()` call, and prints version
@@ -1324,7 +1325,7 @@ def arg(
             >>> parser.parse_args([])
             Namespace(foo=42)
 
-        Note:
+        **Note**:
             Giving some `default` value to the function `arg()` will force the argument to be optional if there is
             no flag present in the `name_or_flags` argument. That gives the same result as if `make_flag=True`. The
             only exception occurs when `nargs` is passed and it is equal to `?` or `*`. In those cases, passing a
@@ -1458,7 +1459,7 @@ def arg(
         As the example shows, if an option is marked as `required`, `parse_args()` will report an error if that
         option is not present at the command line.
 
-        Note:
+        **Note**:
             Required options are generally considered bad form because users expect options to be optional, and thus
             they should be avoided when possible.
 
@@ -1572,7 +1573,7 @@ def arg(
                 --foo bar baz
 
     - `dest` (`str | None`, optional). Defaults to `None`.
-        Note:
+        **Note**:
             The parameter `dest` is described here just for documentation. It will raise an error if it is passed to
             the `arg()` function, because it is not necessary: the `dest` keyword argument of the `add_argument()`
             method is taken from the dataclass field name.
@@ -1695,7 +1696,7 @@ def subparsers(
 
     - `dest` (`str | None`, optional). Defaults to `None`.
         Name of the attribute under which sub-command name will be stored. By default `None` and no value is stored.
-        **Note:** The parameter `dest` is described here just for documentation. It will raise an error if it is passed to the
+        **Note**: The parameter `dest` is described here just for documentation. It will raise an error if it is passed to the
         `subparsers()` function, because it is not necessary: the `dest` keyword argument of the `add_subparsers()`
         method is taken from the dataclass field name.
 
@@ -1813,7 +1814,7 @@ def default(default: T | None = None) -> T:
 
     It allows some additional attributes to be stored without any inspection of the command line to be added.
 
-    Note:
+    **Note**:
         This function must be used prior to pass a `dict` value to the `defaults` keyword argument in the function
         `subparser()`.
 
@@ -2095,7 +2096,7 @@ def dataparser(
         Note that most parent parsers will specify `add_help=False`. Otherwise, the `ArgumentParser` will see two
         `-h/--help` options (one in the parent and one in the child) and raise an error.
 
-        Note:
+        **Note**:
             You must fully initialize the parsers before passing them via `parents=`. If you change the parent
             parsers after the child parser, those changes will not be reflected in the child.
 
