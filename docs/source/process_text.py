@@ -60,8 +60,8 @@ def put_links_on_file(
             for arg in arguments_links:
                 arg_without_backticks = arg.replace("`", "")
                 arg_without_backticks_and_under_for_hifen = arg_without_backticks.replace("_", "-")
-                if line.startswith(f"        - {arg}"):
-                    line = f"\n        .. _{arg_without_backticks_and_under_for_hifen}:\n\n{line}"
+                if line.startswith(f"    - {arg}"):
+                    line = f"\n    .. _{arg_without_backticks_and_under_for_hifen}:\n\n{line}"
                 elif arg in line:
                     line = line.replace(
                         arg, f":argument_link:`{arg_without_backticks}<{arg_without_backticks_and_under_for_hifen}>`"
