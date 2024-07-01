@@ -1,22 +1,27 @@
-[tool.poetry]
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
 name = "dataparsers"
 version = "2.2.2"
 description = "A wrapper around argparse to get command line argument parsers from dataclasses"
-authors = ["Diogo Rossi <rossi.diogo@gmail.com>"]
 readme = "README.md"
-repository = "https://github.com/Diogo-Rossi/dataparsers.git"
-documentation = "https://dataparsers.readthedocs.io/en/latest/index.html#"
+requires-python = ">=3.10"
+keywords = []
+license = { text = "MIT" }
+authors = [{ name = "Diogo Rossi", email = "rossi.diogo@gmail.com" }]
+classifiers = [
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+dependencies = []
 
-
-[tool.poetry.dependencies]
-python = "^3.10"
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^7.4.0"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[project.urls]
+Documentation = "https://dataparsers.readthedocs.io/en/latest/index.html#"
+Source = "https://github.com/Diogo-Rossi/dataparsers.git"
+Issues = "https://github.com/Diogo-Rossi/dataparsers/issues"
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
