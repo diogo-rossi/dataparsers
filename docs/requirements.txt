@@ -2,3 +2,4 @@ myst-parser
 sphinx-rtd-theme
 sphinxnotes-comboroles
 sphinx-copybutton
+furo
