@@ -1,0 +1,118 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to
+[Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [2.3.0] - 2024-07-02
+
+### Added ✨
+
+- Translations
+- License file
+- Build system to PEP standard `[project]` table
+- Update documentation
+
+### Fixed 🐞
+
+- Replace `os` by `shutil` to get terminal size.
+- Remove `type` when `action="help"`.
+
+## [2.2.2] - 2024-04-01
+
+### Fixed 🐞
+
+- Documentation in docstrings for stub.
+
+## [2.2.1] - 2024-03-21
+
+### Fixed 🐞
+
+- Documentation in docstrings for stub.
+
+## [2.2.0] - 2024-03-21
+
+### Added ✨
+
+- New argument `metavar` in `parse_know()`
+
+### Fixed 🐞
+
+- Verification for `dest` in function `subparsers()`
+
+## [2.1.0] - 2024-03-20
+
+### Added ✨
+
+- New functions and parameters to treat: groups, mutually exclusive groups, subparsers and defaults
+- New function `parse_known()`
+
+### Fixed 🐞
+
+- Verification if is dataclass
+- Treat `Callable` in field type
+- Treat `type` when `action = "store_const"`
+
+## [2.0.1] - 2024-03-01
+
+### Fixed 🐞
+
+- Fix error when `type` is a string (not callable).
+
+### Added 👷
+
+- Improve tests
+
+## [2.0.0] - 2024-02-21
+
+### Changed 💥
+
+- Parameter name in `dataparser()` function.
+
+### Added ✨
+
+- Lots of documentation improvements
+
+## [1.0.1] - 2024-02-20
+
+### Fixed 🐞
+
+- Pass the code to a separated module file `dataparsers.py`, which is imported in `__init__.py`
+
+## [1.0.0] - 2024-02-20
+
+### Changed 💥
+
+- Make the module a package: turn it in a file `__init__.py`
+
+## [0.1.0] - 2024-02-14
+
+### Added ✨
+
+- First stable version.
+- Improved documentation in stub file
+
+## [0.0.1] - 2024-02-01
+
+### Fixed 🐞
+
+- Include homepage
+
+## [0.0.0] - 2024-02-01
+
+### New 🎉
+
+- First version released, draft and unstable.
+
+[unreleased]: https://github.com/olivierlacan/keep-a-changelog/compare/v1.1.1...HEAD
+[2.1.0]: https://github.com/Diogo-Rossi/dataparsers/releases/tag/v2.1.0
+[2.0.1]: https://github.com/Diogo-Rossi/dataparsers/releases/tag/v2.0.1
+[2.0.0]: https://github.com/Diogo-Rossi/dataparsers/releases/tag/v2.0.0
+[1.0.1]: https://github.com/Diogo-Rossi/dataparsers/releases/tag/v1.0.1
+[1.0.0]: https://github.com/Diogo-Rossi/dataparsers/releases/tag/v1.0.0
+[0.1.0]: https://github.com/Diogo-Rossi/dataparsers/releases/tag/v0.1.0
+[0.0.1]: https://github.com/Diogo-Rossi/dataparsers/releases/tag/v0.0.1
+[0.0.0]: https://github.com/Diogo-Rossi/dataparsers/releases/tag/v0.0.0
