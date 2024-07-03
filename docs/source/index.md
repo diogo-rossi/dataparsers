@@ -27,4 +27,4 @@ pip install dataparsers
 - PyPI:
   [https://pypi.org/project/dataparsers/](https://pypi.org/project/dataparsers/)
 - Documentation:
-  [https://dataparsers.readthedocs.io/en/latest/index.html](https://dataparsers.readthedocs.io/en/latest/index.html)
+  [https://dataparsers.readthedocs.io/en/latest/](https://dataparsers.readthedocs.io/en/latest/)
