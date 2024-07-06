@@ -1197,8 +1197,8 @@ def arg(
         The `nargs` keyword argument associates a different number of command-line arguments with a single action.
         See also "Specifying ambiguous arguments". The supported values are:
 
-            - `N` (an integer):
-              `N` arguments from the command line will be gathered together into a list. For example::
+        - `N` (an integer):
+            `N` arguments from the command line will be gathered together into a list. For example::
 
                 >>> parser = argparse.ArgumentParser()
                 >>> parser.add_argument('--foo', nargs=2)
@@ -1206,10 +1206,10 @@ def arg(
                 >>> parser.parse_args('c --foo a b'.split())
                 Namespace(bar=['c'], foo=['a', 'b'])
 
-              Note that `nargs=1` produces a list of one item. This is different from the default, in which the item
-              is produced by itself.
+            Note that `nargs=1` produces a list of one item. This is different from the default, in which the item
+            is produced by itself.
 
-            - `"?"`:
+        - `"?"`:
             One argument will be consumed from the command line if possible, and produced as a single item. If
             no command-line argument is present, the value from `default` will be produced. Note that for optional
             arguments, there is an additional case - the option string is present but not followed by a
@@ -1238,7 +1238,7 @@ def arg(
                 Namespace(infile=<_io.TextIOWrapper name='<stdin>' encoding='UTF-8'>,
                         outfile=<_io.TextIOWrapper name='<stdout>' encoding='UTF-8'>)
 
-            - `"*"`:
+        - `"*"`:
             All command-line arguments present are gathered into a list. Note that it generally doesn't make
             much sense to have more than one positional argument with `nargs="*"`, but multiple optional arguments
             with `nargs="*"` is possible. For example::
@@ -1250,7 +1250,7 @@ def arg(
                 >>> parser.parse_args('a b --foo x y --bar 1 2'.split())
                 Namespace(bar=['1', '2'], baz=['a', 'b'], foo=['x', 'y']
 
-            - `"+"`:
+        - `"+"`:
             Just like `"*"`, all command-line args present are gathered into a list. Additionally, an error
             message will be generated if there wasn't at least one command-line argument present. For example::
 
@@ -1268,12 +1268,12 @@ def arg(
         The const argument of `add_argument()` is used to hold constant values that are not read from the command
         line but are required for the various ArgumentParser actions. The two most common uses of it are:
 
-            (1) When `add_argument()` is called with `action='store_const'` or `action='append_const'`. These
+        (1) When `add_argument()` is called with `action='store_const'` or `action='append_const'`. These
             actions add the const value to one of the attributes of the object returned by `parse_args()`. See
             the action description for examples. If const is not provided to `add_argument()`, it will receive a
             default value of `None`.
 
-            (2) When `add_argument()` is called with option strings (like `-f` or `--foo`) and `nargs='?'`. This
+        (2) When `add_argument()` is called with option strings (like `-f` or `--foo`) and `nargs='?'`. This
             creates an optional argument that can be followed by zero or one command-line arguments. When
             parsing the command line, if the option string is encountered with no command-line argument
             following it, the value of const will be assumed to be `None` instead. See the `nargs` description
