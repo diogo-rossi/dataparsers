@@ -2396,8 +2396,6 @@ def write_help(
     - `space` (`int`, optional). Defaults to `24`.
         The indentation space used in in CLI helps.
 
-        The indentation space used in in CLI helps.
-
     - `dedent` (`bool`, optional). Defaults to `True`.
         Whether to remove blank spaces at start and end of lines.
 
