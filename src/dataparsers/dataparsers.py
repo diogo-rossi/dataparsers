@@ -158,7 +158,7 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
     subparsers: dict[str, ArgumentParser] = {}
     subparsers_group: _SubParsersAction | None = None
 
-    for fld in fields(cls):  # type: ignore
+    for fld in fields(cls):
         if fld.metadata.get("is_subparsers_group", False):
             subparsers_group_kwargs = fld.metadata.get("subparsers_group_kwargs", {})
             subparsers_group_kwargs.pop("dest", None)
@@ -179,7 +179,7 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
                     if subparser_defaults is not None:
                         subparsers[field_name].set_defaults(**subparser_defaults)
 
-    for fld in fields(cls):  # type: ignore
+    for fld in fields(cls):
         if type(fld.type) == str:
             fld.type = eval(fld.type)
         if get_origin(fld.type) is list or (get_origin(fld.type) in [Union, UnionType] and type(None) in get_args(fld.type)):
