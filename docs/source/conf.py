@@ -42,7 +42,6 @@ author = "Diogo Rossi"
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
-    "sphinx.ext.viewcode",
     "myst_parser",
     "sphinx_copybutton",
     "sphinx.ext.doctest",
@@ -90,7 +89,7 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "furo" # sphinx_rtd_theme
+html_theme = "furo"  # sphinx_rtd_theme
 html_title = '<p style="text-align: center"><b>dataparsers</b></p>'
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -101,7 +100,7 @@ html_logo = "logo.png"
 
 html_theme_options = {
     # 'logo_only': True,
-    'display_version': True,
+    "display_version": True,
     # "sidebar_hide_name": True,
 }
 
