@@ -25,10 +25,6 @@ Documentation = "https://dataparsers.readthedocs.io/en/latest/"
 Source = "https://github.com/Diogo-Rossi/dataparsers.git"
 Issues = "https://github.com/Diogo-Rossi/dataparsers/issues"
 
-[tool.pytest.ini_options]
-pythonpath = ["."]
-addopts = "-rx -vv -s --tb=short"
-
 [dependency-groups]
 dev = [
     "taskipy>=1.14.1",
@@ -39,3 +35,11 @@ dev = [
     "sphinx-copybutton>=0.5.2",
     "sphinxnotes-comboroles>=1.0",
 ]
+
+[tool.taskipy.tasks]
+doc = { cmd = "make html", cwd = "./docs", help = "Make docs" }
+test = { cmd = "pytest" }
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+addopts = "-rx -vv -s --tb=short"
