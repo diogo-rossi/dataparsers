@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "dataparsers"
-version = "2.3.3"
+version = "2.3.4"
 description = "A wrapper around argparse to get command line argument parsers from dataclasses"
 readme = "README.md"
 requires-python = ">=3.10"
