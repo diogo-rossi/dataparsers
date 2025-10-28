@@ -644,6 +644,9 @@ To define subparsers (or [sub commands](https://docs.python.org/3/library/argpar
 and initialize it with the function {py:func}`~dataparsers.subparser`. This function accepts all parameters of the original [`add_parser()`](https://github.com/python/cpython/blob/fc4599800778f9b130d5e336deadbdeb5bd3e5ee/Lib/argparse.py#L1221)
 method, except for `name`: the name of the subparser will receive the [`dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass) field name.
 
+```{note}
+Subparsers added to a subparser are not yet supported
+```
 To add an argument to the created subparser (instead of the main parser), use the [`subparser`](./2_available_functions.md#subparser) keyword argument of the
 {py:func}`~dataparsers.arg` function and assign to it the previously created field:
 
