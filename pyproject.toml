@@ -37,9 +37,8 @@ dev = [
 ]
 
 [tool.taskipy.tasks]
-doc = { cmd = "make html", cwd = "./docs", help = "Make docs" }
-test = { cmd = "pytest" }
+docs = { cmd = "make html", cwd = "./docs", help = "Make docs" }
+test = { cmd = "pytest", cwd = "./tests", help = "Test with pytest"}
 
 [tool.pytest.ini_options]
-pythonpath = ["."]
 addopts = "-rx -vv -s --tb=short"
