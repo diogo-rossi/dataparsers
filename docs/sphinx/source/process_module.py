@@ -90,7 +90,7 @@ ARGUMENTS_LINKS = [
 THIS_FILE = Path(__file__)
 THIS_DIR = THIS_FILE.parent.resolve()
 DOCS_DIR = THIS_DIR.parent.resolve()
-ROOT_DIR = DOCS_DIR.parent.resolve()
+ROOT_DIR = DOCS_DIR.parent.parent.resolve()
 
 STUB_FILE = ROOT_DIR / "src/dataparsers/__init__.pyi"
 MARK_FILE = ROOT_DIR / "src/dataparsers/__init__.md"
