@@ -1,5 +1,5 @@
 **/__pycache__
 dist/
-docs/build/
+docs/sphinx/build/
 .venv
 *.egg-info/
