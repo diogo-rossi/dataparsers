@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "dataparsers"
-version = "2.3.4"
+version = "2.3.5"
 description = "A wrapper around argparse to get command line argument parsers from dataclasses"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -22,8 +22,8 @@ dependencies = []
 
 [project.urls]
 Documentation = "https://dataparsers.readthedocs.io/en/latest/"
-Source = "https://github.com/Diogo-Rossi/dataparsers.git"
-Issues = "https://github.com/Diogo-Rossi/dataparsers/issues"
+Source = "https://github.com/diogo-rossi/dataparsers.git"
+Issues = "https://github.com/diogo-rossi/dataparsers/issues"
 
 [project.optional-dependencies]
 docs = [
@@ -50,7 +50,8 @@ dev = [
 
 [tool.taskipy.tasks]
 docs = { cmd = "make html", cwd = "./docs/sphinx", help = "Make docs" }
-test = { cmd = "pytest", cwd = "./tests", help = "Test with pytest"}
+open = { cmd = "index.html", cwd = "./docs/sphinx/build/html", help = "Open docs" }
+test = { cmd = "pytest", cwd = "./tests", help = "Test with pytest" }
 
 [tool.pytest.ini_options]
 addopts = "-rx -vv -s --tb=short"
