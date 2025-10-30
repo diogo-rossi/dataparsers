@@ -252,6 +252,15 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
 
                 handler = groups[group_name]
 
+            if group_id is not None:
+                if group_id not in groups:
+                    groups[group_id] = parser.add_argument_group(
+                        title=group_id if type(group_id) == str else None,
+                        description=groups_descriptions.get(group_id, None),
+                    )
+
+                handler = groups[group_id]
+
             if mutually_exclusive_group is not None:
                 group_kwargs = {}
                 if type(mutually_exclusive_group) is Field:
@@ -263,15 +272,6 @@ def make_parser(cls: type, *, parser: ArgumentParser | None = None) -> ArgumentP
                     mutually_exclusive_groups[group_name] = handler.add_mutually_exclusive_group(**group_kwargs)
 
                 handler = mutually_exclusive_groups[group_name]
-
-            if group_id is not None:
-                if group_id not in groups:
-                    groups[group_id] = parser.add_argument_group(
-                        title=group_id if type(group_id) == str else None,
-                        description=groups_descriptions.get(group_id, None),
-                    )
-
-                handler = groups[group_id]
 
             if exclusive_group_id is not None:
 
