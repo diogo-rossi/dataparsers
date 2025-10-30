@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import sys
+import pytest
 
 # add `src` folder to the `sys.path`, relative to the CWD
 sys.path.insert(0, os.path.abspath("./src"))
@@ -150,3 +151,83 @@ def test_09_forced_make_flags(capsys: CapSys):
     output = capsys.readouterr().out
     flags = HelpDisplay(output).flags
     assert all(name in flags for name in ["--string", "--integer"])
+
+
+def test_10_mutually_exclusive_group_with_wrong_input(capsys: CapSys):
+    @dataparser
+    class Args:
+        MyGroup: ClassVar = mutually_exclusive_group(required=True)
+        string: str = arg("-s", mutually_exclusive_group=MyGroup)
+        integer: int = arg("-i", mutually_exclusive_group=MyGroup)
+
+    with pytest.raises(SystemExit) as excinfo:
+        parse(Args, "-s name -i 36".split())
+    assert excinfo.value.code == 2
+    output = capsys.readouterr().err
+    assert "not allowed with argument" in output
+    assert "-i/--integer" in output
+    assert "-s/--string" in output
+
+
+def test_11_groupTitle_togetherWith_mutuallyExclusiveGroup(capsys: CapSys):
+    @dataclass
+    class Args:
+        meg: ClassVar = mutually_exclusive_group()
+        sam: str = arg(group_title="Group1", mutually_exclusive_group=meg)
+        ham: str = arg(group_title="Group1", mutually_exclusive_group=meg)
+        foo: str = arg(group_title="Group2", mutually_exclusive_group=meg)
+        bar: str = arg(group_title="Group2", mutually_exclusive_group=meg)
+
+    parser = make_parser(Args)
+    parser.print_help()
+    output = capsys.readouterr().out
+    g = HelpDisplay(output).group("Group1")
+    assert all(name in g for name in ["--sam", "--ham", "--foo", "--bar"])
+
+
+def test_12_groupTitle_togetherWith_mutuallyExclusiveGroupId(capsys: CapSys):
+    @dataclass
+    class Args:
+        sam: str = arg(group_title="Group1", mutually_exclusive_group_id="meg")
+        ham: str = arg(group_title="Group1", mutually_exclusive_group_id="meg")
+        foo: str = arg(group_title="Group2", mutually_exclusive_group_id="meg")
+        bar: str = arg(group_title="Group2", mutually_exclusive_group_id="meg")
+
+    parser = make_parser(Args)
+    parser.print_help()
+    output = capsys.readouterr().out
+    g = HelpDisplay(output).group("Group1")
+    assert all(name in g for name in ["--sam", "--ham", "--foo", "--bar"])
+
+
+def test_13_group_togetherWith_mutuallyExclusiveGroup(capsys: CapSys):
+    @dataclass
+    class Args:
+        g1: ClassVar = group("Group1")
+        meg: ClassVar = mutually_exclusive_group()
+        sam: str = arg(group=g1, mutually_exclusive_group=meg)
+        ham: str = arg(group=g1, mutually_exclusive_group=meg)
+        foo: str = arg(group=g1, mutually_exclusive_group=meg)
+        bar: str = arg(group=g1, mutually_exclusive_group=meg)
+
+    parser = make_parser(Args)
+    parser.print_help()
+    output = capsys.readouterr().out
+    g = HelpDisplay(output).group("Group1")
+    assert all(name in g for name in ["--sam", "--ham", "--foo", "--bar"])
+
+
+def test_14_group_togetherWith_mutuallyExclusiveGroupId(capsys: CapSys):
+    @dataclass
+    class Args:
+        g1: ClassVar = group("Group1")
+        sam: str = arg(group=g1, mutually_exclusive_group_id="meg")
+        ham: str = arg(group=g1, mutually_exclusive_group_id="meg")
+        foo: str = arg(group=g1, mutually_exclusive_group_id="meg")
+        bar: str = arg(group=g1, mutually_exclusive_group_id="meg")
+
+    parser = make_parser(Args)
+    parser.print_help()
+    output = capsys.readouterr().out
+    g = HelpDisplay(output).group("Group1")
+    assert all(name in g for name in ["--sam", "--ham", "--foo", "--bar"])
