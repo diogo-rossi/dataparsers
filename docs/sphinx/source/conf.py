@@ -30,7 +30,7 @@ from dataparsers import arg, parse
 # %% -- Project information -----------------------------------------------------
 
 project = "dataparsers"
-copyright = "2024, Diogo Rossi"
+copyright = "2025, Diogo Rossi"
 author = "Diogo Rossi"
 
 

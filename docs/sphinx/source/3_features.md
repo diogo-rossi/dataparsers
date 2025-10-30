@@ -34,7 +34,7 @@ Use this project if you want particular added features, such as:
 - More simplicity
 
 The simplicity is mentioned because it is just a simple module
-[`dataparsers.py`](https://github.com/Diogo-Rossi/dataparsers/blob/main/src/dataparsers/dataparsers.py)
+[`dataparsers.py`](https://github.com/diogo-rossi/dataparsers/blob/main/src/dataparsers/dataparsers.py)
 that doesn't have any additional dependencies (it is pure Python) which can be
 downloaded directly and placed in your CLI scripts folder to import from.
 
@@ -47,7 +47,7 @@ are just the few
 the _stdlib_ imports, `Class` (a `TypeVar`) and `SubParser` (a frozen `dataclass`).
 
 Additionally, this project also provides a
-[stub file (`.pyi`)](https://github.com/Diogo-Rossi/dataparsers/blob/main/src/dataparsers/__init__.pyi)
+[stub file (`.pyi`)](https://github.com/diogo-rossi/dataparsers/blob/main/src/dataparsers/__init__.pyi)
 that can be used by type checkers but, moreover, may be used by some code
 editors to give helper documentation including the related docs of `argparse`
 methods, which are also provided in this project's documentation, for

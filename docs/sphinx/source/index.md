@@ -1,4 +1,4 @@
-# Documentation for `dataparsers`
+# `dataparsers`
 
 This project provides a simple module that wrappers around
 [`argparse`](https://docs.python.org/3/library/argparse.html#module-argparse) to
@@ -23,7 +23,7 @@ pip install dataparsers
 ## Links
 
 - GitHub repository:
-  [https://github.com/Diogo-Rossi/dataparsers](https://github.com/Diogo-Rossi/dataparsers)
+  [https://github.com/diogo-rossi/dataparsers](https://github.com/diogo-rossi/dataparsers)
 - PyPI:
   [https://pypi.org/project/dataparsers/](https://pypi.org/project/dataparsers/)
 - Documentation:
