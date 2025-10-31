@@ -86,7 +86,7 @@ In general, the `arg()` function accepts all parameters that are used in the ori
 exceptions) and some additional parameters. The `default` keyword argument used above makes the argument optional (i.e.,
 passed with flags like `--bar`) except in some specific situations.
 
-For more information, see the [documentation](https://dataparsers.readthedocs.io/en/latest/index.html).
+For more information, see the [documentation](https://dataparsers.readthedocs.io/en/latest/).
 
 ## Formalities, features, benefits and drawbacks
 
