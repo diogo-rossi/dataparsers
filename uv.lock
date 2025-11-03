@@ -146,53 +146,41 @@ wheels = [
 
 [[package]]
 name = "dataparsers"
-version = "2.3.4"
+version = "2.3.6"
 source = { editable = "." }
-
-[package.optional-dependencies]
-docs = [
-    { name = "furo" },
-    { name = "myst-parser" },
-    { name = "sphinx" },
-    { name = "sphinx-copybutton" },
-    { name = "sphinxnotes-comboroles" },
-]
 
 [package.dev-dependencies]
 dev = [
+    { name = "pytest" },
+    { name = "taskipy" },
+]
+docs = [
     { name = "furo" },
     { name = "mkdocs" },
     { name = "mkdocs-material" },
     { name = "mkdocstrings-python" },
     { name = "myst-parser" },
-    { name = "pytest" },
     { name = "sphinx" },
     { name = "sphinx-copybutton" },
     { name = "sphinxnotes-comboroles" },
-    { name = "taskipy" },
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "furo", marker = "extra == 'docs'", specifier = ">=2024.8.6" },
-    { name = "myst-parser", marker = "extra == 'docs'", specifier = ">=4.0.0" },
-    { name = "sphinx", marker = "extra == 'docs'", specifier = ">=8.1.3" },
-    { name = "sphinx-copybutton", marker = "extra == 'docs'", specifier = ">=0.5.2" },
-    { name = "sphinxnotes-comboroles", marker = "extra == 'docs'", specifier = ">=1.0" },
-]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "pytest", specifier = ">=8.3.4" },
+    { name = "taskipy", specifier = ">=1.14.1" },
+]
+docs = [
     { name = "furo", specifier = ">=2024.8.6" },
     { name = "mkdocs", specifier = ">=1.6.1" },
     { name = "mkdocs-material", specifier = ">=9.6.22" },
     { name = "mkdocstrings-python", specifier = ">=1.18.2" },
     { name = "myst-parser", specifier = ">=4.0.0" },
-    { name = "pytest", specifier = ">=8.3.4" },
     { name = "sphinx", specifier = ">=8.1.3" },
     { name = "sphinx-copybutton", specifier = ">=0.5.2" },
     { name = "sphinxnotes-comboroles", specifier = ">=1.0" },
-    { name = "taskipy", specifier = ">=1.14.1" },
 ]
 
 [[package]]
